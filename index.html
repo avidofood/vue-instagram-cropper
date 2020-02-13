@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue Instagram Cropper</title>
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <style>
+        html, body {
+            background-color: #000000;
+            font-family: 'Nunito', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <section class="container">
+            <div class="d-flex justify-content-center align-items-center px-2 py-4">
+                <h4 class="text-white text-center d-md-none" style="font-weight: 600;">Vue Instagram Cropper</h4>
+                <h1 class="text-white d-none d-md-block" style="font-weight: 600; ">Vue Instagram Cropper</h1>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="bg-white p-4 rounded">
+                    <div style="width: 300px; height: 300px;">
+                        <instagram-cropper class="w-100 h-100" initial-image="https://raw.githubusercontent.com/avidofood/vue-responsive-video-background-player/master/demo/public/images/hero-mobile%402.jpg"></instagram-cropper>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container text-center mt-4">
+            <h6 class="text-light">Vue.js component</h6>
+            <a class="btn btn-danger" href="https://github.com/avidofood/vue-instagram-cropper" role="button">Source on GitHub</a>
+
+            <div class="social mt-4">
+                <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
+                <a class="github-button" href="https://github.com/avidofood/vue-instagram-cropper" data-show-count="true" aria-label="Star avidofood/vue-instagram-cropper on GitHub">Star</a>
+            </div>
+        </section>
+
+        <section class="container mt-5">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <h4 class="text-white d-md-none" style="font-weight: 600;">Designed for Vue</h4>
+                    <h2 class="text-white d-none d-md-block" style="font-weight: 600; ">Designed for Vue</h2>
+                </div>
+                <div class="col-12 col-md-6">
+                    <p class="text-white">It's super lightweight and feels like the image cropper from Instagram.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="demo/public/js/app.js"></script>
+</body>
+</html>
