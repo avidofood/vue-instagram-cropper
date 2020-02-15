@@ -16,7 +16,7 @@ export default {
                 this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT);
             }
         },
-        $_c_placeImage(applyMetadata) {
+        $_c_placeImage() {
             if (!this.img) return;
 
             const { imgData } = this;
@@ -33,10 +33,6 @@ export default {
                 this.imgData.height = this.naturalHeight * this.scaleRatio;
             }
 
-            if (applyMetadata) {
-                this.$_c_applyMetadata();
-            }
-
             this.move({ x: 0, y: 0 });
             this.$_c_draw();
         },
@@ -45,6 +41,9 @@ export default {
             const imgHeight = this.naturalHeight;
             const canvasRatio = this.outputWidth / this.outputHeight;
             let scaleRatio;
+
+            this.skipScaleRatio = true;
+
             if (this.aspectRatio > canvasRatio) {
                 scaleRatio = imgWidth / this.outputWidth;
                 this.imgData.height = imgHeight / scaleRatio;
@@ -58,23 +57,57 @@ export default {
                 this.imgData.startX = -(this.imgData.width - this.outputWidth) / 2;
                 this.imgData.startY = 0;
             }
-        },
-        $_c_applyMetadata() {
-            if (!this.userMetadata) return;
 
-            const { startX, startY, scale } = this.userMetadata;
-            if (u.numberValid(startX)) {
-                this.imgData.startX = startX;
-            }
-            if (u.numberValid(startY)) {
-                this.imgData.startY = startY;
-            }
-            if (u.numberValid(scale)) {
-                this.scaleRatio = scale;
-            }
             this.$nextTick(() => {
-                this.userMetadata = null;
+                this.skipScaleRatio = false;
             });
+        },
+        /**
+         * Is like "cover". Fills ups the whole canvas
+         */
+        $_c_aspectFill() {
+            const imgWidth = this.naturalWidth;
+            const imgHeight = this.naturalHeight;
+            const canvasRatio = this.outputWidth / this.outputHeight;
+            let scaleRatio;
+
+            this.skipScaleRatio = true;
+
+            if (this.aspectRatio > canvasRatio) {
+                scaleRatio = imgHeight / this.outputHeight;
+                this.imgData.width = imgWidth / scaleRatio;
+                this.imgData.height = this.outputHeight;
+                this.imgData.startX = -(this.imgData.width - this.outputWidth) / 2;
+                this.imgData.startY = 0;
+            } else {
+                scaleRatio = imgWidth / this.outputWidth;
+                this.imgData.height = imgHeight / scaleRatio;
+                this.imgData.width = this.outputWidth;
+                this.imgData.startY = -(this.imgData.height - this.outputHeight) / 2;
+                this.imgData.startX = 0;
+            }
+
+            this.$nextTick(() => {
+                this.skipScaleRatio = false;
+            });
+        },
+        $_c_imageIsFullyZoomedOut() {
+            if (this.$_c_imageIsWiderThanHeight()) {
+                return this.imgData.width <= this.outputWidth;
+            }
+
+            return this.imgData.height <= this.outputHeight;
+        },
+        $_c_imageIsFullyZoomedIn() {
+            // Like cover or even more zoomed in.
+            if (this.$_c_imageIsWiderThanHeight()) {
+                return this.imgData.height >= this.outputHeight;
+            }
+
+            return this.imgData.width >= this.outputWidth;
+        },
+        $_c_imageIsWiderThanHeight() {
+            return this.imgData.width > this.imgData.height;
         },
 
     },

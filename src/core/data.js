@@ -16,8 +16,12 @@ export default {
     naturalWidth: 0,
     naturalHeight: 0,
     scaleRatio: null,
+    // unfortunately a stupid bug
+    // if I use e.g. aspectFill, it
+    // activates the scaleRatio and changes the
+    // image position.
+    skipScaleRatio: false,
 
-    userMetadata: null,
     imageSet: false,
 
     loading: false,

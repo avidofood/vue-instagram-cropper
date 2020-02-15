@@ -34,6 +34,8 @@
             @wheel.stop="$_c_handleWheel"
             @mousewheel.stop="$_c_handleWheel"
         />
+
+        <FullscreenButton @click.native="$_c_handleFullscreen" />
     </div>
 </template>
 
@@ -51,6 +53,10 @@ import image from './mixins/image';
 import handleMethods from './mixins/handleMethods';
 import watches from './mixins/watches';
 
+import fullscreenButtonMethods from './mixins/buttons/fullscreenButtonMethods';
+
+import FullscreenButton from './components/buttons/FullscreenButton.vue';
+
 
 export default {
     props,
@@ -62,7 +68,11 @@ export default {
         computed,
         image,
         handleMethods,
+        fullscreenButtonMethods,
     ],
+    components: {
+        FullscreenButton,
+    },
     data() {
         return data;
     },
@@ -157,6 +167,23 @@ export default {
         &:hover{
             opacity: 1;
         }
+    }
+
+    & .rounded-button{
+        position: absolute;
+        display: flex;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        user-select: none;
+        background-color: rgba(37, 37, 37, 0.6);
+        border: 1px solid transparent;
+        padding: 5px;
+        font-size: 16px;
+        line-height: 1.5;
+        border-radius: 100px;
+        box-shadow: 0 0 1px #949494;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     }
 }
 

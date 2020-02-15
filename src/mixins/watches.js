@@ -21,7 +21,7 @@ export default {
             this.imgData.width = this.naturalWidth * val;
             this.imgData.height = this.naturalHeight * val;
 
-            if (!this.userMetadata && this.imageSet) {
+            if (!this.skipScaleRatio && this.imageSet) {
                 const offsetX = (x - 1) * (pos.x - this.imgData.startX);
                 const offsetY = (x - 1) * (pos.y - this.imgData.startY);
                 this.imgData.startX -= offsetX;
