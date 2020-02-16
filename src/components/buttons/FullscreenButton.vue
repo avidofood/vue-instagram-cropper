@@ -1,5 +1,5 @@
 <template>
-    <button class="rounded-button bottom-left-abs">
+    <rounded-button class="bottom-left-abs">
         <svg
             viewBox="0 0 22.5 22.5"
             xmlns="http://www.w3.org/2000/svg"
@@ -17,11 +17,22 @@
                 <path d="m21.75 8.75v-7.6a.4.4 0 0 0 -.4-.4h-7.6" />
             </g>
         </svg>
-    </button>
+    </rounded-button>
 </template>
 
+
+<script>
+import RoundedButton from './RoundedButton.vue';
+
+export default {
+    components: {
+        RoundedButton,
+    },
+};
+</script>
+
 <style lang="scss" scoped>
-    .rounded-button.bottom-left-abs{
+    .bottom-left-abs{
         bottom: 10px;
         left: 10px;
     }
