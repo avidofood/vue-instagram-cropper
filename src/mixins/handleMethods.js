@@ -29,7 +29,7 @@ export default {
                 const coord = u.getPointerCoords(evt, this);
                 this.lastMovingCoord = coord;
             }
-            if (evt.touches && evt.touches.length === 2 && !this.disablePinchToZoom) {
+            if (evt.touches && evt.touches.length === 2) {
                 this.dragging = false;
                 this.pinching = true;
                 this.pinchDistance = u.getPinchDistance(evt, this);
@@ -62,6 +62,9 @@ export default {
                 this.tabStart = 0;
                 return;
             }
+
+            this.$_c_checkBounceness();
+
             this.dragging = false;
             this.pinching = false;
             this.pinchDistance = 0;

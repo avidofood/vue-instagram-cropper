@@ -48,14 +48,14 @@ export default {
                 scaleRatio = imgWidth / this.outputWidth;
                 this.imgData.height = imgHeight / scaleRatio;
                 this.imgData.width = this.outputWidth;
-                this.imgData.startY = -(this.imgData.height - this.outputHeight) / 2;
-                this.imgData.startX = 0;
+                this.$_c_bounceTopCenter();
+                this.$_c_bounceLeft();
             } else {
                 scaleRatio = imgHeight / this.outputHeight;
                 this.imgData.width = imgWidth / scaleRatio;
                 this.imgData.height = this.outputHeight;
-                this.imgData.startX = -(this.imgData.width - this.outputWidth) / 2;
-                this.imgData.startY = 0;
+                this.$_c_bounceLeftCenter();
+                this.$_c_bounceTop();
             }
 
             this.$nextTick(() => {
@@ -77,14 +77,14 @@ export default {
                 scaleRatio = imgHeight / this.outputHeight;
                 this.imgData.width = imgWidth / scaleRatio;
                 this.imgData.height = this.outputHeight;
-                this.imgData.startX = -(this.imgData.width - this.outputWidth) / 2;
-                this.imgData.startY = 0;
+                this.$_c_bounceLeftCenter();
+                this.$_c_bounceTop();
             } else {
                 scaleRatio = imgWidth / this.outputWidth;
                 this.imgData.height = imgHeight / scaleRatio;
                 this.imgData.width = this.outputWidth;
-                this.imgData.startY = -(this.imgData.height - this.outputHeight) / 2;
-                this.imgData.startX = 0;
+                this.$_c_bounceTopCenter();
+                this.$_c_bounceLeft();
             }
 
             this.$nextTick(() => {
