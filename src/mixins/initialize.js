@@ -34,8 +34,6 @@ export default {
             let src;
             let img;
 
-            console.log('hier bin ich');
-
             if (this.initialImage && typeof this.initialImage === 'string') {
                 src = this.initialImage;
                 img = new Image();

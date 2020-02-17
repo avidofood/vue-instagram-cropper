@@ -109,6 +109,9 @@ export default {
         $_c_imageIsWiderThanHeight() {
             return this.imgData.width > this.imgData.height;
         },
+        $_c_imageReachedMaximumScale() {
+            return this.scaleRatio >= this.maximumScaleRatio;
+        },
 
     },
 };

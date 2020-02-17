@@ -55,6 +55,7 @@ import watches from './mixins/watches';
 
 import fullscreenButtonMethods from './mixins/buttons/fullscreenButtonMethods';
 import handleBounce from './mixins/clipping/handleBounce';
+import handleZoom from './mixins/clipping/handleZoom';
 
 import FullscreenButton from './components/buttons/FullscreenButton.vue';
 
@@ -71,6 +72,7 @@ export default {
         handleMethods,
         fullscreenButtonMethods,
         handleBounce,
+        handleZoom,
     ],
     components: {
         FullscreenButton,

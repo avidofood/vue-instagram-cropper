@@ -120,8 +120,10 @@ export default {
             } else if (evt.wheelDelta > 0 || evt.deltaY < 0 || evt.detail < 0) {
                 this.zoom(true);
             }
+
             this.$nextTick(() => {
                 this.scrolling = false;
+                this.$_c_handleZoomWheel();
             });
         },
 

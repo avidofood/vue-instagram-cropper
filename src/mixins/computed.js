@@ -14,5 +14,9 @@ export default {
         aspectRatio() {
             return this.naturalWidth / this.naturalHeight;
         },
+        maximumScaleRatio() {
+            // my weird calculation from Instagram
+            return this.aspectRatio * (-2.127) + 4.3405;
+        },
     },
 };
