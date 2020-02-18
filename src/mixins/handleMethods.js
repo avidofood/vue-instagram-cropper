@@ -184,7 +184,7 @@ export default {
         },
         $_c_handleClick(evt) {
             this.emitNativeEvent(evt);
-            if (!this.hasImage()) {
+            if (!this.hasImage() && !this.supportTouch) {
                 this.chooseFile();
             }
         },

@@ -35,7 +35,14 @@
             @mousewheel.stop="$_c_handleWheel"
         />
 
-        <FullscreenButton @click.native="$_c_handleFullscreen" />
+        <FullscreenButton
+            v-if="img"
+            @click.native="$_c_handleFullscreen"
+        />
+        <RemoveButton
+            v-if="img"
+            @click.native="remove"
+        />
     </div>
 </template>
 
@@ -52,12 +59,14 @@ import computed from './mixins/computed';
 import image from './mixins/image';
 import handleMethods from './mixins/handleMethods';
 import watches from './mixins/watches';
+import fileinput from './mixins/fileinput';
 
 import fullscreenButtonMethods from './mixins/buttons/fullscreenButtonMethods';
 import handleBounce from './mixins/clipping/handleBounce';
 import handleZoom from './mixins/clipping/handleZoom';
 
 import FullscreenButton from './components/buttons/FullscreenButton.vue';
+import RemoveButton from './components/buttons/RemoveButton.vue';
 
 
 export default {
@@ -73,9 +82,11 @@ export default {
         fullscreenButtonMethods,
         handleBounce,
         handleZoom,
+        fileinput,
     ],
     components: {
         FullscreenButton,
+        RemoveButton,
     },
     data() {
         return data;
@@ -99,7 +110,6 @@ export default {
             };
             this.orientation = 1;
             this.scaleRatio = null;
-            this.userMetadata = null;
             this.imageSet = false;
             this.chosenFile = null;
 

@@ -29,7 +29,13 @@
             <div class="d-flex justify-content-center align-items-center">
                 <div class="bg-white p-4 rounded">
                     <div style="width: 300px; height: 300px;">
-                        <instagram-cropper class="w-100 h-100" initial-image="https://raw.githubusercontent.com/avidofood/vue-responsive-video-background-player/master/demo/public/images/hero-mobile%402.jpg"></instagram-cropper>
+                        <instagram-cropper 
+                            class="w-100 h-100" 
+                            initial-image="https://raw.githubusercontent.com/avidofood/vue-responsive-video-background-player/master/demo/public/images/hero-mobile%402.jpg" 
+                            placeholder-color="#000000" 
+                            placeholder="Choose or Drag'n'Drop an image"
+                            :placeholder-font-size="14"
+                        ></instagram-cropper>
                     </div>
                 </div>
             </div>
