@@ -1,7 +1,6 @@
 export default {
     canvas: null,
     ctx: null,
-    originalImage: null,
     img: null,
 
 

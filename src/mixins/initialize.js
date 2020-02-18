@@ -15,7 +15,6 @@ export default {
             this.ctx.webkitImageSmoothingEnabled = true;
             this.ctx.msImageSmoothingEnabled = true;
             this.ctx.imageSmoothingEnabled = true;
-            this.originalImage = null;
             this.img = null;
             this.$refs.fileInput.value = '';
             this.imageSet = false;
