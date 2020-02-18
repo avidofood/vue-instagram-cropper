@@ -99,6 +99,10 @@ export default {
                 const delta = distance - this.pinchDistance;
                 this.zoom(delta > 0, Settings.PINCH_ACCELERATION);
                 this.pinchDistance = distance;
+
+                this.$nextTick(() => {
+                    this.$_c_handleZoomWheel();
+                });
             }
         },
 

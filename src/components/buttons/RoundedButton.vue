@@ -33,7 +33,7 @@
 
         & .btn__content{
             display:flex;
-            padding: 5px;
+            padding: 6px;
             border-radius: 100px;
         }
 

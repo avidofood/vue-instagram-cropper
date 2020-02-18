@@ -3,8 +3,8 @@
         <svg
             viewBox="0 0 22.5 22.5"
             xmlns="http://www.w3.org/2000/svg"
-            width="10"
-            height="10"
+            width="12"
+            height="12"
         >
             <g
                 fill="none"
@@ -33,7 +33,7 @@ export default {
 
 <style lang="scss" scoped>
     .bottom-left-abs{
-        bottom: 10px;
-        left: 10px;
+        bottom: 8px;
+        left: 8px;
     }
 </style>
