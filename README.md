@@ -1,7 +1,7 @@
 # Instagram Cropper for Vue 🖼
 
 
-![Laravel Tongue](https://raw.githubusercontent.com/avidofood/vue-responsive-video-background-player/master/demo/public/images/roadster.png)
+![Vue Instagram Cropper](/images/intro.png)
 
 **If you are looking to crop and upload images like in Instagram, please visit https://github.com/avidofood/vue-instagram-image-upload 😜**
  
