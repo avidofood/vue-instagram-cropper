@@ -51,11 +51,11 @@ export default {
             }
 
             if (u.imageLoaded(img)) {
-                this.$_c_onload(img, true);
+                this.$_c_onload(img, +img.dataset.exifOrientation, true);
             } else {
                 this.loading = true;
                 img.onload = () => {
-                    this.$_c_onload(img, true);
+                    this.$_c_onload(img, +img.dataset.exifOrientation, true);
                 };
                 img.onerror = () => {
                     this.$_c_setPlaceholders();

@@ -3,14 +3,26 @@ import events from '../core/events';
 
 export default {
     methods: {
-        $_c_onload(img, initial) {
+        $_c_onload(img, orientation = 1, initial) {
             if (this.imageSet) {
                 this.remove();
             }
 
             this.img = img;
 
-            this.$_c_placeImage();
+
+            if (orientation > 1) {
+                if (!this.img) return;
+
+                const tempImg = u.getRotatedImage(this.img, orientation);
+
+                tempImg.onload = () => {
+                    this.img = tempImg;
+                    this.$_c_placeImage();
+                };
+            } else {
+                this.$_c_placeImage();
+            }
 
             if (initial) {
                 this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT);
