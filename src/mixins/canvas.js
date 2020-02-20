@@ -41,6 +41,8 @@ export default {
                 this.imageSet = true;
                 this.emitEvent(events.NEW_IMAGE_DRAWN_EVENT);
             }
+
+            this.$_c_updateVModel();
         },
         $_c_paintBackground() {
             this.ctx.fillStyle = this.canvasColor;

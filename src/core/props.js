@@ -1,9 +1,17 @@
+import vModelValidator from '../lib/validator';
+
 let initialImageType = String;
 if (typeof window !== 'undefined' && window.Image) {
     initialImageType = [String, Image];
 }
 
 export default {
+    value: {
+        type: Object,
+        note: 'Our v-model. It has to contain at least an url ',
+        validator: vModelValidator,
+        required: false,
+    },
     quality: {
         type: Number,
         default: 2,

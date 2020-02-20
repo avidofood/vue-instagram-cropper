@@ -1,8 +1,42 @@
 import u from '../core/util';
 import events from '../core/events';
+import { has, countObject } from '../lib/helper';
 
 export default {
     methods: {
+        $_c_setImage() {
+            if (countObject(this.value) === 1 && has(this.value, 'url') && typeof this.value.url === 'string') {
+                this.$_c_setImageViaUrl();
+                return;
+            }
+            // Due to the validator of value, we can assume the properties are correct
+            if (typeof this.value === 'object') {
+                console.log('muss das noch machen');
+            }
+
+            // else setPlaceholder
+        },
+        $_c_setImageViaUrl() {
+            const img = new Image();
+
+            if (!/^data:/.test(this.value.url) && !/^blob:/.test(this.value.url)) {
+                img.setAttribute('crossOrigin', 'anonymous');
+            }
+            img.src = this.value.url;
+
+
+            if (u.imageLoaded(img)) {
+                this.$_c_onload(img, +img.dataset.exifOrientation, true);
+            } else {
+                this.loading = true;
+                img.onload = () => {
+                    this.$_c_onload(img, +img.dataset.exifOrientation, true);
+                };
+                img.onerror = () => {
+                    this.$_c_setPlaceholders();
+                };
+            }
+        },
         $_c_onload(img, orientation = 1, initial) {
             if (this.imageSet) {
                 this.remove();
@@ -123,6 +157,24 @@ export default {
         },
         $_c_imageReachedMaximumScale() {
             return this.scaleRatio >= this.maximumScaleRatio;
+        },
+        $_c_updateVModel() {
+            console.log('hier');
+            this.$emit('input', {
+                url: this.value.url,
+                thumbnail: 'bluvv',
+                image: 'blob',
+                order: '0',
+                cropper: {
+                    img: this.img,
+                    imgData: this.imgData,
+                    naturalHeight: this.naturalHeight,
+                    naturalWidth: this.naturalWidth,
+                    outputHeight: this.outputHeight,
+                    outputWidth: this.outputWidth,
+                    scaleRatio: this.scaleRatio,
+                },
+            });
         },
 
     },

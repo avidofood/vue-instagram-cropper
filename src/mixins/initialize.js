@@ -6,7 +6,6 @@ export default {
     methods: {
         $_c_initialize() {
             this.canvas = this.$refs.canvas;
-            // Hier kann ein problem entstehen, weil realwidth noch nicht existieren
             this.$_c_setSize();
             this.canvas.style.backgroundColor = this.canvasColor;
             this.ctx = this.canvas.getContext('2d');
@@ -30,6 +29,7 @@ export default {
             this.canvas.style.height = `${this.realHeight}px`;
         },
         $_c_setInitial() {
+            this.$_c_setImage();
             let src;
             let img;
 
