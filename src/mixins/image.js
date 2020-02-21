@@ -41,11 +41,13 @@ export default {
         },
         $_c_setImageViaObject() {
             const { img } = this.value.cropper;
+            const { ctx } = this;
 
             this.naturalHeight = img.naturalHeight;
             this.naturalWidth = img.naturalWidth;
 
             this.imageSet = true;
+            this.skipScaleRatio = true;
 
             this.img = img;
             this.imgData = this.value.cropper.imgData;
@@ -54,6 +56,7 @@ export default {
             this.$nextTick(() => {
                 this.imgData = this.value.cropper.imgData;
                 this.scaleRatio = this.value.cropper.scaleRatio;
+                this.skipScaleRatio = false;
             });
 
             this.scaleRatio = this.value.cropper.scaleRatio;
@@ -62,7 +65,8 @@ export default {
                 startX, startY, width, height,
             } = this.value.cropper.imgData;
 
-            this.ctx.drawImage(this.img, startX, startY, width, height);
+            console.log(this.value);
+            ctx.drawImage(this.img, startX, startY, width, height);
         },
         $_c_onload(img, orientation = 1, initial) {
             if (this.imageSet) {
@@ -191,8 +195,6 @@ export default {
                 cropper: {
                     img: this.img,
                     imgData: this.imgData,
-                    outputHeight: this.outputHeight,
-                    outputWidth: this.outputWidth,
                     scaleRatio: this.scaleRatio,
                 },
             });

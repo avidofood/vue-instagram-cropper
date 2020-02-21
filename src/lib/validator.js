@@ -35,7 +35,7 @@ function hasCropperProperties(val) {
     let result = true;
 
     const firstLayer = ['url', 'cropper'];
-    const secondLayer = ['img', 'imgData', 'outputHeight', 'outputWidth', 'scaleRatio'];
+    const secondLayer = ['img', 'imgData', 'scaleRatio'];
     const thirdLayer = ['height', 'startX', 'startY', 'width'];
 
     firstLayer.forEach((item) => {
