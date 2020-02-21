@@ -65,7 +65,6 @@ export default {
                 startX, startY, width, height,
             } = this.value.cropper.imgData;
 
-            console.log(this.value);
             ctx.drawImage(this.img, startX, startY, width, height);
         },
         $_c_onload(img, orientation = 1, initial) {
