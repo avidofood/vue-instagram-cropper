@@ -1,21 +1,23 @@
 import u from '../core/util';
 import events from '../core/events';
 import { has, countObject } from '../lib/helper';
+import debounce from '../lib/debounce';
 
 export default {
     methods: {
-        $_c_setImage() {
+        $_c_setImage: debounce(function setImage() {
             if (countObject(this.value) === 1 && has(this.value, 'url') && typeof this.value.url === 'string') {
                 this.$_c_setImageViaUrl();
                 return;
             }
             // Due to the validator of value, we can assume the properties are correct
-            if (typeof this.value === 'object') {
-                console.log('muss das noch machen');
+            if (this.value && typeof this.value === 'object') {
+                this.$_c_setImageViaObject();
+                return;
             }
 
-            // else setPlaceholder
-        },
+            this.$_c_setPlaceholders();
+        }, 50),
         $_c_setImageViaUrl() {
             const img = new Image();
 
@@ -36,6 +38,31 @@ export default {
                     this.$_c_setPlaceholders();
                 };
             }
+        },
+        $_c_setImageViaObject() {
+            const { img } = this.value.cropper;
+
+            this.naturalHeight = img.naturalHeight;
+            this.naturalWidth = img.naturalWidth;
+
+            this.imageSet = true;
+
+            this.img = img;
+            this.imgData = this.value.cropper.imgData;
+
+            // Needed to trick the $Watcher with OldVal out.
+            this.$nextTick(() => {
+                this.imgData = this.value.cropper.imgData;
+                this.scaleRatio = this.value.cropper.scaleRatio;
+            });
+
+            this.scaleRatio = this.value.cropper.scaleRatio;
+
+            const {
+                startX, startY, width, height,
+            } = this.value.cropper.imgData;
+
+            this.ctx.drawImage(this.img, startX, startY, width, height);
         },
         $_c_onload(img, orientation = 1, initial) {
             if (this.imageSet) {
@@ -158,24 +185,18 @@ export default {
         $_c_imageReachedMaximumScale() {
             return this.scaleRatio >= this.maximumScaleRatio;
         },
-        $_c_updateVModel() {
-            console.log('hier');
+        $_c_updateVModel: debounce(function updateVModel() {
             this.$emit('input', {
-                url: this.value.url,
-                thumbnail: 'bluvv',
-                image: 'blob',
-                order: '0',
+                url: has(this.value, 'url') ? this.value.url : '',
                 cropper: {
                     img: this.img,
                     imgData: this.imgData,
-                    naturalHeight: this.naturalHeight,
-                    naturalWidth: this.naturalWidth,
                     outputHeight: this.outputHeight,
                     outputWidth: this.outputWidth,
                     scaleRatio: this.scaleRatio,
                 },
             });
-        },
+        }, 20),
 
     },
 };

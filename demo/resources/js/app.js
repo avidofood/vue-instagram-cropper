@@ -13,4 +13,11 @@ new Vue({ // eslint-disable-line no-new
             },
         };
     },
+    methods: {
+        changeImageURL() {
+            this.cropper = {
+                url: 'https://images.unsplash.com/photo-1485841938031-1bf81239b815?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=628&q=80',
+            };
+        },
+    },
 });

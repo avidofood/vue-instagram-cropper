@@ -11,5 +11,5 @@ export function has(obj, key) {
 }
 
 export function countObject(obj) {
-    return Object.keys(obj).length;
+    return obj === null ? 0 : Object.keys(obj).length;
 }

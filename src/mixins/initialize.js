@@ -18,7 +18,7 @@ export default {
             this.$refs.fileInput.value = '';
             this.imageSet = false;
             this.chosenFile = null;
-            this.$_c_setInitial();
+            this.$_c_setImage();
 
             this.emitEvent(events.INIT_EVENT, this);
         },
@@ -27,40 +27,6 @@ export default {
             this.canvas.height = this.outputHeight;
             this.canvas.style.width = `${this.realWidth}px`;
             this.canvas.style.height = `${this.realHeight}px`;
-        },
-        $_c_setInitial() {
-            this.$_c_setImage();
-            let src;
-            let img;
-
-            if (this.initialImage && typeof this.initialImage === 'string') {
-                src = this.initialImage;
-                img = new Image();
-
-                if (!/^data:/.test(src) && !/^blob:/.test(src)) {
-                    img.setAttribute('crossOrigin', 'anonymous');
-                }
-                img.src = src;
-            } else if (typeof this.initialImage === 'object' && this.initialImage instanceof Image) {
-                img = this.initialImage;
-            }
-
-            if (!src && !img) {
-                this.$_c_setPlaceholders();
-                return;
-            }
-
-            if (u.imageLoaded(img)) {
-                this.$_c_onload(img, +img.dataset.exifOrientation, true);
-            } else {
-                this.loading = true;
-                img.onload = () => {
-                    this.$_c_onload(img, +img.dataset.exifOrientation, true);
-                };
-                img.onerror = () => {
-                    this.$_c_setPlaceholders();
-                };
-            }
         },
     },
     mounted() {

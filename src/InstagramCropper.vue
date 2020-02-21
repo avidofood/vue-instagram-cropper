@@ -113,6 +113,8 @@ export default {
             this.imageSet = false;
             this.chosenFile = null;
 
+            this.$emit('input', null);
+
             if (hadImage) {
                 this.emitEvent(events.IMAGE_REMOVE_EVENT);
             }

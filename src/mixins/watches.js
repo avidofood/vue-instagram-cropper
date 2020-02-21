@@ -3,6 +3,12 @@ import events from '../core/events';
 
 export default {
     watch: {
+        value: {
+            handler() {
+                this.$_c_setImage();
+            },
+            deep: true,
+        },
         scaleRatio(val, oldVal) {
             if (!this.img) return;
             if (!u.numberValid(val)) return;

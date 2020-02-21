@@ -12,13 +12,13 @@ export default function validateVModel(val) {
         return true;
     }
 
+    if (hasCropperProperties(val)) {
+        return true;
+    }
+
     if (!has(val, 'url')) {
         emitError('v-model is missing the property url');
         return false;
-    }
-
-    if (hasCropperProperties(val)) {
-        return true;
     }
 
 
@@ -34,8 +34,8 @@ function emitError(msg) {
 function hasCropperProperties(val) {
     let result = true;
 
-    const firstLayer = ['url', 'thumbnail', 'order', 'image', 'cropper'];
-    const secondLayer = ['img', 'imgData', 'naturalHeight', 'naturalWidth', 'outputHeight', 'outputWidth', 'scaleRatio'];
+    const firstLayer = ['url', 'cropper'];
+    const secondLayer = ['img', 'imgData', 'outputHeight', 'outputWidth', 'scaleRatio'];
     const thirdLayer = ['height', 'startX', 'startY', 'width'];
 
     firstLayer.forEach((item) => {
