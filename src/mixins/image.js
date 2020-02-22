@@ -2,6 +2,7 @@ import u from '../core/util';
 import events from '../core/events';
 import { has, countObject } from '../lib/helper';
 import debounce from '../lib/debounce';
+import * as Settings from '../core/const';
 
 export default {
     methods: {
@@ -120,12 +121,25 @@ export default {
 
             this.skipScaleRatio = true;
 
+            // image is wider than canvas
             if (this.aspectRatio > canvasRatio) {
-                scaleRatio = imgWidth / this.outputWidth;
-                this.imgData.height = imgHeight / scaleRatio;
-                this.imgData.width = this.outputWidth;
+                if (this.greaterThanMaximumAspectRatio) {
+                    this.imgData.height = this.outputWidth / Settings.MAXIMUM_ASPECT_RATIO;
+                    this.imgData.width = (this.imgData.height / imgHeight) * imgWidth;
+                    this.$_c_bounceTopCenter();
+                    this.$_c_bounceLeftCenter();
+                } else {
+                    scaleRatio = imgWidth / this.outputWidth;
+                    this.imgData.height = imgHeight / scaleRatio;
+                    this.imgData.width = this.outputWidth;
+                    this.$_c_bounceTopCenter();
+                    this.$_c_bounceLeft();
+                }
+            } else if (this.smallerThanMinimumAspectRatio) {
+                this.imgData.width = this.outputHeight * Settings.MINIMUM_ASPECT_RATIO;
+                this.imgData.height = (this.imgData.width / imgWidth) * imgHeight;
                 this.$_c_bounceTopCenter();
-                this.$_c_bounceLeft();
+                this.$_c_bounceLeftCenter();
             } else {
                 scaleRatio = imgHeight / this.outputHeight;
                 this.imgData.width = imgWidth / scaleRatio;
@@ -169,10 +183,12 @@ export default {
         },
         $_c_imageIsFullyZoomedOut() {
             if (this.$_c_imageIsWiderThanHeight()) {
-                return this.imgData.width <= this.outputWidth;
+                return this.imgData.width <= this.outputWidth
+                    || this.greaterThanMaximumAspectCanvasRatio;
             }
 
-            return this.imgData.height <= this.outputHeight;
+            return this.imgData.height <= this.outputHeight
+                || this.smallerThanMinimumAspectCanvasRatio;
         },
         $_c_imageIsFullyZoomedIn() {
             // Like cover or even more zoomed in.
