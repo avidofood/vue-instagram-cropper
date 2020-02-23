@@ -26,7 +26,7 @@ export default {
         },
         maximumScaleRatio() {
             // my weird calculation from Instagram
-            return this.aspectRatio * (-2.127) + 4.3405;
+            return this.aspectRatio * (2.56) + 2.725;
         },
         greaterThanMaximumAspectRatio() {
             return this.aspectRatio > Settings.MAXIMUM_ASPECT_RATIO;
