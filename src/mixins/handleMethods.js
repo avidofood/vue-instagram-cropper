@@ -119,6 +119,7 @@ export default {
 
             evt.preventDefault();
             this.scrolling = true;
+
             if (evt.wheelDelta < 0 || evt.deltaY > 0 || evt.detail > 0) {
                 this.zoom(false);
             } else if (evt.wheelDelta > 0 || evt.deltaY < 0 || evt.detail < 0) {
@@ -126,8 +127,8 @@ export default {
             }
 
             this.$nextTick(() => {
-                this.scrolling = false;
                 this.$_c_handleZoomWheel();
+                this.scrolling = false;
             });
         },
 

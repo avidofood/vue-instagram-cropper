@@ -2,6 +2,7 @@ export default {
     canvas: null,
     ctx: null,
     img: null,
+    line: null,
 
 
     imgData: {

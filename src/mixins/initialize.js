@@ -1,6 +1,6 @@
 import poly from '../lib/polyfills';
-import u from '../core/util';
 import events from '../core/events';
+import Line from '../lib/Line';
 
 export default {
     methods: {
@@ -14,6 +14,8 @@ export default {
             this.ctx.webkitImageSmoothingEnabled = true;
             this.ctx.msImageSmoothingEnabled = true;
             this.ctx.imageSmoothingEnabled = true;
+            this.line = new Line(this.ctx);
+            this.ctx.strokeStyle = '#ffffff';
             this.img = null;
             this.$refs.fileInput.value = '';
             this.imageSet = false;

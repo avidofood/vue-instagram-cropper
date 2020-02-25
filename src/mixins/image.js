@@ -61,12 +61,6 @@ export default {
             });
 
             this.scaleRatio = this.value.cropper.scaleRatio;
-
-            const {
-                startX, startY, width, height,
-            } = this.value.cropper.imgData;
-
-            ctx.drawImage(this.img, startX, startY, width, height);
         },
         $_c_onload(img, orientation = 1, initial) {
             if (this.imageSet) {

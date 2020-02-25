@@ -64,6 +64,7 @@ import fileinput from './mixins/fileinput';
 import fullscreenButtonMethods from './mixins/buttons/fullscreenButtonMethods';
 import handleBounce from './mixins/clipping/handleBounce';
 import handleZoom from './mixins/clipping/handleZoom';
+import ruleofthirdGrid from './mixins/layer/ruleofthirdGrid';
 
 import FullscreenButton from './components/buttons/FullscreenButton.vue';
 import RemoveButton from './components/buttons/RemoveButton.vue';
@@ -83,6 +84,7 @@ export default {
         handleBounce,
         handleZoom,
         fileinput,
+        ruleofthirdGrid,
     ],
     components: {
         FullscreenButton,

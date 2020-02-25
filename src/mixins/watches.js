@@ -67,5 +67,11 @@ export default {
                 this.emitEvent(events.LOADING_END_EVENT);
             }
         },
+        dragging(bool) {
+            if (!bool) this.$nextTick(this.$_c_draw);
+        },
+        pinching(bool) {
+            if (!bool) this.$nextTick(this.$_c_draw);
+        },
     },
 };

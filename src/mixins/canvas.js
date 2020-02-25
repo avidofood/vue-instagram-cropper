@@ -43,6 +43,10 @@ export default {
                 this.emitEvent(events.NEW_IMAGE_DRAWN_EVENT);
             }
 
+            if (this.dragging || this.pinching || this.scrolling) {
+                this.$_c_drawRuleOfThirdGrid();
+            }
+
             this.$_c_updateVModel();
         },
         $_c_paintBackground() {

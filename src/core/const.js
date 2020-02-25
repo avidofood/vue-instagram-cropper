@@ -5,7 +5,7 @@ export const MIN_WIDTH = 10; // The minimal width the user can zoom to.
 export const DEFAULT_PLACEHOLDER_TAKEUP = 2 / 3; // Placeholder text by default takes up this amount of times of canvas width.
 export const PINCH_ACCELERATION = 2; // The amount of times by which the pinching is more sensitive than the scolling
 
-export const ZOOM_SPEED = 4; // Specifies how fast the zoom is reacting to scroll gestures. Default to level 3.
+export const ZOOM_SPEED = 3; // Specifies how fast the zoom is reacting to scroll gestures. Default to level 3.
 
 export const MAXIMUM_ASPECT_RATIO = 1.91 / 1;
 export const MINIMUM_ASPECT_RATIO = 4 / 5;
