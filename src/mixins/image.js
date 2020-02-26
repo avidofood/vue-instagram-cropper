@@ -50,7 +50,6 @@ export default {
         },
         $_c_setImageViaObject() {
             const { img } = this.value.cropper;
-            const { ctx } = this;
 
             this.naturalHeight = img.naturalHeight;
             this.naturalWidth = img.naturalWidth;
@@ -106,7 +105,7 @@ export default {
 
 
             if (!this.imageSet) {
-                this.$_c_aspectFit();
+                this.$_c_aspectFill();
             } else {
                 this.imgData.width = this.naturalWidth * this.scaleRatio;
                 this.imgData.height = this.naturalHeight * this.scaleRatio;
