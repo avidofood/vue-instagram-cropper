@@ -44,4 +44,9 @@ export default {
         },
     },
     initialImage: initialImageType,
+    forceCacheBreak: {
+        type: Boolean,
+        default: false,
+        note: 'This is important if you have still CORS issues. But remember the browser is not caching anymore',
+    },
 };

@@ -21,11 +21,19 @@ export default {
         }, 50),
         $_c_setImageViaUrl() {
             const img = new Image();
+            let href = this.value.url;
 
-            if (!/^data:/.test(this.value.url) && !/^blob:/.test(this.value.url)) {
+            if (!/^data:/.test(href) && !/^blob:/.test(href)) {
                 img.setAttribute('crossOrigin', 'anonymous');
             }
-            img.src = this.value.url;
+
+            if (this.forceCacheBreak) {
+                const src = new URL(this.value.url);
+                src.searchParams.append('cors', Date.now());
+                href = src.href;
+            }
+
+            img.src = href;
 
 
             if (u.imageLoaded(img)) {
