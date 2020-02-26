@@ -44,6 +44,6 @@ export default {
         }
     },
     beforeDestroy() {
-
+        this.$_c_autoSizingRemove();
     },
 };
