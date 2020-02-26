@@ -152,6 +152,44 @@ export default {
             }
             this.scaleRatio *= x;
         },
+        getCanvas() {
+            return this.canvas;
+        },
+        getContext() {
+            return this.ctx;
+        },
+        getChosenFile() {
+            return this.chosenFile || this.$refs.fileInput.files[0];
+        },
+        refresh() {
+            this.$nextTick(this.$_c_initialize);
+        },
+        generateDataUrl(type, compressionRate) {
+            if (!this.hasImage()) return '';
+            return this.canvas.toDataURL(type, compressionRate);
+        },
+        generateBlob(callback, mimeType, qualityArgument) {
+            if (!this.hasImage()) {
+                callback(null);
+                return;
+            }
+            this.canvas.toBlob(callback, mimeType, qualityArgument);
+        },
+        promisedBlob(...args) {
+            if (typeof Promise === 'undefined') {
+                console.warn('No Promise support. Please add Promise polyfill if you want to use this method.');
+                return null;
+            }
+            return new Promise((resolve, reject) => {
+                try {
+                    this.generateBlob((blob) => {
+                        resolve(blob);
+                    }, ...args);
+                } catch (err) {
+                    reject(err);
+                }
+            });
+        },
     },
 };
 </script>

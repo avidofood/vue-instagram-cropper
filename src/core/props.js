@@ -1,10 +1,5 @@
 import vModelValidator from '../lib/validator';
 
-let initialImageType = String;
-if (typeof window !== 'undefined' && window.Image) {
-    initialImageType = [String, Image];
-}
-
 export default {
     value: {
         type: Object,
@@ -43,10 +38,9 @@ export default {
             return val >= 0;
         },
     },
-    initialImage: initialImageType,
     forceCacheBreak: {
         type: Boolean,
         default: false,
-        note: 'This is important if you have still CORS issues. But remember the browser is not caching anymore',
+        note: 'This is important if you have still CORS issues. But remember the browser is not caching images anymore',
     },
 };
