@@ -43,6 +43,16 @@ new Vue({ // eslint-disable-line no-new
 
             img.src = 'https://images.unsplash.com/photo-1559124778-aa10b8898cc0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=562&q=80';
         },
+        download(type, compressionRate) {
+            this.$refs.cropper.generateBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.download = 'filename';
+                a.href = url;
+                a.click();
+                URL.revokeObjectURL(url);
+            }, type, compressionRate);
+        },
 
     },
 });

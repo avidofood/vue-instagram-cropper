@@ -30,6 +30,7 @@
                 <div class="bg-white p-4 rounded">
                     <div style="width: 300px; height: 300px;">
                         <instagram-cropper 
+                            ref="cropper"
                             v-model="cropper"
                             class="w-100 h-100"
                             placeholder-color="#000000" 
@@ -46,6 +47,10 @@
             <div class="row justify-content-center">
                 <div class="px-1"><button class="btn btn-secondary" @click="changeImageURL">Load other URL</button></div>
                 <div class="px-1"><button class="btn btn-secondary" @click="changeImageObject">Load other Object</button></div>
+            </div>
+            <div class="row justify-content-center pt-2">
+                <div class="px-1"><button class="btn btn-secondary" @click="download">Download</button></div>
+                <div class="px-1"><button class="btn btn-secondary" @click="download('image/jpeg', 0.8)">Download 20% compressed JPEG</button></div>
             </div>
         </section>
 
