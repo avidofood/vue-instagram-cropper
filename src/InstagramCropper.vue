@@ -35,6 +35,8 @@
             @mousewheel.stop="$_c_handleWheel"
         />
 
+        <slot />
+
         <FullscreenButton
             v-if="img"
             @click.native="$_c_handleFullscreen"

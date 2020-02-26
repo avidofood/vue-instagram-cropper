@@ -8,7 +8,7 @@ if (typeof window !== 'undefined' && window.Image) {
 export default {
     value: {
         type: Object,
-        note: 'Our v-model. It has to contain at least an url ',
+        note: 'Our v-model. It has to contain at least an url property',
         validator: vModelValidator,
         required: false,
     },
