@@ -17,6 +17,29 @@
     "*.json",
     "*.js"
   ],
+  "keywords": [
+    "instagram",
+    "instagram cropper",
+    "cropper",
+    "vue",
+    "image",
+    "crop",
+    "upload",
+    "vue-cropper",
+    "vue cropper",
+    "image cropper",
+    "vue plugin",
+    "move",
+    "zoom",
+    "javascript",
+    "web",
+    "front-end",
+    "staightforward",
+    "customizable",
+    "editable",
+    "lightweight",
+    "mobile"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/avidofood/vue-instagram-cropper.git"
