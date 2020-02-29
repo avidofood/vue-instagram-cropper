@@ -18,6 +18,7 @@ export default {
             }
 
             this.$_c_setPlaceholders();
+            this.$_c_reset_values();
         }, 50),
         $_c_setImageViaUrl() {
             const img = new Image();

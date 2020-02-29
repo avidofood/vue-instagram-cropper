@@ -102,21 +102,10 @@ export default {
         remove() {
             if (!this.imageSet) return;
             this.$_c_setPlaceholders();
-            const hadImage = this.img != null;
-            this.img = null;
-            this.$refs.fileInput.value = '';
-            this.imgData = {
-                width: 0,
-                height: 0,
-                startX: 0,
-                startY: 0,
-            };
-            this.orientation = 1;
-            this.scaleRatio = null;
-            this.imageSet = false;
-            this.chosenFile = null;
 
-            this.$emit('input', null);
+            const hadImage = this.img != null;
+
+            this.$_c_reset_values();
 
             if (hadImage) {
                 this.emitEvent(events.IMAGE_REMOVE_EVENT);

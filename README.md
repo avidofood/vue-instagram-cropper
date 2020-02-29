@@ -3,7 +3,7 @@
 
 ![Vue Instagram Cropper](/images/intro.png)
 
-**If you are looking to crop and upload images like in Instagram, please visit https://github.com/avidofood/vue-instagram-image-upload 😜**
+**If you are looking to crop and upload images like in Instagram, please visit https://github.com/avidofood/vue-cropgram 😜**
 
 ## Installation in 2 Steps
 

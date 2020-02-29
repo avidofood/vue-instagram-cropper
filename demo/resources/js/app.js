@@ -53,6 +53,9 @@ new Vue({ // eslint-disable-line no-new
                 URL.revokeObjectURL(url);
             }, type, compressionRate);
         },
+        setToNull() {
+            this.cropper = null;
+        },
 
     },
 });
