@@ -1,9 +1,8 @@
 import vModelValidator from '../lib/validator';
 
 export default {
-    value: {
-        type: Object,
-        note: 'Our v-model. It has to contain at least an url property',
+    src: {
+        type: [Object, String],
         validator: vModelValidator,
         required: false,
     },

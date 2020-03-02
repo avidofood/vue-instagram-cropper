@@ -3,8 +3,9 @@ import events from '../core/events';
 
 export default {
     watch: {
-        value: {
+        src: {
             handler() {
+                console.log('value has changed');
                 this.$_c_setImage();
             },
             deep: true,

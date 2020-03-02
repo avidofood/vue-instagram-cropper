@@ -1,4 +1,4 @@
-import { has, exists, countObject } from './helper';
+import { exists } from './helper';
 /**
  * It validates the prop value for our v-model. If it's not empty, we need the URL property.
  * Remember: This is fired, when object is not empty.
@@ -8,19 +8,12 @@ import { has, exists, countObject } from './helper';
  * @return  {boolean}
  */
 export default function validateVModel(val) {
-    if (has(val, 'url') && countObject(val) === 1) {
-        return true;
-    }
+    if (typeof val === 'string') return true;
+
 
     if (hasCropperProperties(val)) {
         return true;
     }
-
-    if (!has(val, 'url')) {
-        emitError('v-model is missing the property url');
-        return false;
-    }
-
 
     emitError('v-model is missing correct properties');
 
@@ -34,20 +27,15 @@ function emitError(msg) {
 function hasCropperProperties(val) {
     let result = true;
 
-    const firstLayer = ['url', 'cropper'];
-    const secondLayer = ['img', 'imgData', 'scaleRatio'];
-    const thirdLayer = ['height', 'startX', 'startY', 'width'];
+    const firstLayer = ['img', 'imgData', 'scaleRatio'];
+    const secondLayer = ['height', 'startX', 'startY', 'width'];
 
     firstLayer.forEach((item) => {
         result = result && exists(val, item);
     });
 
     secondLayer.forEach((item) => {
-        result = result && exists(val.cropper, item);
-    });
-
-    thirdLayer.forEach((item) => {
-        result = result && exists(val.cropper.imgData, item);
+        result = result && exists(val.imgData, item);
     });
 
     return result;

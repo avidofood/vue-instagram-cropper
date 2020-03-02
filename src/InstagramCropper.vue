@@ -71,7 +71,7 @@ import ruleofthirdGrid from './mixins/layer/ruleofthirdGrid';
 import FullscreenButton from './components/buttons/FullscreenButton.vue';
 import RemoveButton from './components/buttons/RemoveButton.vue';
 
-import { has } from './lib/helper';
+import deepClone from './lib/deepClone';
 
 
 export default {
@@ -183,12 +183,9 @@ export default {
         },
         getMetadata() {
             return {
-                url: has(this.value, 'url') ? this.value.url : '',
-                cropper: {
-                    img: this.img,
-                    imgData: this.imgData,
-                    scaleRatio: this.scaleRatio,
-                },
+                img: this.img,
+                imgData: deepClone(this.imgData),
+                scaleRatio: deepClone(this.scaleRatio),
             };
         },
     },

@@ -1,18 +1,18 @@
 import u from '../core/util';
 import events from '../core/events';
-import { has, countObject } from '../lib/helper';
 import debounce from '../lib/debounce';
 import * as Settings from '../core/const';
+import deepClone from '../lib/deepClone';
 
 export default {
     methods: {
         $_c_setImage: debounce(function setImage() {
-            if (countObject(this.value) === 1 && has(this.value, 'url') && typeof this.value.url === 'string') {
+            if (typeof this.src === 'string') {
                 this.$_c_setImageViaUrl();
                 return;
             }
             // Due to the validator of value, we can assume the properties are correct
-            if (this.value && typeof this.value === 'object') {
+            if (this.src && typeof this.src === 'object') {
                 this.$_c_setImageViaObject();
                 return;
             }
@@ -22,14 +22,14 @@ export default {
         }, 50),
         $_c_setImageViaUrl() {
             const img = new Image();
-            let href = this.value.url;
+            let href = this.src;
 
             if (!/^data:/.test(href) && !/^blob:/.test(href)) {
                 img.setAttribute('crossOrigin', 'anonymous');
             }
 
             if (this.forceCacheBreak) {
-                const src = new URL(this.value.url);
+                const src = new URL(this.src);
                 src.searchParams.append('cors', Date.now());
                 href = src.href;
             }
@@ -50,7 +50,10 @@ export default {
             }
         },
         $_c_setImageViaObject() {
-            const { img } = this.value.cropper;
+            const src = deepClone(this.src);
+
+            // can't be cloned
+            const { img } = this.src;
 
             this.naturalHeight = img.naturalHeight;
             this.naturalWidth = img.naturalWidth;
@@ -59,16 +62,16 @@ export default {
             this.skipScaleRatio = true;
 
             this.img = img;
-            this.imgData = this.value.cropper.imgData;
+            this.imgData = src.imgData;
 
             // Needed to trick the $Watcher with OldVal out.
             this.$nextTick(() => {
-                this.imgData = this.value.cropper.imgData;
-                this.scaleRatio = this.value.cropper.scaleRatio;
+                this.imgData = src.imgData;
+                this.scaleRatio = src.scaleRatio;
                 this.skipScaleRatio = false;
             });
 
-            this.scaleRatio = this.value.cropper.scaleRatio;
+            this.scaleRatio = src.scaleRatio;
         },
         $_c_onload(img, orientation = 1, initial) {
             if (this.imageSet) {
@@ -207,7 +210,7 @@ export default {
             return this.scaleRatio >= this.maximumScaleRatio;
         },
         $_c_updateVModel: debounce(function updateVModel() {
-            this.$emit('input', this.getMetadata());
+            this.$emit('update', this.getMetadata());
         }, 20),
 
     },

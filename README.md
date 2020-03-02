@@ -33,14 +33,12 @@
 
 ```html
  <instagram-cropper 
-    v-model="cropper"
+    :src="cropper"
  ></instagram-cropper>
 
  with 
 
- cropper: {
-    url: 'http path to img',
- },
+ cropper: 'https://i.picsum.photos/id/468/200/300.jpg',
 ```
 
 ### Advanced version 🌐
@@ -49,7 +47,7 @@
  <instagram-cropper
     ref="cropper"
     class="w-100 h-100"
-    v-model="cropper"
+    :src="cropper"
     :quality="4"
     :placeholder-font-size="14"
     placeholder-color="#000000" 
@@ -69,9 +67,9 @@ This package is made to immitate Instagram's cropper.
 
 ### Props values
 
-- `v-model` (required: `false`, type: Object)
+- `src` (required: `false`, type: String or Object)
 
-This is your object for giving existing URL images. After adding a new image, you get additional meta information of the image.
+You can set the source of the placeholder image here. You can also use objects to set images. Test it by saving the meta-object by calling the method `getMetadata()`.
 
 - `quality` (default: `2`)
 
@@ -109,6 +107,7 @@ This is important if you have still CORS issues. But remember the browser is not
 - `initial-image-loaded`: Emitted when initial image loaded.
 - `loading-start`: Emitted when image loading phase starts.
 - `loading-end`: Emitted when image loading phase ends.
+- `update`: When a new image is drawn, you get get the metadata via the event.
 
 ## Methods
 
@@ -129,6 +128,7 @@ You need to set `ref=cropper` to the HTML tag `<instagram-cropper>`. After that 
 - `promisedBlob( mimeType: string, compressionRate: number )`: 
    - This method returns a Promise wrapping around generateBlob(), so that you can use async/await syntax instead of a callback to get blob data, it's simpler.
    - If there is no image, the first argument of callback function is null.
+- `getMetadata()`: Gives an object back with all important information to create the image again at the same scale and position. Useful, if you are using a list of images.
 
 ```javascript
 const blob = await this.$refs.cropper.promisedBlob()
