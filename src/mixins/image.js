@@ -207,14 +207,7 @@ export default {
             return this.scaleRatio >= this.maximumScaleRatio;
         },
         $_c_updateVModel: debounce(function updateVModel() {
-            this.$emit('input', {
-                url: has(this.value, 'url') ? this.value.url : '',
-                cropper: {
-                    img: this.img,
-                    imgData: this.imgData,
-                    scaleRatio: this.scaleRatio,
-                },
-            });
+            this.$emit('input', this.getMetadata());
         }, 20),
 
     },

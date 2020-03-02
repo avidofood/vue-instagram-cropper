@@ -71,6 +71,8 @@ import ruleofthirdGrid from './mixins/layer/ruleofthirdGrid';
 import FullscreenButton from './components/buttons/FullscreenButton.vue';
 import RemoveButton from './components/buttons/RemoveButton.vue';
 
+import { has } from './lib/helper';
+
 
 export default {
     props,
@@ -178,6 +180,16 @@ export default {
                     reject(err);
                 }
             });
+        },
+        getMetadata() {
+            return {
+                url: has(this.value, 'url') ? this.value.url : '',
+                cropper: {
+                    img: this.img,
+                    imgData: this.imgData,
+                    scaleRatio: this.scaleRatio,
+                },
+            };
         },
     },
 };
