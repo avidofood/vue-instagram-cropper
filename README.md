@@ -98,6 +98,7 @@ This is important if you have still CORS issues. But remember the browser is not
 - `file-choose`: File was chosen
 - `file-size-exceed`: File Size Limit was reached
 - `file-type-mismatch`: Only images are accepted
+- `file-loaded`: Emitted when a new file is received and read successfully
 - `new-image`: Emitted when a new valid image is received and read successfully
 - `new-image-drawn`: Emitted when a new image is drawn on canvas for the first time.
 - `image-remove`: Emitted when image remove from croppa.

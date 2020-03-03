@@ -34,6 +34,7 @@ export default {
                 img.src = fileData;
                 fileData = null; // Weird..
                 img.onload = () => {
+                    this.emitEvent(events.FILE_LOADED_EVENT);
                     this.$_c_onload(img, orientation);
                     this.emitEvent(events.NEW_IMAGE_EVENT);
                 };

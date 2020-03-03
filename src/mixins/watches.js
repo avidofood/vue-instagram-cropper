@@ -5,7 +5,6 @@ export default {
     watch: {
         src: {
             handler() {
-                console.log('value has changed');
                 this.$_c_setImage();
             },
             deep: true,
