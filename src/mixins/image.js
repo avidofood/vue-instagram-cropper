@@ -41,6 +41,7 @@ export default {
                 this.$_c_onload(img, +img.dataset.exifOrientation, true);
             } else {
                 this.loading = true;
+                this.$_c_paintBackground();
                 img.onload = () => {
                     this.$_c_onload(img, +img.dataset.exifOrientation, true);
                 };

@@ -35,6 +35,8 @@
             @mousewheel.stop="$_c_handleWheel"
         />
 
+        <SpinnerCircle v-if="loading" />
+
         <slot />
 
         <FullscreenButton
@@ -68,6 +70,7 @@ import handleBounce from './mixins/clipping/handleBounce';
 import handleZoom from './mixins/clipping/handleZoom';
 import ruleofthirdGrid from './mixins/layer/ruleofthirdGrid';
 
+import SpinnerCircle from './components/spinner/SpinnerCircle.vue';
 import FullscreenButton from './components/buttons/FullscreenButton.vue';
 import RemoveButton from './components/buttons/RemoveButton.vue';
 
@@ -91,6 +94,7 @@ export default {
         ruleofthirdGrid,
     ],
     components: {
+        SpinnerCircle,
         FullscreenButton,
         RemoveButton,
     },

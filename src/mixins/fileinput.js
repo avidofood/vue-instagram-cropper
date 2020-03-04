@@ -7,6 +7,7 @@ export default {
         $_c_onNewFileIn(file) {
             this.currentIsInitial = false;
             this.loading = true;
+            this.$_c_paintBackground();
             this.emitEvent(events.FILE_CHOOSE_EVENT, file);
             this.chosenFile = file;
 
