@@ -40,7 +40,7 @@
         <slot />
 
         <FullscreenButton
-            v-if="img"
+            v-if="img && aspectRatio !== 1"
             @click.native="$_c_handleFullscreen"
         />
         <RemoveButton
