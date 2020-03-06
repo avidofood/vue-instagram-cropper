@@ -70,6 +70,8 @@ export default {
                 this.imgData = src.imgData;
                 this.scaleRatio = src.scaleRatio;
                 this.skipScaleRatio = false;
+
+                this.$_c_checkBounceness();
             });
 
             this.scaleRatio = src.scaleRatio;
