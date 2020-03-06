@@ -14,6 +14,24 @@
             background-color: #000000;
             font-family: 'Nunito', sans-serif;
         }
+
+        .cropper-wrapper{
+            width: 100%;
+            min-height: 300px;
+        }
+        .cropper-container{
+            width: 100%;
+            height: 300px;
+        }
+        @media (min-width: 576px){
+            .cropper-wrapper{
+                width: auto;
+            }
+            .cropper-container{
+                width: 300px;
+                height: 300px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -27,17 +45,14 @@
 
         <section class="container">
             <div class="d-flex justify-content-center align-items-center">
-                <div class="bg-white p-4 rounded">
-                    <div style="width: 300px; height: 300px;">
-                        <instagram-cropper 
-                            ref="cropper"
-                            class="w-100 h-100"
-                            :src="cropper"
-                            placeholder-color="#000000" 
-                            placeholder="Choose or Drag'n'Drop an image"
-                            :placeholder-font-size="14"
-                        ></instagram-cropper>
-                    </div>
+                <div class="bg-white p-4 rounded cropper-wrapper">
+                    <instagram-cropper 
+                        ref="cropper"
+                        :src="cropper"
+                        placeholder-color="#000000" 
+                        placeholder="Choose or Drag'n'Drop an image"
+                        :placeholder-font-size="14"
+                    ></instagram-cropper>
                 </div>
             </div>
         </section>
@@ -45,13 +60,13 @@
         <section class="container text-center mt-4">
             <h6 class="text-light">Some Methods</h6>
             <div class="row justify-content-center">
-                <div class="px-1"><button class="btn btn-secondary" @click="changeImageURL">Load other URL</button></div>
-                <div class="px-1"><button class="btn btn-secondary" @click="changeImageObject">Load other Object</button></div>
-                <div class="px-1"><button class="btn btn-secondary" @click="setToNull">Set object to null</button></div>
+                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="changeImageURL">Load other URL</button></div>
+                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="changeImageObject">Load other Object</button></div>
+                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="setToNull">Set object to null</button></div>
             </div>
-            <div class="row justify-content-center pt-2">
-                <div class="px-1"><button class="btn btn-secondary" @click="download">Download</button></div>
-                <div class="px-1"><button class="btn btn-secondary" @click="download('image/jpeg', 0.8)">Download 20% compressed JPEG</button></div>
+            <div class="row justify-content-center">
+                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="download">Download</button></div>
+                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="download('image/jpeg', 0.8)">Download 20% compressed JPEG</button></div>
             </div>
         </section>
 

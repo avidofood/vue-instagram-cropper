@@ -4,8 +4,8 @@ import events from '../core/events';
 export default {
     methods: {
         $_c_setContainerSize() {
-            this.realWidth = +getComputedStyle(this.$el).width.slice(0, -2);
-            this.realHeight = +getComputedStyle(this.$el).height.slice(0, -2);
+            this.realWidth = parseInt(getComputedStyle(this.$el).width.slice(0, -2), 10);
+            this.realHeight = parseInt(getComputedStyle(this.$el).height.slice(0, -2), 10);
         },
         $_c_autoSizingInit() {
             this.$_c_setContainerSize();
@@ -53,6 +53,17 @@ export default {
             this.ctx.fillStyle = this.canvasColor;
             this.ctx.clearRect(0, 0, this.outputWidth, this.outputHeight);
             this.ctx.fillRect(0, 0, this.outputWidth, this.outputHeight);
+        },
+        $_c_onDimensionChange() {
+            if (!this.img) {
+                this.$_c_initialize();
+            }
+
+            this.$_c_setSize();
+            this.$_c_setCtx();
+
+            this.$_c_placeImage();
+            this.$_c_handleZoomWheel();
         },
     },
 };

@@ -9,13 +9,8 @@ export default {
             this.$_c_setSize();
             this.canvas.style.backgroundColor = this.canvasColor;
             this.ctx = this.canvas.getContext('2d');
-            this.ctx.imageSmoothingEnabled = true;
-            this.ctx.imageSmoothingQuality = 'high';
-            this.ctx.webkitImageSmoothingEnabled = true;
-            this.ctx.msImageSmoothingEnabled = true;
-            this.ctx.imageSmoothingEnabled = true;
+            this.$_c_setCtx();
             this.line = new Line(this.ctx);
-            this.ctx.strokeStyle = '#ffffff';
             this.img = null;
             this.$refs.fileInput.value = '';
             this.imageSet = false;
@@ -29,6 +24,14 @@ export default {
             this.canvas.height = this.outputHeight;
             this.canvas.style.width = `${this.realWidth}px`;
             this.canvas.style.height = `${this.realHeight}px`;
+        },
+        $_c_setCtx() {
+            this.ctx.imageSmoothingEnabled = true;
+            this.ctx.imageSmoothingQuality = 'high';
+            this.ctx.webkitImageSmoothingEnabled = true;
+            this.ctx.msImageSmoothingEnabled = true;
+            this.ctx.imageSmoothingEnabled = true;
+            this.ctx.strokeStyle = '#ffffff';
         },
         $_c_reset_values() {
             this.img = null;

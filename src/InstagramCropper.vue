@@ -2,6 +2,7 @@
     <div
         class="cropper-container"
         :class="img ? 'cropper--has-target' : ''"
+        :style="'background-color:' + canvasColor + ';'"
         @dragenter.stop.prevent="$_c_handleDragEnter"
         @dragleave.stop.prevent="$_c_handleDragLeave"
         @dragover.stop.prevent="$_c_handleDragOver"
@@ -200,15 +201,9 @@ export default {
 .cropper-container{
     display: inline-block;
     cursor: pointer;
-    transition: all 0.3s;
     position: relative;
     font-size: 0;
     align-self: flex-start;
-    background-color: #e6e6e6;
-
-    canvas{
-        transition: all 0.3s;
-    }
 
     &:hover{
         opacity: 0.7;

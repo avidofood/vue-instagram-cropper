@@ -9,6 +9,12 @@ export default {
             },
             deep: true,
         },
+        outputWidth() {
+            this.$_c_onDimensionChange();
+        },
+        outputHeight() {
+            this.$_c_onDimensionChange();
+        },
         scaleRatio(val, oldVal) {
             if (!this.img) return;
             if (!u.numberValid(val)) return;
