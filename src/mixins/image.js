@@ -6,7 +6,7 @@ import deepClone from '../lib/deepClone';
 
 export default {
     methods: {
-        $_c_setImage: debounce(function setImage() {
+        $_c_setImage() {
             if (typeof this.src === 'string') {
                 this.$_c_setImageViaUrl();
                 return;
@@ -19,7 +19,7 @@ export default {
 
             this.$_c_setPlaceholders();
             this.$_c_reset_values();
-        }, 50),
+        },
         $_c_setImageViaUrl() {
             const img = new Image();
             let href = this.src;
