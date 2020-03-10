@@ -53,6 +53,7 @@
 
 <script>
 import props from './core/props';
+import propsOptions from './core/propsOptions';
 import data from './core/data';
 import events from './core/events';
 import * as Settings from './core/const';
@@ -79,7 +80,7 @@ import deepClone from './lib/deepClone';
 
 
 export default {
-    props,
+    props: { ...props, ...propsOptions },
     mixins: [
         watches,
         initialize,
