@@ -84,7 +84,7 @@ export default {
         },
         $_c_onload(img, orientation = 1, initial) {
             if (this.imageSet) {
-                this.remove();
+                this.remove(events.IMAGE_REMOVE_ONLOAD_EVENT);
             }
 
             this.img = img;

@@ -46,7 +46,7 @@
         />
         <RemoveButton
             v-if="img"
-            @click.native="remove"
+            @click.native="remove()"
         />
     </div>
 </template>
@@ -107,7 +107,7 @@ export default {
         emitEvent(...args) {
             this.$emit(...args);
         },
-        remove() {
+        remove(event = events.IMAGE_REMOVE_EVENT) {
             if (!this.imageSet) return;
             this.$_c_setPlaceholders();
 
@@ -116,7 +116,7 @@ export default {
             this.$_c_reset_values();
 
             if (hadImage) {
-                this.emitEvent(events.IMAGE_REMOVE_EVENT);
+                this.emitEvent(event);
             }
         },
         move(offset) {

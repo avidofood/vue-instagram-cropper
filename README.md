@@ -101,7 +101,8 @@ This is important if you have still CORS issues. But remember the browser is not
 - `file-loaded`: Emitted when a new file is received and read successfully
 - `new-image`: Emitted when a new valid image is received and read successfully
 - `new-image-drawn`: Emitted when a new image is drawn on canvas for the first time.
-- `image-remove`: Emitted when image remove from croppa.
+- `image-remove`: Emitted when image is removed from croppa.
+- `image-remove-onload`: Emitted when image is removed from croppa due to file-loaded or change of `src`.
 - `move`: 
 - `zoom`: 
 - `draw`: Emitted on every view update
