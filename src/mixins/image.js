@@ -12,21 +12,21 @@ export default {
          * We need to debounce, so that the next image
          * is rendered correctly
          */
-        $_c_setImage: debounce(function setImage() {
+        $_c_setImage: debounce(function setImage(inital = false) {
             if (typeof this.src === 'string') {
-                this.$_c_setImageViaUrl();
+                this.$_c_setImageViaUrl(inital);
                 return;
             }
             // Due to the validator of value, we can assume the properties are correct
             if (this.src && typeof this.src === 'object') {
-                this.$_c_setImageViaObject();
+                this.$_c_setImageViaObject(inital);
                 return;
             }
 
             this.$_c_setPlaceholders();
             this.$_c_reset_values();
         }, 30),
-        $_c_setImageViaUrl() {
+        $_c_setImageViaUrl(initial) {
             const img = new Image();
             let href = this.src;
 
@@ -44,19 +44,19 @@ export default {
 
 
             if (u.imageLoaded(img)) {
-                this.$_c_onload(img, +img.dataset.exifOrientation, true);
+                this.$_c_onload(img, +img.dataset.exifOrientation, initial);
             } else {
                 this.loading = true;
                 this.$_c_paintBackground();
                 img.onload = () => {
-                    this.$_c_onload(img, +img.dataset.exifOrientation, true);
+                    this.$_c_onload(img, +img.dataset.exifOrientation, initial);
                 };
                 img.onerror = () => {
                     this.$_c_setPlaceholders();
                 };
             }
         },
-        $_c_setImageViaObject() {
+        $_c_setImageViaObject(initial) {
             const src = deepClone(this.src);
 
             // can't be cloned
@@ -78,6 +78,10 @@ export default {
                 this.skipScaleRatio = false;
 
                 this.$_c_checkBounceness();
+
+                if (initial) {
+                    this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT);
+                }
             });
 
             this.scaleRatio = src.scaleRatio;
@@ -116,10 +120,10 @@ export default {
             imgData.startX = u.numberValid(imgData.startX) ? imgData.startX : 0;
             imgData.startY = u.numberValid(imgData.startY) ? imgData.startY : 0;
 
-
             if (!this.imageSet) {
                 this.$_c_aspectFill();
             } else {
+                // Called in $_c_onDimensionChange
                 this.imgData.width = this.naturalWidth * this.scaleRatio;
                 this.imgData.height = this.naturalHeight * this.scaleRatio;
             }

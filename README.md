@@ -95,6 +95,7 @@ This is important if you have still CORS issues. But remember the browser is not
 ## Events 
 
 - `init`: Initialized
+- `initial-image-loaded`: Emitted when initial image loaded.
 - `file-choose`: File was chosen
 - `file-size-exceed`: File Size Limit was reached
 - `file-type-mismatch`: Only images are accepted
@@ -106,7 +107,6 @@ This is important if you have still CORS issues. But remember the browser is not
 - `move`: 
 - `zoom`: 
 - `draw`: Emitted on every view update
-- `initial-image-loaded`: Emitted when initial image loaded.
 - `loading-start`: Emitted when image loading phase starts.
 - `loading-end`: Emitted when image loading phase ends.
 - `update`: When a new image is drawn, you get get the metadata via the event.

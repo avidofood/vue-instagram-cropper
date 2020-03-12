@@ -15,7 +15,7 @@ export default {
             this.$refs.fileInput.value = '';
             this.imageSet = false;
             this.chosenFile = null;
-            this.$_c_setImage();
+            this.$_c_setImage(true);
 
             this.emitEvent(events.INIT_EVENT, this);
         },
