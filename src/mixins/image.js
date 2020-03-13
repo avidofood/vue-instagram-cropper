@@ -44,12 +44,12 @@ export default {
 
 
             if (u.imageLoaded(img)) {
-                this.$_c_onload(img, +img.dataset.exifOrientation, initial);
+                this.$_c_onload(img, +img.dataset.exifOrientation, initial, true);
             } else {
                 this.loading = true;
                 this.$_c_paintBackground();
                 img.onload = () => {
-                    this.$_c_onload(img, +img.dataset.exifOrientation, initial);
+                    this.$_c_onload(img, +img.dataset.exifOrientation, initial, true);
                 };
                 img.onerror = () => {
                     this.$_c_setPlaceholders();
@@ -86,7 +86,7 @@ export default {
 
             this.scaleRatio = src.scaleRatio;
         },
-        $_c_onload(img, orientation = 1, initial) {
+        $_c_onload(img, orientation = 1, initial, keepAspect = false) {
             if (this.imageSet) {
                 this.remove(events.IMAGE_REMOVE_ONLOAD_EVENT);
             }
@@ -101,17 +101,17 @@ export default {
 
                 tempImg.onload = () => {
                     this.img = tempImg;
-                    this.$_c_placeImage();
+                    this.$_c_placeImage(keepAspect);
                 };
             } else {
-                this.$_c_placeImage();
+                this.$_c_placeImage(keepAspect);
             }
 
             if (initial) {
                 this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT);
             }
         },
-        $_c_placeImage() {
+        $_c_placeImage(keepAspect) {
             if (!this.img) return;
 
             const { imgData } = this;
@@ -121,7 +121,15 @@ export default {
             imgData.startY = u.numberValid(imgData.startY) ? imgData.startY : 0;
 
             if (!this.imageSet) {
-                this.$_c_aspectFill();
+                // This part is important, when you load your own images from your server.
+                // Usually the aspectRatio is perfectly set and you don't want to change it.
+                // For example if you are loading the image via URL src
+                // and you don't want to change the aspect ratio
+                if (keepAspect && !this.greaterThanMaximumAspectRatio && !this.smallerThanMinimumAspectRatio) {
+                    this.$_c_aspectFit();
+                } else {
+                    this.$_c_aspectFill();
+                }
             } else {
                 // Called in $_c_onDimensionChange
                 this.imgData.width = this.naturalWidth * this.scaleRatio;
