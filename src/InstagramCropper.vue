@@ -77,6 +77,7 @@ import FullscreenButton from './components/buttons/FullscreenButton.vue';
 import RemoveButton from './components/buttons/RemoveButton.vue';
 
 import deepClone from './lib/deepClone';
+import Saving from './lib/Saving';
 
 
 export default {
@@ -172,31 +173,26 @@ export default {
         refresh() {
             this.$nextTick(this.$_c_initialize);
         },
+        saving(img, imgData, outputWidth, outputHeight) {
+            return new Saving(img, imgData, outputWidth, outputHeight);
+        },
         generateDataUrl(type, compressionRate) {
             if (!this.hasImage()) return '';
-            return this.canvas.toDataURL(type, compressionRate);
+
+            return this.saving(this.img, this.imgData, this.outputWidth, this.outputHeight)
+                .generateDataUrl(type, compressionRate);
         },
         generateBlob(callback, mimeType, qualityArgument) {
             if (!this.hasImage()) {
                 callback(null);
                 return;
             }
-            this.canvas.toBlob(callback, mimeType, qualityArgument);
+            this.saving(this.img, this.imgData, this.outputWidth, this.outputHeight)
+                .generateBlob(callback, mimeType, qualityArgument);
         },
         promisedBlob(...args) {
-            if (typeof Promise === 'undefined') {
-                console.warn('No Promise support. Please add Promise polyfill if you want to use this method.');
-                return null;
-            }
-            return new Promise((resolve, reject) => {
-                try {
-                    this.generateBlob((blob) => {
-                        resolve(blob);
-                    }, ...args);
-                } catch (err) {
-                    reject(err);
-                }
-            });
+            return this.saving(this.img, this.imgData, this.outputWidth, this.outputHeight)
+                .promisedBlob(...args);
         },
         getMetadata() {
             return {
