@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/npm/l/vue-instagram-cropper.svg" alt="License">
 </a>
 
-![Vue Instagram Cropper](/images/intro.png)
+<a href="https://avidofood.github.io/vue-instagram-cropper"><img src="/images/intro.png" width="400" alt="try it out" /></a>
 
 **If you are looking to crop and upload images like in Instagram, please visit https://github.com/avidofood/vue-cropgram 😜**
 
