@@ -1,5 +1,14 @@
 # Instagram Cropper for Vue 🖼
 
+<a href="https://www.npmjs.com/package/vue-instagram-cropper">
+  <img src="https://img.shields.io/npm/dt/vue-instagram-cropper.svg" alt="Downloads">
+</a>
+<a href="https://www.npmjs.com/package/vue-instagram-cropper">
+  <img src="https://img.shields.io/npm/v/vue-instagram-cropper.svg" alt="Version">
+</a>
+<a href="https://www.npmjs.com/package/vue-instagram-cropper">
+  <img src="https://img.shields.io/npm/l/vue-instagram-cropper.svg" alt="License">
+</a>
 
 ![Vue Instagram Cropper](/images/intro.png)
 
