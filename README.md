@@ -144,7 +144,14 @@ You need to set `ref=cropper` to the HTML tag `<instagram-cropper>`. After that 
 ```javascript
 const blob = await this.$refs.cropper.promisedBlob()
 ``` 
-   
+
+## TODO
+
+I have only limited time to develop this package further. It would mean a lot to me, if you would help me to improve it step by step. Here is a small list, what is still missing:
+
+- When zooming, the grid should be visible (Only moving shows the grid right now)
+- The maximum zoom limit is not the same as in Instagram
+- We need the prop `forceAspect`. Important if you want to "clip" the image to a specific aspect ratio. Needed for multiple images with [vue-cropgram](https://github.com/avidofood/vue-cropgram)
  
 ## Security
 
