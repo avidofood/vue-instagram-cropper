@@ -1,5 +1,8 @@
 <template>
-    <button class="rounded-button">
+    <button
+        class="rounded-button"
+        type="button"
+    >
         <span
             class="btn__content"
             tabindex="-1"
