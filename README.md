@@ -101,7 +101,7 @@ If you love overlays, then copy the overlay from the advanced example.
 
 This is important if you have still CORS issues. But remember the browser is not caching images anymore.
 
-- `prevent-white-space` (default: `false`)
+- `preventWhiteSpace` (default: `false`)
 
 Prevents revealing background white space when moving or zooming the image.
 
