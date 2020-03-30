@@ -41,7 +41,7 @@
         <slot />
 
         <FullscreenButton
-            v-if="img && aspectRatio !== 1"
+            v-if="img && aspectRatio !== 1 && !preventWhiteSpace"
             @click.native="$_c_handleFullscreen"
         />
         <RemoveButton
@@ -70,6 +70,8 @@ import fileinput from './mixins/fileinput';
 import fullscreenButtonMethods from './mixins/buttons/fullscreenButtonMethods';
 import handleBounce from './mixins/clipping/handleBounce';
 import handleZoom from './mixins/clipping/handleZoom';
+import handlePrevent from './mixins/clipping/handlePrevent';
+import clips from './mixins/clipping/clips';
 import ruleofthirdGrid from './mixins/layer/ruleofthirdGrid';
 
 import SpinnerCircle from './components/spinner/SpinnerCircle.vue';
@@ -93,6 +95,8 @@ export default {
         fullscreenButtonMethods,
         handleBounce,
         handleZoom,
+        handlePrevent,
+        clips,
         fileinput,
         ruleofthirdGrid,
     ],
@@ -127,6 +131,10 @@ export default {
             const oldY = this.imgData.startY;
             this.imgData.startX += offset.x;
             this.imgData.startY += offset.y;
+
+            if (this.preventWhiteSpace) {
+                this.$_c_preventMovingToWhiteSpace();
+            }
 
             if (this.imgData.startX !== oldX || this.imgData.startY !== oldY) {
                 this.emitEvent(events.MOVE_EVENT);
@@ -201,6 +209,17 @@ export default {
                 scaleRatio: deepClone(this.scaleRatio),
             };
         },
+        addClipPlugin(plugin) {
+            if (!this.clipPlugins) {
+                this.clipPlugins = [];
+            }
+            if (typeof plugin === 'function' && this.clipPlugins.indexOf(plugin) < 0) {
+                this.clipPlugins.push(plugin);
+            } else {
+                throw Error('Clip plugins should be functions');
+            }
+        },
+
     },
 };
 </script>

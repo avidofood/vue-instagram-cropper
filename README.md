@@ -101,6 +101,10 @@ If you love overlays, then copy the overlay from the advanced example.
 
 This is important if you have still CORS issues. But remember the browser is not caching images anymore.
 
+- `prevent-white-space` (default: `false`)
+
+Prevents revealing background white space when moving or zooming the image.
+
 ## Events 
 
 - `init`: Initialized
@@ -144,6 +148,29 @@ You need to set `ref=cropper` to the HTML tag `<instagram-cropper>`. After that 
 ```javascript
 const blob = await this.$refs.cropper.promisedBlob()
 ``` 
+
+- `addClipPlugin(func)`: Add clip plugin to clip the image. Example:
+
+```javascript
+// Add a clip plugin to make a circle clip on image
+onInit(vm) {
+  this.$refs.cropper.addClipPlugin(function (ctx, x, y, w, h) {
+    /*
+     * ctx: canvas context
+     * x: start point (top-left corner) x coordination
+     * y: start point (top-left corner) y coordination
+     * w: croppa width
+     * h: croppa height
+    */
+    ctx.beginPath();
+    ctx.arc(x + w / 2, y + h / 2, w / 2, 0, 2 * Math.PI, true);
+    ctx.closePath();
+  })
+},
+``` 
+>Note: in the plugin function you should always start with ctx.beginPath() and end with ctx.closePath().
+
+>Note: it only works when prevent-white-space is true.
 
 ## TODO
 

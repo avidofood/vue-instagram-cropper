@@ -52,6 +52,7 @@
                         placeholder-color="#000000" 
                         placeholder="Choose or Drag'n'Drop an image"
                         :placeholder-font-size="14"
+                        :prevent-white-space="preventWhiteSpace"
                     ></instagram-cropper>
                 </div>
             </div>
@@ -67,6 +68,11 @@
             <div class="row justify-content-center">
                 <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="download">Download</button></div>
                 <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="download('image/jpeg', 0.8)">Download 20% compressed JPEG</button></div>
+                
+            </div>
+            <div class="row justify-content-center">
+                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="togglePreventWhiteSpace" v-text="preventWhiteSpaceText"></button></div>
+                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="addCircleClip">Add circle clip</button></div>
             </div>
         </section>
 

@@ -120,7 +120,9 @@ export default {
             imgData.startX = u.numberValid(imgData.startX) ? imgData.startX : 0;
             imgData.startY = u.numberValid(imgData.startY) ? imgData.startY : 0;
 
-            if (!this.imageSet) {
+            if (this.preventWhiteSpace) {
+                this.$_c_aspectFill();
+            } else if (!this.imageSet) {
                 // This part is important, when you load your own images from your server.
                 // Usually the aspectRatio is perfectly set and you don't want to change it.
                 // For example if you are loading the image via URL src

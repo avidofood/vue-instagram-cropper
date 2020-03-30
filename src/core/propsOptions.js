@@ -35,4 +35,8 @@ export default {
         default: false,
         note: 'This is important if you have still CORS issues. But remember the browser is not caching images anymore',
     },
+    preventWhiteSpace: {
+        type: Boolean,
+        default: false,
+    },
 };

@@ -8,8 +8,14 @@ new Vue({ // eslint-disable-line no-new
     el: '#app',
     data() {
         return {
+            preventWhiteSpace: false,
             cropper: 'https://raw.githubusercontent.com/avidofood/vue-responsive-video-background-player/master/demo/public/images/hero-mobile%402.jpg',
         };
+    },
+    computed: {
+        preventWhiteSpaceText() {
+            return `preventWhiteSpace: ${this.preventWhiteSpace ? 'true' : 'false'}`;
+        },
     },
     methods: {
         changeImageURL() {
@@ -48,6 +54,19 @@ new Vue({ // eslint-disable-line no-new
         },
         setToNull() {
             this.cropper = null;
+        },
+        togglePreventWhiteSpace() {
+            this.preventWhiteSpace = !this.preventWhiteSpace;
+        },
+        addCircleClip() {
+            this.preventWhiteSpace = true;
+            this.$refs.cropper.clipPlugins = null; // we need to reset the values
+            this.$refs.cropper.addClipPlugin((ctx, x, y, w, h) => {
+                ctx.beginPath();
+                ctx.arc(x + w / 2, y + h / 2, w / 2, 0, 2 * Math.PI, true);
+                ctx.closePath();
+            });
+            this.$refs.cropper.refresh();
         },
 
     },

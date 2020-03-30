@@ -15,6 +15,12 @@ export default {
         outputHeight() {
             this.$_c_onDimensionChange();
         },
+        preventWhiteSpace(val) {
+            if (val) {
+                this.imageSet = false;
+            }
+            this.$_c_placeImage();
+        },
         scaleRatio(val, oldVal) {
             if (!this.img) return;
             if (!u.numberValid(val)) return;
@@ -38,6 +44,11 @@ export default {
                 const offsetY = (x - 1) * (pos.y - this.imgData.startY);
                 this.imgData.startX -= offsetX;
                 this.imgData.startY -= offsetY;
+            }
+
+            if (this.preventWhiteSpace) {
+                this.$_c_preventZoomingToWhiteSpace();
+                this.$_c_preventMovingToWhiteSpace();
             }
         },
         'imgData.width': function imgDataWidth(val, oldVal) {

@@ -36,6 +36,10 @@ export default {
             this.$_c_paintBackground();
             ctx.drawImage(this.img, startX, startY, width, height);
 
+            if (this.preventWhiteSpace) {
+                this.$_c_clip(this.$_c_createContainerClipPath);
+            }
+
             this.emitEvent(events.DRAW_EVENT, ctx);
 
             if (!this.imageSet) {
@@ -57,6 +61,11 @@ export default {
         $_c_onDimensionChange() {
             if (!this.img) {
                 this.$_c_initialize();
+                return;
+            }
+
+            if (this.preventWhiteSpace) {
+                this.imageSet = false;
             }
 
             this.$_c_setSize();
