@@ -2,7 +2,7 @@ export default {
     methods: {
         $_c_handleFullscreen() {
             if (this.$_c_imageIsFullyZoomedOut()) {
-                this.$_c_aspectFill(); // WARNING THIS IS NOT WORKING REMEMBER?
+                this.$_c_aspectFill();
                 return;
             }
             if (this.$_c_imageIsFullyZoomedIn()) {

@@ -8549,7 +8549,7 @@ if (typeof window !== 'undefined') {
 // Indicate to webpack that this file can be concatenated
 /* harmony default export */ var setPublicPath = (null);
 
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"477cbf7c-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/InstagramCropper.vue?vue&type=template&id=3e6e80d7&scoped=true&
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"43a19272-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/InstagramCropper.vue?vue&type=template&id=3e6e80d7&scoped=true&
 var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"cropper-container",class:_vm.img ? 'cropper--has-target' : '',style:('background-color:' + _vm.canvasColor + ';'),on:{"dragenter":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handleDragEnter($event)},"dragleave":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handleDragLeave($event)},"dragover":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handleDragOver($event)},"drop":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handleDrop($event)}}},[_c('input',{ref:"fileInput",staticStyle:{"height":"1px","width":"1px","overflow":"hidden","margin-left":"-99999px","position":"absolute"},attrs:{"type":"file","accept":"image/*"},on:{"change":_vm.$_c_handleInputChange}}),_c('canvas',{ref:"canvas",on:{"click":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handleClick($event)},"dblclick":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handleDblClick($event)},"touchstart":function($event){$event.stopPropagation();return _vm.$_c_handlePointerStart($event)},"mousedown":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handlePointerStart($event)},"pointerstart":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handlePointerStart($event)},"touchend":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handlePointerEnd($event)},"touchcancel":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handlePointerEnd($event)},"mouseup":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handlePointerEnd($event)},"pointerend":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handlePointerEnd($event)},"pointercancel":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handlePointerEnd($event)},"touchmove":function($event){$event.stopPropagation();return _vm.$_c_handlePointerMove($event)},"mousemove":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handlePointerMove($event)},"pointermove":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handlePointerMove($event)},"pointerleave":function($event){$event.stopPropagation();$event.preventDefault();return _vm.$_c_handlePointerLeave($event)},"DOMMouseScroll":function($event){$event.stopPropagation();return _vm.$_c_handleWheel($event)},"wheel":function($event){$event.stopPropagation();return _vm.$_c_handleWheel($event)},"mousewheel":function($event){$event.stopPropagation();return _vm.$_c_handleWheel($event)}}}),(_vm.loading)?_c('SpinnerCircle'):_vm._e(),_vm._t("default"),(_vm.img && _vm.aspectRatio !== 1 && !_vm.preventWhiteSpace)?_c('FullscreenButton',{nativeOn:{"click":function($event){return _vm.$_c_handleFullscreen($event)}}}):_vm._e(),(_vm.img)?_c('RemoveButton',{nativeOn:{"click":function($event){return _vm.remove()}}}):_vm._e()],2)}
 var staticRenderFns = []
 
@@ -9265,9 +9265,12 @@ var es_parse_int = __webpack_require__("e25e");
     aspectRatio: function aspectRatio() {
       return this.naturalWidth / this.naturalHeight;
     },
+    canvasRatio: function canvasRatio() {
+      return this.outputWidth / this.outputHeight;
+    },
     // The ratio you see on the canvas or blob result
     aspectCanvasRatio: function aspectCanvasRatio() {
-      if (this.$_c_imageIsWiderThanHeight()) {
+      if (this.aspectRatio > this.canvasRatio) {
         return this.outputWidth / (this.imgData.height > this.outputHeight ? this.outputHeight : this.imgData.height);
       }
 
@@ -9277,17 +9280,23 @@ var es_parse_int = __webpack_require__("e25e");
       // my weird calculation from Instagram
       return this.aspectRatio * 2.56 + 2.725;
     },
+    maximumAspectRatio: function maximumAspectRatio() {
+      return this.canvasRatio > MAXIMUM_ASPECT_RATIO ? this.canvasRatio : MAXIMUM_ASPECT_RATIO;
+    },
+    minimumAspectRatio: function minimumAspectRatio() {
+      return this.canvasRatio < MINIMUM_ASPECT_RATIO ? this.canvasRatio : MINIMUM_ASPECT_RATIO;
+    },
     greaterThanMaximumAspectRatio: function greaterThanMaximumAspectRatio() {
-      return this.aspectRatio > MAXIMUM_ASPECT_RATIO;
+      return this.aspectRatio > this.maximumAspectRatio;
     },
     smallerThanMinimumAspectRatio: function smallerThanMinimumAspectRatio() {
-      return this.aspectRatio < MINIMUM_ASPECT_RATIO;
+      return this.aspectRatio < this.minimumAspectRatio;
     },
     greaterThanMaximumAspectCanvasRatio: function greaterThanMaximumAspectCanvasRatio() {
-      return this.aspectCanvasRatio > MAXIMUM_ASPECT_RATIO;
+      return this.aspectCanvasRatio > this.maximumAspectRatio;
     },
     smallerThanMinimumAspectCanvasRatio: function smallerThanMinimumAspectCanvasRatio() {
-      return this.aspectCanvasRatio < MINIMUM_ASPECT_RATIO;
+      return this.aspectCanvasRatio < this.minimumAspectRatio;
     }
   }
 });
@@ -9511,7 +9520,6 @@ function debounce(fn, delay) {
 
 
 
-
 /* harmony default export */ var mixins_image = ({
   methods: {
     /**
@@ -9663,13 +9671,12 @@ function debounce(fn, delay) {
 
       var imgWidth = this.naturalWidth;
       var imgHeight = this.naturalHeight;
-      var canvasRatio = this.outputWidth / this.outputHeight;
       var scaleRatio;
       this.skipScaleRatio = true; // image is wider than canvas
 
-      if (this.aspectRatio > canvasRatio) {
+      if (this.aspectRatio > this.canvasRatio) {
         if (this.greaterThanMaximumAspectRatio) {
-          this.imgData.height = this.outputWidth / MAXIMUM_ASPECT_RATIO;
+          this.imgData.height = this.outputWidth / this.maximumAspectRatio;
           this.imgData.width = this.imgData.height / imgHeight * imgWidth;
           this.$_c_bounceTopCenter();
           this.$_c_bounceLeftCenter();
@@ -9681,7 +9688,7 @@ function debounce(fn, delay) {
           this.$_c_bounceLeft();
         }
       } else if (this.smallerThanMinimumAspectRatio) {
-        this.imgData.width = this.outputHeight * MINIMUM_ASPECT_RATIO;
+        this.imgData.width = this.outputHeight * this.minimumAspectRatio;
         this.imgData.height = this.imgData.width / imgWidth * imgHeight;
         this.$_c_bounceTopCenter();
         this.$_c_bounceLeftCenter();
@@ -9706,11 +9713,10 @@ function debounce(fn, delay) {
 
       var imgWidth = this.naturalWidth;
       var imgHeight = this.naturalHeight;
-      var canvasRatio = this.outputWidth / this.outputHeight;
       var scaleRatio;
       this.skipScaleRatio = true;
 
-      if (this.aspectRatio > canvasRatio) {
+      if (this.aspectRatio > this.canvasRatio) {
         scaleRatio = imgHeight / this.outputHeight;
         this.imgData.width = imgWidth / scaleRatio;
         this.imgData.height = this.outputHeight;
@@ -9728,23 +9734,28 @@ function debounce(fn, delay) {
         _this5.skipScaleRatio = false;
       });
     },
+
+    /**
+     * That means the image is smaller than the canvas
+     */
     $_c_imageIsFullyZoomedOut: function $_c_imageIsFullyZoomedOut() {
-      if (this.$_c_imageIsWiderThanHeight()) {
-        return this.imgData.width <= this.outputWidth || this.greaterThanMaximumAspectCanvasRatio;
+      if (this.aspectRatio > this.canvasRatio) {
+        return this.imgData.width < this.outputWidth || this.greaterThanMaximumAspectCanvasRatio;
       }
 
-      return this.imgData.height <= this.outputHeight || this.smallerThanMinimumAspectCanvasRatio;
+      return this.imgData.height < this.outputHeight || this.smallerThanMinimumAspectCanvasRatio;
     },
+
+    /**
+     * That means the image that the image is much more zoomed in.
+     * Like fully covered or even more zoomed in.
+     */
     $_c_imageIsFullyZoomedIn: function $_c_imageIsFullyZoomedIn() {
-      // Like cover or even more zoomed in.
-      if (this.$_c_imageIsWiderThanHeight()) {
+      if (this.aspectRatio > this.canvasRatio) {
         return this.imgData.height >= this.outputHeight;
       }
 
       return this.imgData.width >= this.outputWidth;
-    },
-    $_c_imageIsWiderThanHeight: function $_c_imageIsWiderThanHeight() {
-      return this.imgData.width > this.imgData.height;
     },
     $_c_imageReachedMaximumScale: function $_c_imageReachedMaximumScale() {
       return this.scaleRatio >= this.maximumScaleRatio;
@@ -10122,8 +10133,7 @@ function debounce(fn, delay) {
   methods: {
     $_c_handleFullscreen: function $_c_handleFullscreen() {
       if (this.$_c_imageIsFullyZoomedOut()) {
-        this.$_c_aspectFill(); // WARNING THIS IS NOT WORKING REMEMBER?
-
+        this.$_c_aspectFill();
         return;
       }
 
@@ -10143,7 +10153,7 @@ function debounce(fn, delay) {
 /* harmony default export */ var handleBounce = ({
   methods: {
     $_c_checkBounceness: function $_c_checkBounceness() {
-      if (this.$_c_imageIsWiderThanHeight()) {
+      if (this.aspectRatio > this.canvasRatio) {
         // Checking Y-Coordination
         if (this.imgData.height <= this.outputHeight) {
           this.$_c_bounceTopCenter();
@@ -10385,7 +10395,7 @@ var es_array_fill = __webpack_require__("cb29");
     }
   }
 });
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"477cbf7c-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/spinner/SpinnerCircle.vue?vue&type=template&id=23cf8d19&scoped=true&
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"43a19272-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/spinner/SpinnerCircle.vue?vue&type=template&id=23cf8d19&scoped=true&
 var SpinnerCirclevue_type_template_id_23cf8d19_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"cropper-spinner"})}
 var SpinnerCirclevue_type_template_id_23cf8d19_scoped_true_staticRenderFns = []
 
@@ -10519,14 +10529,14 @@ var component = normalizeComponent(
 )
 
 /* harmony default export */ var SpinnerCircle = (component.exports);
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"477cbf7c-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/buttons/FullscreenButton.vue?vue&type=template&id=e842d076&scoped=true&
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"43a19272-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/buttons/FullscreenButton.vue?vue&type=template&id=e842d076&scoped=true&
 var FullscreenButtonvue_type_template_id_e842d076_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('rounded-button',{staticClass:"bottom-left-abs"},[_c('svg',{attrs:{"viewBox":"0 0 22.5 22.5","xmlns":"http://www.w3.org/2000/svg","width":"12","height":"12"}},[_c('g',{attrs:{"fill":"none","stroke":"#fff","stroke-linecap":"round","stroke-miterlimit":"10","stroke-width":"1.5"}},[_c('path',{attrs:{"d":"m.75 13.75v7.6a.4.4 0 0 0 .4.4h7.6"}}),_c('path',{attrs:{"d":"m21.75 8.75v-7.6a.4.4 0 0 0 -.4-.4h-7.6"}})])])])}
 var FullscreenButtonvue_type_template_id_e842d076_scoped_true_staticRenderFns = []
 
 
 // CONCATENATED MODULE: ./src/components/buttons/FullscreenButton.vue?vue&type=template&id=e842d076&scoped=true&
 
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"477cbf7c-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/buttons/RoundedButton.vue?vue&type=template&id=3f992ba0&scoped=true&
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"43a19272-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/buttons/RoundedButton.vue?vue&type=template&id=3f992ba0&scoped=true&
 var RoundedButtonvue_type_template_id_3f992ba0_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('button',{staticClass:"rounded-button",attrs:{"type":"button"}},[_c('span',{staticClass:"btn__content",attrs:{"tabindex":"-1"}},[_vm._t("default")],2)])}
 var RoundedButtonvue_type_template_id_3f992ba0_scoped_true_staticRenderFns = []
 
@@ -10612,7 +10622,7 @@ var FullscreenButton_component = normalizeComponent(
 )
 
 /* harmony default export */ var FullscreenButton = (FullscreenButton_component.exports);
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"477cbf7c-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/buttons/RemoveButton.vue?vue&type=template&id=368a47e0&scoped=true&
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"43a19272-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/buttons/RemoveButton.vue?vue&type=template&id=368a47e0&scoped=true&
 var RemoveButtonvue_type_template_id_368a47e0_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('rounded-button',{staticClass:"top-right-abs"},[_c('svg',{attrs:{"viewBox":"0 0 12.81 12.81","xmlns":"http://www.w3.org/2000/svg","width":"10","height":"10"}},[_c('g',{attrs:{"fill":"none","stroke":"#fff","stroke-linecap":"round","stroke-miterlimit":"10","stroke-width":"1.5"}},[_c('path',{attrs:{"d":"m.75.75 5.66 5.66 5.65-5.66"}}),_c('path',{attrs:{"d":"m12.06 12.06-5.65-5.65-5.66 5.65"}})])])])}
 var RemoveButtonvue_type_template_id_368a47e0_scoped_true_staticRenderFns = []
 

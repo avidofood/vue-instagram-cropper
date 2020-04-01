@@ -9,7 +9,9 @@ export default {
             if (this.$_c_imageIsFullyZoomedOut()) {
                 this.$_c_aspectFit();
                 return;
-            } if (this.$_c_imageReachedMaximumScale()) {
+            }
+
+            if (this.$_c_imageReachedMaximumScale()) {
                 this.scaleRatio = this.maximumScaleRatio;
             }
 

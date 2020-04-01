@@ -1,7 +1,6 @@
 import u from '../core/util';
 import events from '../core/events';
 import debounce from '../lib/debounce';
-import * as Settings from '../core/const';
 import deepClone from '../lib/deepClone';
 
 export default {
@@ -144,15 +143,14 @@ export default {
         $_c_aspectFit() {
             const imgWidth = this.naturalWidth;
             const imgHeight = this.naturalHeight;
-            const canvasRatio = this.outputWidth / this.outputHeight;
             let scaleRatio;
 
             this.skipScaleRatio = true;
 
             // image is wider than canvas
-            if (this.aspectRatio > canvasRatio) {
+            if (this.aspectRatio > this.canvasRatio) {
                 if (this.greaterThanMaximumAspectRatio) {
-                    this.imgData.height = this.outputWidth / Settings.MAXIMUM_ASPECT_RATIO;
+                    this.imgData.height = this.outputWidth / this.maximumAspectRatio;
                     this.imgData.width = (this.imgData.height / imgHeight) * imgWidth;
                     this.$_c_bounceTopCenter();
                     this.$_c_bounceLeftCenter();
@@ -164,7 +162,7 @@ export default {
                     this.$_c_bounceLeft();
                 }
             } else if (this.smallerThanMinimumAspectRatio) {
-                this.imgData.width = this.outputHeight * Settings.MINIMUM_ASPECT_RATIO;
+                this.imgData.width = this.outputHeight * this.minimumAspectRatio;
                 this.imgData.height = (this.imgData.width / imgWidth) * imgHeight;
                 this.$_c_bounceTopCenter();
                 this.$_c_bounceLeftCenter();
@@ -186,12 +184,11 @@ export default {
         $_c_aspectFill() {
             const imgWidth = this.naturalWidth;
             const imgHeight = this.naturalHeight;
-            const canvasRatio = this.outputWidth / this.outputHeight;
             let scaleRatio;
 
             this.skipScaleRatio = true;
 
-            if (this.aspectRatio > canvasRatio) {
+            if (this.aspectRatio > this.canvasRatio) {
                 scaleRatio = imgHeight / this.outputHeight;
                 this.imgData.width = imgWidth / scaleRatio;
                 this.imgData.height = this.outputHeight;
@@ -209,25 +206,28 @@ export default {
                 this.skipScaleRatio = false;
             });
         },
+        /**
+         * That means the image is smaller than the canvas
+         */
         $_c_imageIsFullyZoomedOut() {
-            if (this.$_c_imageIsWiderThanHeight()) {
-                return this.imgData.width <= this.outputWidth
+            if (this.aspectRatio > this.canvasRatio) {
+                return this.imgData.width < this.outputWidth
                     || this.greaterThanMaximumAspectCanvasRatio;
             }
 
-            return this.imgData.height <= this.outputHeight
+            return this.imgData.height < this.outputHeight
                 || this.smallerThanMinimumAspectCanvasRatio;
         },
+        /**
+         * That means the image that the image is much more zoomed in.
+         * Like fully covered or even more zoomed in.
+         */
         $_c_imageIsFullyZoomedIn() {
-            // Like cover or even more zoomed in.
-            if (this.$_c_imageIsWiderThanHeight()) {
+            if (this.aspectRatio > this.canvasRatio) {
                 return this.imgData.height >= this.outputHeight;
             }
 
             return this.imgData.width >= this.outputWidth;
-        },
-        $_c_imageIsWiderThanHeight() {
-            return this.imgData.width > this.imgData.height;
         },
         $_c_imageReachedMaximumScale() {
             return this.scaleRatio >= this.maximumScaleRatio;

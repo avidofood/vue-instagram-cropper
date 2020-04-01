@@ -4,7 +4,7 @@
 export default {
     methods: {
         $_c_checkBounceness() {
-            if (this.$_c_imageIsWiderThanHeight()) {
+            if (this.aspectRatio > this.canvasRatio) {
                 // Checking Y-Coordination
                 if (this.imgData.height <= this.outputHeight) {
                     this.$_c_bounceTopCenter();

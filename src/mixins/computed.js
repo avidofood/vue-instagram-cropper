@@ -16,9 +16,12 @@ export default {
         aspectRatio() {
             return this.naturalWidth / this.naturalHeight;
         },
+        canvasRatio() {
+            return this.outputWidth / this.outputHeight;
+        },
         // The ratio you see on the canvas or blob result
         aspectCanvasRatio() {
-            if (this.$_c_imageIsWiderThanHeight()) {
+            if (this.aspectRatio > this.canvasRatio) {
                 return this.outputWidth / (this.imgData.height > this.outputHeight ? this.outputHeight : this.imgData.height);
             }
 
@@ -28,17 +31,23 @@ export default {
             // my weird calculation from Instagram
             return this.aspectRatio * (2.56) + 2.725;
         },
+        maximumAspectRatio() {
+            return this.canvasRatio > Settings.MAXIMUM_ASPECT_RATIO ? this.canvasRatio : Settings.MAXIMUM_ASPECT_RATIO;
+        },
+        minimumAspectRatio() {
+            return this.canvasRatio < Settings.MINIMUM_ASPECT_RATIO ? this.canvasRatio : Settings.MINIMUM_ASPECT_RATIO;
+        },
         greaterThanMaximumAspectRatio() {
-            return this.aspectRatio > Settings.MAXIMUM_ASPECT_RATIO;
+            return this.aspectRatio > this.maximumAspectRatio;
         },
         smallerThanMinimumAspectRatio() {
-            return this.aspectRatio < Settings.MINIMUM_ASPECT_RATIO;
+            return this.aspectRatio < this.minimumAspectRatio;
         },
         greaterThanMaximumAspectCanvasRatio() {
-            return this.aspectCanvasRatio > Settings.MAXIMUM_ASPECT_RATIO;
+            return this.aspectCanvasRatio > this.maximumAspectRatio;
         },
         smallerThanMinimumAspectCanvasRatio() {
-            return this.aspectCanvasRatio < Settings.MINIMUM_ASPECT_RATIO;
+            return this.aspectCanvasRatio < this.minimumAspectRatio;
         },
 
     },
