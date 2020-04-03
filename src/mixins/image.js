@@ -2,6 +2,7 @@ import u from '../core/util';
 import events from '../core/events';
 import debounce from '../lib/debounce';
 import deepClone from '../lib/deepClone';
+import MissingImg from '../assets/images/MissingImg.svg';
 
 export default {
     methods: {
@@ -26,7 +27,7 @@ export default {
             this.$_c_reset_values();
         }, 30),
         $_c_setImageViaUrl(initial) {
-            const img = new Image();
+            let img = new Image();
             let href = this.src;
 
             if (!/^data:/.test(href) && !/^blob:/.test(href)) {
@@ -51,7 +52,11 @@ export default {
                     this.$_c_onload(img, +img.dataset.exifOrientation, initial, true);
                 };
                 img.onerror = () => {
-                    this.$_c_setPlaceholders();
+                    img = new Image();
+                    img.src = MissingImg;
+                    img.onload = () => {
+                        this.$_c_onload(img, +img.dataset.exifOrientation, initial, true);
+                    };
                 };
             }
         },
