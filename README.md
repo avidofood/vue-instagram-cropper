@@ -115,6 +115,7 @@ Prevents revealing background white space when moving or zooming the image.
 - `file-loaded`: Emitted when a new file is received and read successfully
 - `new-image`: Emitted when a new valid image is received and read successfully
 - `new-image-drawn`: Emitted when a new image is drawn on canvas for the first time.
+- `image-error`: Emitted when an error occurs for the image (`onerror`-listener)
 - `image-remove`: Emitted when image is removed from croppa.
 - `image-remove-onload`: Emitted when image is removed from croppa due to file-loaded or change of `src`.
 - `move`: 
