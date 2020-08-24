@@ -33,8 +33,8 @@ export default {
                 img.setAttribute('crossOrigin', 'anonymous');
             }
 
-            if (this.forceCacheBreak) {
-                const src = new URL(this.src);
+            if (this.forceCacheBreak && href) {
+                const src = new URL(href);
                 src.searchParams.append('cors', Date.now());
                 href = src.href;
             }

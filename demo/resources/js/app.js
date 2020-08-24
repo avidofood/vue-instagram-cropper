@@ -43,6 +43,8 @@ new Vue({ // eslint-disable-line no-new
             img.src = 'https://images.unsplash.com/photo-1559124778-aa10b8898cc0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=562&q=80';
         },
         download(type, compressionRate) {
+            if (!this.$refs.cropper.hasImage()) return;
+
             this.$refs.cropper.generateBlob((blob) => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -59,6 +61,8 @@ new Vue({ // eslint-disable-line no-new
             this.preventWhiteSpace = !this.preventWhiteSpace;
         },
         addCircleClip() {
+            if (!this.$refs.cropper.hasImage()) return;
+
             this.preventWhiteSpace = true;
             this.$refs.cropper.clipPlugins = null; // we need to reset the values
             this.$refs.cropper.addClipPlugin((ctx, x, y, w, h) => {

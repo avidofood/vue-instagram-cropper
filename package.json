@@ -1,6 +1,6 @@
 {
   "name": "vue-instagram-cropper",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Simple Image Cropper that works like Instagram for Vue",
   "main": "dist/index.common.js",
   "unpkg": "dist/index.umd.min.js",
@@ -51,16 +51,16 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.0.5",
-    "@vue/cli-service": "^4.0.5",
+    "@vue/cli-plugin-babel": "^4.5.4",
+    "@vue/cli-service": "^4.5.4",
     "cross-env": "^6.0.3",
     "eslint": "^6.6.0",
     "eslint-config-avidofood": "^1.1.0",
-    "laravel-mix": "^5.0.0",
-    "vue": "^2.6.10",
-    "vue-template-compiler": "^2.6.10",
-    "sass": "^1.25.0",
-    "sass-loader": "^8.0.2"
+    "laravel-mix": "^5.0.5",
+    "sass": "^1.26.10",
+    "sass-loader": "^8.0.2",
+    "vue": "^2.6.12",
+    "vue-template-compiler": "^2.6.12"
   },
   "dependencies": {
     "canvas-exif-orientation": "^0.4.0"
