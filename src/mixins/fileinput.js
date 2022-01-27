@@ -46,6 +46,10 @@ export default {
             const base64 = u.parseDataUrl(fileData);
             let orientation = 1;
 
+            if (this.fixOrientation > 0) {
+                return this.fixOrientation;
+            }
+
             try {
                 orientation = u.getFileOrientation(u.base64ToArrayBuffer(base64));
             } catch (err) {
