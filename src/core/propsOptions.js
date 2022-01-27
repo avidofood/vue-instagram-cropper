@@ -39,4 +39,12 @@ export default {
         type: Boolean,
         default: false,
     },
+    fixOrientation: {
+        type: Number,
+        default: 0,
+        validator(val) {
+            return val >= 0;
+        },
+        note: '0 means fixOrientation will be disabled.',
+    },
 };
