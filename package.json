@@ -52,7 +52,7 @@
   "license": "MIT",
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.4",
-    "@vue/cli-service": "^4.5.4",
+    "@vue/cli-service": "^5.0.8",
     "cross-env": "^6.0.3",
     "eslint": "^6.6.0",
     "eslint-config-avidofood": "^1.1.0",
