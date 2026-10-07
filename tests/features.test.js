@@ -9,6 +9,7 @@ import {
     callsOf,
     landscapeUrl,
     lastDrawnImage,
+    loadImage,
     mountCropper,
     mountEmpty,
     mountWithImage,
@@ -496,5 +497,53 @@ describe('grid after the review', () => {
 
         expect(timer).toBeTruthy();
         expect(clear).toHaveBeenCalledWith(timer);
+    });
+});
+
+describe('a container that hides and shows again', () => {
+    const hidden = 'display: none; width: 100%; height: 100%;';
+    const shown = 'width: 300px; height: 300px;';
+
+    it.each([false, true])('keeps the crop with preventWhiteSpace %s', async (preventWhiteSpace) => {
+        const wrapper = await mountWithImage({ preventWhiteSpace });
+        wrapper.vm.zoom(true, 20);
+        await sleep(50);
+        wrapper.vm.move({ x: -30, y: 10 });
+        await sleep(50);
+        const { imgData } = wrapper.vm.getMetadata();
+        const draws = callsOf(wrapper, 'drawImage').length;
+
+        await resizeContainer(wrapper, hidden);
+        await sleep(50);
+        await resizeContainer(wrapper, shown);
+        await sleep(50);
+
+        expect(wrapper.vm.getMetadata().imgData).toEqual(imgData);
+        expect(wrapper.emitted('new-image-drawn')).toHaveLength(1);
+        expect(callsOf(wrapper, 'drawImage').length).toBeGreaterThan(draws);
+        expect(lastDrawnImage(wrapper).slice(2)).toEqual([
+            imgData.startX, imgData.startY, imgData.width, imgData.height,
+        ]);
+    });
+
+    it('applies metadata that arrives while the container is hidden', async () => {
+        const img = await loadImage(landscapeUrl);
+        const metadata = {
+            img,
+            imgData: {
+                width: 900, height: 675, startX: -150, startY: -40,
+            },
+            scaleRatio: 1.125,
+        };
+        const wrapper = await mountWithImage();
+
+        await resizeContainer(wrapper, hidden);
+        await wrapper.setProps({ src: metadata });
+        await sleep(100);
+        await resizeContainer(wrapper, shown);
+        await sleep(50);
+
+        expect(wrapper.vm.getMetadata().imgData).toEqual(metadata.imgData);
+        expect(lastDrawnImage(wrapper).slice(1)).toEqual([img, -150, -40, 900, 675]);
     });
 });

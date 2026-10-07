@@ -44,6 +44,8 @@ export default {
             this.scaleRatio = null;
             this.imageSet = false;
             this.chosenFile = null;
+            this.$_c_drawnSize = null;
+            this.$_c_metadataPending = false;
         },
         $_c_reset_values() {
             this.$_c_clearImage();

@@ -35,6 +35,9 @@ export default {
             // A container without a size, for example with v-show. $_c_onDimensionChange()
             // places and draws the image when the container gets a size.
             if (!this.outputWidth || !this.outputHeight) return;
+            // $_c_onDimensionChange() keeps the crop when the container shows up with this size
+            this.$_c_drawnSize = this.$_c_currentSize();
+            this.$_c_metadataPending = false;
 
             // A handler of draw or new-image-drawn can call remove()
             const { img } = this;
@@ -66,12 +69,19 @@ export default {
 
             this.$_c_updateVModel();
         },
+        $_c_currentSize() {
+            return `${this.outputWidth}x${this.outputHeight}`;
+        },
         $_c_paintBackground() {
             this.ctx.fillStyle = this.canvasColor;
             this.ctx.clearRect(0, 0, this.outputWidth, this.outputHeight);
             this.ctx.fillRect(0, 0, this.outputWidth, this.outputHeight);
         },
         $_c_onDimensionChange() {
+            // A hidden container, for example with v-show. The image keeps its crop until the
+            // container shows up again.
+            if (!this.outputWidth || !this.outputHeight) return;
+
             this.$_c_setSize();
             this.$_c_setCtx();
 
@@ -79,6 +89,19 @@ export default {
                 // An image that still loads is placed when it arrives
                 if (!this.loading) this.$_c_setPlaceholders();
                 return;
+            }
+
+            if (this.imageSet) {
+                // Shown again with the size of the last draw: the crop is still right
+                if (this.$_c_drawnSize === this.$_c_currentSize()) {
+                    this.$_c_draw();
+                    return;
+                }
+                // Metadata that arrived while the container had no size
+                if (this.$_c_drawnSize === null && this.$_c_metadataPending) {
+                    this.$_c_layoutMetadata();
+                    return;
+                }
             }
 
             if (this.preventWhiteSpace) {

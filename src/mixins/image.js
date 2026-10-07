@@ -115,6 +115,7 @@ export default {
             // The watchers only draw when a number changes
             const imageChanged = img !== this.img;
             this.imageSet = true;
+            this.$_c_drawnSize = null;
 
             // With preventWhiteSpace, a crop that does not fill the canvas, for example a crop
             // from a larger canvas, shows the image filled and centered, as in 1.x
@@ -141,6 +142,13 @@ export default {
                 this.scaleRatio = src.scaleRatio;
                 this.skipScaleRatio = false;
 
+                if (!this.outputWidth || !this.outputHeight) {
+                    // The container is hidden. $_c_layoutMetadata() runs when it shows up.
+                    this.$_c_metadataPending = true;
+                    if (initial) this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT);
+                    return;
+                }
+
                 this.$_c_checkBounceness();
                 // Another image with the same size and crop needs this draw, and so does the
                 // canvas that another load cleared. Otherwise the same image must not draw
@@ -154,6 +162,15 @@ export default {
 
             this.scaleRatio = src.scaleRatio;
         },
+        // The second half of $_c_setImageViaObject() for a container that was hidden
+        $_c_layoutMetadata() {
+            if (this.preventWhiteSpace && !(this.scaleRatio >= this.minimumScaleRatio)) {
+                this.$_c_placeImage();
+                return;
+            }
+            this.$_c_checkBounceness();
+            this.$_c_draw();
+        },
         $_c_onload(img, loadId, initial = false, keepAspect = false) {
             if (this.imageSet) {
                 this.remove(events.IMAGE_REMOVE_ONLOAD_EVENT);
@@ -164,6 +181,7 @@ export default {
             this.img = img;
             // $_c_onDimensionChange() needs it for an image that loaded in a hidden container
             this.$_c_keepAspect = keepAspect;
+            this.$_c_drawnSize = null;
             this.$_c_placeImage(keepAspect);
 
             if (initial) {
