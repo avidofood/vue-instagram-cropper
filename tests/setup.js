@@ -53,7 +53,8 @@ const createContext = (canvas) => {
     const context = markRaw({ canvas, calls: [] });
     [
         'arc', 'beginPath', 'clearRect', 'closePath', 'drawImage', 'fill', 'fillRect', 'fillText',
-        'lineTo', 'moveTo', 'quadraticCurveTo', 'restore', 'save', 'stroke',
+        'lineTo', 'moveTo', 'quadraticCurveTo', 'restore', 'rotate', 'save', 'scale', 'stroke',
+        'translate',
     ].forEach((name) => {
         context[name] = (...args) => context.calls.push([name, ...args]);
     });

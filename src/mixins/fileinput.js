@@ -1,6 +1,5 @@
 // Handles the methods for the input field with the type "file"
 import events from '../core/events';
-import u from '../core/util';
 
 export default {
     methods: {
@@ -28,33 +27,16 @@ export default {
 
             const fr = new FileReader();
             fr.onload = (e) => {
-                let fileData = e.target.result;
-                const orientation = this.$_c_getFileOrientation(fileData);
-
+                // The browser applies the EXIF orientation of the image itself
                 const img = new Image();
-                img.src = fileData;
-                fileData = null; // Weird..
+                img.src = e.target.result;
                 img.onload = () => {
                     this.emitEvent(events.FILE_LOADED_EVENT);
-                    this.$_c_onload(img, orientation);
+                    this.$_c_onload(img);
                     this.emitEvent(events.NEW_IMAGE_EVENT);
                 };
             };
             fr.readAsDataURL(file);
-        },
-        $_c_getFileOrientation(fileData) {
-            const base64 = u.parseDataUrl(fileData);
-            let orientation = 1;
-
-            try {
-                orientation = u.getFileOrientation(u.base64ToArrayBuffer(base64));
-            } catch (err) {
-                //
-            }
-
-            if (orientation < 1) orientation = 1;
-
-            return orientation;
         },
         $_c_fileSizeIsValid(file) {
             if (!file) return false;

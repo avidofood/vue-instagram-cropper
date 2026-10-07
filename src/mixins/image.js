@@ -42,19 +42,19 @@ export default {
             img.src = href;
 
             if (u.imageLoaded(img)) {
-                this.$_c_onload(img, +img.dataset.exifOrientation, initial, true);
+                this.$_c_onload(img, initial, true);
             } else {
                 this.loading = true;
                 this.$_c_paintBackground();
                 img.onload = () => {
-                    this.$_c_onload(img, +img.dataset.exifOrientation, initial, true);
+                    this.$_c_onload(img, initial, true);
                 };
                 img.onerror = () => {
                     this.emitEvent(events.IMAGE_ERROR_EVENT);
                     img = new Image();
                     img.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 600 600\'%3E%3Cpath fill=\'%23fff\' d=\'M0 0H600V600H0z\'/%3E%3Cpath d=\'M231.17 366.43a15.88 15.88 0 0 1-15.88-15.88v-95.31a15.88 15.88 0 0 1 15.88-15.88h137.66a15.89 15.89 0 0 1 15.89 15.88v95.31a15.89 15.89 0 0 1-15.89 15.88zm2.65-90a18.53 18.53 0 1 0 18.53-18.53 18.52 18.52 0 0 0-18.53 18.52zm129.72 68.83v-37.07l-29-29a4 4 0 0 0-5.62 0l-44.84 44.84-18.33-18.33a4 4 0 0 0-5.62 0l-23.67 23.67v15.88z\' fill=\'%23252525\'/%3E%3Cpath d=\'M169.39 219.53a6.66 6.66 0 0 1-1.17-9.34l8.18-10.52a6.66 6.66 0 0 1 9.35-1.17l244.86 189.25a6.68 6.68 0 0 1 1.17 9.35l-8.18 10.51a6.66 6.66 0 0 1-9.35 1.17z\' fill=\'%23b1605f\'/%3E%3C/svg%3E';
                     img.onload = () => {
-                        this.$_c_onload(img, +img.dataset.exifOrientation, initial, true);
+                        this.$_c_onload(img, initial, true);
                     };
                 };
             }
@@ -89,25 +89,13 @@ export default {
 
             this.scaleRatio = src.scaleRatio;
         },
-        $_c_onload(img, orientation = 1, initial, keepAspect = false) {
+        $_c_onload(img, initial = false, keepAspect = false) {
             if (this.imageSet) {
                 this.remove(events.IMAGE_REMOVE_ONLOAD_EVENT);
             }
 
             this.img = img;
-
-            if (orientation > 1) {
-                if (!this.img) return;
-
-                const tempImg = u.getRotatedImage(this.img, orientation);
-
-                tempImg.onload = () => {
-                    this.img = tempImg;
-                    this.$_c_placeImage(keepAspect);
-                };
-            } else {
-                this.$_c_placeImage(keepAspect);
-            }
+            this.$_c_placeImage(keepAspect);
 
             if (initial) {
                 this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT);
