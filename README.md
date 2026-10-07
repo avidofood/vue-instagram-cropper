@@ -84,7 +84,7 @@ const onUpdate: InstagramCropperEmits['update'] = (metadata) => {
  cropper: 'https://i.picsum.photos/id/468/200/300.jpg',
 ```
 
-The component takes the size of its container. Give it a width and a height, for example with a class.
+The component takes the size of its container. Give it a width and a height, for example with a class. When the container changes its size, the canvas follows. This also works for a container that is hidden at first, for example with `v-show`. Without `ResizeObserver`, for example in jsdom, the size stays as it was at the mount.
 
 ### Advanced version 🌐
 

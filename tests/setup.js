@@ -81,6 +81,29 @@ HTMLCanvasElement.prototype.toBlob = function toBlob(callback, type = 'image/png
     });
 };
 
+// jsdom has no ResizeObserver. resizeContainer() in helpers.js calls the observers.
+globalThis.resizeObservers = new Set();
+globalThis.ResizeObserver = class ResizeObserver {
+    constructor(callback) {
+        this.callback = callback;
+        this.targets = new Set();
+    }
+
+    observe(target) {
+        this.targets.add(target);
+        globalThis.resizeObservers.add(this);
+    }
+
+    unobserve(target) {
+        this.targets.delete(target);
+    }
+
+    disconnect() {
+        this.targets.clear();
+        globalThis.resizeObservers.delete(this);
+    }
+};
+
 enableAutoUnmount(afterEach);
 
 afterEach(() => {

@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import { vi } from 'vitest';
 import InstagramCropper from '../src/index';
@@ -47,6 +48,17 @@ export const chooseFile = async (wrapper, file) => {
     const input = wrapper.find('input[type="file"]');
     Object.defineProperty(input.element, 'files', { value: [file], configurable: true });
     await input.trigger('change');
+};
+
+// Changes the style of the container, as CSS or v-show would, and calls the resize observers
+export const resizeContainer = async (wrapper, style) => {
+    wrapper.element.setAttribute('style', style);
+    globalThis.resizeObservers.forEach((observer) => {
+        if (observer.targets.has(wrapper.element)) {
+            observer.callback([{ target: wrapper.element }], observer);
+        }
+    });
+    await nextTick();
 };
 
 // Collects errors that jsdom reports for event listeners and timers

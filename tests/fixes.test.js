@@ -94,16 +94,15 @@ describe('listeners', () => {
         expect(wrapper.vm.dragging).toBe(false);
     });
 
-    it('removes the resize and document listeners on unmount', async () => {
+    it('removes the resize observer and the document listeners on unmount', async () => {
         const wrapper = await mountWithImage();
         await wrapper.find('canvas').trigger('mousedown', { clientX: 10, clientY: 10 });
         const { vm } = wrapper;
-        const removeWindow = vi.spyOn(window, 'removeEventListener');
         const removeDocument = vi.spyOn(document, 'removeEventListener');
 
         wrapper.unmount();
 
-        expect(removeWindow).toHaveBeenCalledWith('resize', vm.$_c_setContainerSize);
+        expect(globalThis.resizeObservers.size).toBe(0);
         expect(removeDocument).toHaveBeenCalledWith('mouseup', vm.$_c_handlePointerEnd);
     });
 

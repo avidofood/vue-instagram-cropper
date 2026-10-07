@@ -160,6 +160,8 @@ export default {
             }
 
             this.img = img;
+            // $_c_onDimensionChange() needs it for an image that loaded in a hidden container
+            this.$_c_keepAspect = keepAspect;
             this.$_c_placeImage(keepAspect);
 
             if (initial) {

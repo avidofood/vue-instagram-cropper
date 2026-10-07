@@ -20,6 +20,7 @@ Version 2.0 is for Vue 3. The props, the events and the methods keep their names
 
 ### Added
 
+- The cropper follows the size of its container with a `ResizeObserver`. In 1.x, it measured the container only on a window resize. A container that was hidden at first, for example with `v-show`, got a canvas of 20 x 20 pixels, because the size `100%` was read as 10 pixels. Now the image is placed when the container shows up.
 - TypeScript types for the props, the metadata, the events, the methods and the plugin. The types also register `InstagramCropper` as a global component for template type checks. See [#6](https://github.com/avidofood/vue-instagram-cropper/issues/6).
 
 ### Fixed
@@ -41,6 +42,7 @@ Version 2.0 is for Vue 3. The props, the events and the methods keep their names
 ### Changed
 
 - The package has no runtime dependencies. `canvas-exif-orientation` is gone.
+- A size change without an image redraws the placeholder. In 1.x, it started the component again and emitted `init` a second time.
 - The package declares `"type": "commonjs"` and `"exports"` with `types` conditions. The ES module build is `dist/vue-instagram-cropper.mjs`, the UMD build is `dist/vue-instagram-cropper.umd.js`. As in 1.x, the CSS is part of the JavaScript files.
 - The build uses Vite 8. Tests use Vitest. Linting uses ESLint 9 and eslint-config-avidofood 4. The development tools need Node.js 22.12 or newer. The published files have no Node.js requirement.
 - `npm pack` and `npm publish` build `dist/` first (`prepack`). The repository no longer contains `dist/`.
