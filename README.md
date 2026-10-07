@@ -302,7 +302,7 @@ Give the container the aspect ratio and set `prevent-white-space`. Then the imag
 const blob = await this.$refs.cropper.promisedBlob('image/jpeg', 0.9, { width: 1080 });
 ```
 
-A size larger than the original image makes the output blurry. Very large canvases can fail in some browsers, for example on iOS. Use `maxWidth` and `maxHeight` to stay below that.
+A size larger than the original image makes the output blurry. An output side over 32767 pixels throws a `RangeError`, because browsers cannot draw such a canvas. Some browsers allow less, for example iOS Safari about 16 megapixels in total. Use `maxWidth` and `maxHeight` to stay below that.
 
 - `addClipPlugin(func)`: Add clip plugin to clip the image. Example:
 

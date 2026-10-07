@@ -1,8 +1,9 @@
 import events from '../core/events';
 
 // A hidden container, for example with v-show, has no size in pixels. The browser then
-// reports a value such as 100% or auto.
-const pixels = (value) => (/^\d+(\.\d+)?px$/.test(value) ? parseInt(value, 10) : 0);
+// reports a value such as 100% or auto. A size such as 401.25px keeps its fraction, so that a
+// container of 4:5 gives an output of exactly 4:5.
+const pixels = (value) => (/^\d+(\.\d+)?px$/.test(value) ? parseFloat(value) : 0);
 
 export default {
     methods: {

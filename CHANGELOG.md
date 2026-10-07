@@ -21,12 +21,12 @@ Version 2.0 is for Vue 3. The props, the events and the methods keep their names
 ### Added
 
 - The cropper follows the size of its container with a `ResizeObserver`. In 1.x, it measured the container only on a window resize. In 1.x, a container that was hidden at first got a canvas of 20 x 20 pixels. An example is `v-show`: the size `100%` was read as 10 pixels. Now the component places the image as soon as the container shows up. A container that hides and shows again with the same size keeps the crop.
-- The rule-of-thirds grid also shows while the user zooms with the wheel, the keys or two fingers, and for half a second after the last zoom step. In 1.x, it only showed while the user moved the image. The new prop `showGrid` (default `true`) can hide it.
+- The rule-of-thirds grid also shows while the user zooms with the wheel, the keys or two fingers. It stays for half a second after the last zoom step. In 1.x, it only showed while the user moved the image. The new prop `showGrid` (default `true`) can hide it.
 - Keyboard support: the canvas can get the focus. The arrow keys move the image, plus and minus zoom it, and Enter opens the file chooser. The canvas and the two buttons have texts for screen readers. The new prop `labels` replaces them, for example in another language. The hidden file input is no longer a tab stop without a visible focus. In 1.x, the cropper only worked with a mouse or a finger.
 - The README shows how to use the cropper with Nuxt and how to crop every image to the same aspect ratio and size. Tests check the server-side rendering and the hydration.
 - The new prop `crossOrigin` (default `anonymous`). Set `use-credentials` for an image server that needs the cookies of the user. In 1.x, the mode was always `anonymous`.
 - The new prop `zoomOnWheel` (default `true`). With `false`, the wheel does not zoom, and the page scrolls over the cropper. In 1.x, the cropper always blocked the page scroll once it had an image.
-- An optional last argument of `generateDataUrl()`, `generateBlob()`, `promisedBlob()` and `saving()` sets the output size: `width`, `height`, `maxWidth` and `maxHeight`. Without it, the output has the visible size in canvas pixels, as in 1.x.
+- An optional last argument sets the output size: `width`, `height`, `maxWidth` and `maxHeight`. It works for `generateDataUrl()`, `generateBlob()`, `promisedBlob()` and the same methods of the object from `saving()`. Without it, the output has the visible size in canvas pixels, as in 1.x. An output side over 32767 pixels throws a `RangeError`.
 - TypeScript types for the props, the metadata, the events, the methods and the plugin. The types also register `InstagramCropper` as a global component for template type checks. See [#6](https://github.com/avidofood/vue-instagram-cropper/issues/6).
 
 ### Fixed
@@ -38,7 +38,7 @@ Version 2.0 is for Vue 3. The props, the events and the methods keep their names
 - A slow image or file can no longer replace a newer one. This also holds in the 30ms before a new `src` starts to load. In 1.x, an image that the user replaced showed up after its load finished.
 - `remove()` while an image loads stops that image. `remove()` and `src` set to `null` end the loading state. In 1.x, the image showed up later, and the spinner stayed.
 - `refresh()` right before the unmount no longer throws a `TypeError`.
-- The output no longer loses a row or a column because of floating point. In 1.x, a 4:5 crop of 640 x 800 pixels gave an output of 640 x 799 pixels.
+- The output no longer loses a row or a column because of floating point. In 1.x, a 4:5 crop of 640 x 800 pixels gave an output of 640 x 799 pixels. A container size such as 401.25 pixels keeps its fraction.
 - `remove()` in a `mouseup` or `touchend` handler during a drag ends the drag. In 1.x, the next image followed the mouse without a pressed button.
 - `remove()` in an event handler during a load or a draw removes the image. Examples are `file-choose`, `image-remove-onload`, `file-loaded`, `initial-image-loaded` and the first `draw`. In 1.x, the image showed up anyway.
 - Metadata of another image with the same size and crop draws the new image. In 1.x, the old image stayed on the canvas.

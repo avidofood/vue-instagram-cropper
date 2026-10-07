@@ -366,9 +366,9 @@ describe('labels', () => {
 });
 
 describe('output size with a fixed aspect ratio', () => {
-    // A 4:5 container with preventWhiteSpace. The image height is 799.99... after the watchers,
-    // because 600 * (800 / 600) is not exact in floating point.
-    it('counts a size such as 799.99999 as 800 pixels', async () => {
+    // A 4:5 container with preventWhiteSpace. The image height is 799.9999999999999 after the
+    // watchers, because 600 * (800 / 600) is not exact in floating point.
+    it('counts a floating point size such as 799.9999999999999 as 800 pixels', async () => {
         const wrapper = await mountWithImage({ preventWhiteSpace: true }, {
             attrs: { style: 'width: 320px; height: 400px;' },
         });
@@ -545,5 +545,44 @@ describe('a container that hides and shows again', () => {
 
         expect(wrapper.vm.getMetadata().imgData).toEqual(metadata.imgData);
         expect(lastDrawnImage(wrapper).slice(1)).toEqual([img, -150, -40, 900, 675]);
+    });
+});
+
+describe('output size after the review', () => {
+    // The browser can give the container a size such as 401.25 pixels, for example 4:5 of 321
+    it('keeps a fractional container size, so 4:5 stays 4:5', async () => {
+        const wrapper = await mountWithImage({ preventWhiteSpace: true }, {
+            attrs: { style: 'width: 321px; height: 401.25px;' },
+        });
+
+        expect(wrapper.vm.generateDataUrl('image/jpeg', 0.9, { width: 1080 }))
+            .toBe('data:image/jpeg;width=1080;height=1350;quality=0.9');
+    });
+
+    it('counts the floating point value 799.9999999999999 as 800', async () => {
+        const wrapper = await mountWithImage();
+        const { img } = wrapper.vm.getMetadata();
+        const imgData = {
+            width: 640, height: 799.9999999999999, startX: 0, startY: 0,
+        };
+
+        expect(wrapper.vm.saving(img, imgData, 640, 800).generateDataUrl())
+            .toBe('data:image/png;width=640;height=800;quality=1');
+    });
+
+    it('ignores Infinity', async () => {
+        const wrapper = await mountWithImage();
+
+        expect(wrapper.vm.generateDataUrl('image/png', 1, { width: Infinity, maxHeight: Infinity }))
+            .toBe('data:image/png;width=600;height=450;quality=1');
+    });
+
+    it('rejects an output larger than a browser canvas', async () => {
+        const wrapper = await mountWithImage();
+
+        expect(() => wrapper.vm.generateDataUrl('image/png', 1, { width: 100000 }))
+            .toThrow(RangeError);
+        await expect(wrapper.vm.promisedBlob('image/png', 1, { height: 40000 }))
+            .rejects.toThrow('larger than 32767 pixels');
     });
 });

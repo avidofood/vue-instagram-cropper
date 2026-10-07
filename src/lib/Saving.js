@@ -6,16 +6,20 @@
      * has already calculated it in croppa
      */
 
-// The watchers compute the image size in floating point, so a height of 800 can be 799.99999.
-// Such a size counts as 800. A real fraction such as 547.6 is cut off, as in 1.x: a partly
-// covered last row would be transparent in a PNG and dark in a JPEG.
+// The watchers compute the image size in floating point, so a height of 800 can be
+// 799.9999999999999. A size within 1e-6 of a whole number counts as that number. A real fraction
+// such as 547.6 is cut off, as in 1.x: a partly covered last row would be transparent in a PNG
+// and dark in a JPEG.
 const pixelSize = (value) => {
     const rounded = Math.round(value);
     return Math.abs(value - rounded) < 1e-6 ? rounded : Math.floor(value);
 };
 
-// Only a positive number counts. Anything else leaves the option out.
-const positive = (value) => (typeof value === 'number' && value > 0 ? value : 0);
+// Only a finite positive number counts. Anything else leaves the option out.
+const positive = (value) => (Number.isFinite(value) && value > 0 ? value : 0);
+
+// The largest canvas side in Chrome and Firefox. A larger canvas stays empty.
+const MAX_CANVAS_SIDE = 32767;
 
 /**
  * The factor from the visible size to the output size. width or height sets that side. With
@@ -94,8 +98,16 @@ export default class Saving {
         const visibleHeight = Math.min(height, this.outputHeight);
         const scale = outputScale(visibleWidth, visibleHeight, options);
 
-        this.canvas.width = Math.max(1, pixelSize(visibleWidth * scale));
-        this.canvas.height = Math.max(1, pixelSize(visibleHeight * scale));
+        const outputWidth = Math.max(1, pixelSize(visibleWidth * scale));
+        const outputHeight = Math.max(1, pixelSize(visibleHeight * scale));
+        if (outputWidth > MAX_CANVAS_SIDE || outputHeight > MAX_CANVAS_SIDE) {
+            throw new RangeError(
+                `vue-instagram-cropper: the output of ${outputWidth} x ${outputHeight} pixels `
+                + `is larger than ${MAX_CANVAS_SIDE} pixels on a side. Use maxWidth and maxHeight.`,
+            );
+        }
+        this.canvas.width = outputWidth;
+        this.canvas.height = outputHeight;
 
         const { startX, startY } = this.getXYPosition();
 
