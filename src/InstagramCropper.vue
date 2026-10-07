@@ -29,9 +29,7 @@
             @mousemove.stop.prevent="$_c_handlePointerMove"
             @pointermove.stop.prevent="$_c_handlePointerMove"
             @pointerleave.stop.prevent="$_c_handlePointerLeave"
-            @DOMMouseScroll.stop="$_c_handleWheel"
             @wheel.stop="$_c_handleWheel"
-            @mousewheel.stop="$_c_handleWheel"
         />
 
         <SpinnerCircle v-if="loading" />

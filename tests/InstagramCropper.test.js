@@ -371,3 +371,17 @@ describe('installation', () => {
         expect(wrapper.findAllComponents(InstagramCropper)).toHaveLength(2);
     });
 });
+
+describe('wheel', () => {
+    // Every browser that Vue 3 supports fires wheel. The legacy events of old Firefox and
+    // Chrome versions are gone, so one turn of the wheel zooms one step.
+    it('zooms one step for each wheel event', async () => {
+        const wrapper = await mountWithImage();
+        const { scaleRatio } = wrapper.vm;
+
+        await wrapper.find('canvas').trigger('wheel', { deltaY: -100 });
+
+        expect(wrapper.vm.scaleRatio).toBeCloseTo(scaleRatio * (1 + 600 * 0.00001 * 3));
+        expect(wrapper.emitted('wheel')).toHaveLength(1);
+    });
+});
