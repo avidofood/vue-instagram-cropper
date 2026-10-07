@@ -71,6 +71,16 @@ const metadata: InstagramCropperMetadata = {
 };
 h(InstagramCropper, { src: metadata });
 
+// getMetadata() in a handler of initial-image-loaded: the watchers did not set scaleRatio yet
+const pending: InstagramCropperMetadata = {
+    img,
+    imgData: {
+        width: 600, height: 450, startX: 0, startY: 75,
+    },
+    scaleRatio: null,
+};
+h(InstagramCropper, { src: pending });
+
 // @ts-expect-error metadata needs imgData
 const incomplete: InstagramCropperMetadata = { img, scaleRatio: 1 };
 
@@ -122,5 +132,6 @@ cropper.addClipPlugin('circle');
 const global: typeof InstagramCropper = {} as GlobalComponents['InstagramCropper'];
 
 export {
+    pending,
     incomplete, hasImage, dataUrl, blob, canvas, context, file, global, instance, empty,
 };

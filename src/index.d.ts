@@ -12,12 +12,13 @@ export interface InstagramCropperImageData {
 
 /**
  * The image and its crop. getMetadata() and the update event return it. Pass it to the src prop
- * to show the image with the same crop again.
+ * to show the image with the same crop again. scaleRatio is null for a moment after a new image,
+ * for example in a handler of initial-image-loaded.
  */
 export interface InstagramCropperMetadata {
     img: HTMLImageElement;
     imgData: InstagramCropperImageData;
-    scaleRatio: number;
+    scaleRatio: number | null;
 }
 
 /**
