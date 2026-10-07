@@ -109,10 +109,17 @@ export default {
             this.$emit(...args);
         },
         remove(event = events.IMAGE_REMOVE_EVENT) {
-            if (!this.imageSet) return;
-            // The user removed the image, so an image that still loads must not show up.
-            // On a new image, $_c_onload() calls remove() itself during the current load.
-            if (event === events.IMAGE_REMOVE_EVENT) this.$_c_startLoad();
+            // On a new image, $_c_onload() calls remove() itself during the current load
+            const byUser = event === events.IMAGE_REMOVE_EVENT;
+            // An image that still loads, or a src that waits for the debounce, must not
+            // show up after the user removed the image
+            if (byUser) this.$_c_cancelLoad();
+
+            if (!this.imageSet) {
+                // The first image was still loading
+                if (byUser) this.$_c_setPlaceholders();
+                return;
+            }
             this.$_c_setPlaceholders();
 
             const hadImage = this.img != null;
@@ -184,7 +191,10 @@ export default {
             return this.chosenFile || this.$refs.fileInput.files[0];
         },
         refresh() {
-            this.$nextTick(this.$_c_initialize);
+            this.$nextTick(() => {
+                // The component can unmount before the next tick
+                if (!this.$.isUnmounted) this.$_c_initialize();
+            });
         },
         saving(img, imgData, outputWidth, outputHeight) {
             return new Saving(img, imgData, outputWidth, outputHeight);

@@ -7,20 +7,14 @@ export default {
     created() {
         // Every cropper needs its own timers. A debounced function in the methods
         // would share one timer between all croppers on the page.
-        /**
-         * Set's image via the src-prop.
-         * Image can be an URL or an object.
-         * We need to debounce, so that the next image
-         * is rendered correctly
-         */
-        this.$_c_setImage = debounce(this.$_c_setImageNow, 30);
+        this.$_c_setImageLater = debounce(this.$_c_setImageNow, 30);
         this.$_c_updateVModel = debounce(this.$_c_emitUpdate, 20);
         // Every image load gets a number. A newer load makes an older one stale, so a slow
         // image or file cannot replace the image that the user chose after it.
         this.$_c_loadId = 0;
     },
     beforeUnmount() {
-        this.$_c_setImage.cancel();
+        this.$_c_setImageLater.cancel();
         this.$_c_updateVModel.cancel();
     },
     methods: {
@@ -32,8 +26,25 @@ export default {
         $_c_isCurrentLoad(loadId) {
             return loadId === this.$_c_loadId && !this.$.isUnmounted;
         },
-        $_c_setImageNow(initial = false) {
-            const loadId = this.$_c_startLoad();
+        // Stops every load, also a src that waits for the debounce, and ends the loading state
+        $_c_cancelLoad() {
+            this.$_c_startLoad();
+            this.$_c_setImageLater.cancel();
+            this.loading = false;
+        },
+        /**
+         * Set's image via the src-prop.
+         * Image can be an URL or an object.
+         * We need to debounce, so that the next image
+         * is rendered correctly.
+         * The new src makes older loads stale right away, not only after the debounce.
+         */
+        $_c_setImage(initial = false) {
+            this.$_c_setImageLater(initial, this.$_c_startLoad());
+        },
+        $_c_setImageNow(initial, loadId) {
+            // remove(), a chosen file or a newer src came after this src
+            if (!this.$_c_isCurrentLoad(loadId)) return;
 
             if (typeof this.src === 'string') {
                 this.$_c_setImageViaUrl(initial, loadId);
@@ -45,6 +56,8 @@ export default {
                 return;
             }
 
+            // A replacement image can still be loading
+            this.loading = false;
             this.$_c_setPlaceholders();
             this.$_c_reset_values();
         },
@@ -97,6 +110,8 @@ export default {
             this.naturalHeight = img.naturalHeight;
             this.naturalWidth = img.naturalWidth;
 
+            // The watchers only draw when a number changes
+            const imageChanged = img !== this.img;
             this.imageSet = true;
 
             // With preventWhiteSpace, a crop that does not fill the canvas, for example a crop
@@ -125,9 +140,9 @@ export default {
                 this.skipScaleRatio = false;
 
                 this.$_c_checkBounceness();
-                // The watchers only draw when a number changes. Another image with the same
-                // size and crop needs this draw.
-                this.$_c_draw();
+                // Another image with the same size and crop needs this draw. The same image
+                // must not draw again: a parent that writes update back to src would loop.
+                if (imageChanged) this.$_c_draw();
 
                 if (initial) {
                     this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT);

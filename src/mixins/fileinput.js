@@ -25,6 +25,7 @@ export default {
                 return;
             }
 
+            // The file replaces an image that still loads and a src that waits for the debounce
             const loadId = this.$_c_startLoad();
             const fr = new FileReader();
             fr.onload = (e) => {

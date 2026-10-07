@@ -1,8 +1,11 @@
 import { nextTick } from 'vue';
+import { mount } from '@vue/test-utils';
 import {
     describe, expect, it, vi,
 } from 'vitest';
+import InstagramCropper from '../src/index';
 import {
+    callsOf,
     chooseFile,
     collectErrors,
     imageFile,
@@ -383,5 +386,135 @@ describe('metadata with preventWhiteSpace', () => {
         await sleep(50);
 
         expect(wrapper.vm.getMetadata().imgData).toEqual(imgData);
+    });
+});
+
+describe('a parent that writes update back to src', () => {
+    // <InstagramCropper :src="crop" @update="crop = $event" /> settled in 1.x
+    it('settles and stops emitting update', async () => {
+        const Parent = {
+            components: { InstagramCropper },
+            data: () => ({ crop: landscapeUrl, updates: 0 }),
+            template: `<InstagramCropper
+                style="width: 300px; height: 300px;"
+                :src="crop"
+                @update="crop = $event; updates += 1"
+            />`,
+        };
+        const wrapper = mount(Parent, { attachTo: document.body });
+        await vi.waitFor(() => expect(wrapper.vm.updates).toBeGreaterThan(0));
+        await sleep(200);
+        const { updates } = wrapper.vm;
+
+        await sleep(300);
+
+        expect(wrapper.vm.updates).toBe(updates);
+        expect(updates).toBeLessThanOrEqual(3);
+    });
+});
+
+describe('changes during the 30ms before a new src loads', () => {
+    it('ignores the old image when it finishes in that time', async () => {
+        vi.useFakeTimers();
+        try {
+            const slowUrl = 'https://example.com/old-800x600-delay-20.jpg';
+            const wrapper = mountCropper({ src: slowUrl });
+            await vi.advanceTimersByTimeAsync(31);
+
+            // The old image finishes 20ms later, before the new src starts to load
+            const newUrl = 'https://example.com/new-600x800-delay-100.jpg';
+            await wrapper.setProps({ src: newUrl });
+            await vi.advanceTimersByTimeAsync(300);
+
+            const drawn = callsOf(wrapper, 'drawImage').map((call) => call[1].src);
+            expect(drawn).not.toContain(slowUrl);
+            expect(drawn.at(-1)).toBe(newUrl);
+            expect(wrapper.emitted('new-image-drawn')).toHaveLength(1);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it('remove() wins over a src that did not load yet', async () => {
+        const wrapper = await mountWithImage();
+
+        await wrapper.setProps({ src: portraitUrl });
+        wrapper.vm.remove();
+        await sleep(100);
+
+        expect(wrapper.vm.hasImage()).toBe(false);
+        expect(lastDrawnImage(wrapper)[1].src).toBe(landscapeUrl);
+    });
+
+    it('a chosen file wins over a src that did not load yet', async () => {
+        const wrapper = await mountWithImage();
+
+        await wrapper.setProps({ src: portraitUrl });
+        await chooseFile(wrapper, imageFile());
+        await waitForEvent(wrapper, 'new-image-drawn', 2);
+        await sleep(100);
+
+        expect(wrapper.vm.getMetadata().img.src).toMatch(/^data:image\/jpeg;base64,/);
+    });
+});
+
+describe('remove() while an image loads', () => {
+    it('stops the first image from showing up', async () => {
+        const slowUrl = 'https://example.com/first-800x600-delay-100.jpg';
+        const wrapper = mountCropper({ src: slowUrl });
+        await waitForEvent(wrapper, 'loading-start');
+
+        wrapper.vm.remove();
+        await sleep(200);
+
+        expect(wrapper.vm.hasImage()).toBe(false);
+        expect(callsOf(wrapper, 'drawImage')).toHaveLength(0);
+        expect(wrapper.vm.loading).toBe(false);
+        expect(wrapper.emitted('loading-end')).toHaveLength(1);
+    });
+
+    it('ends the loading state of a replacement', async () => {
+        const wrapper = await mountWithImage();
+        await wrapper.setProps({ src: 'https://example.com/next-600x800-delay-100.jpg' });
+        await waitForEvent(wrapper, 'loading-start', 2);
+
+        wrapper.vm.remove();
+        await sleep(200);
+
+        expect(wrapper.vm.loading).toBe(false);
+        expect(wrapper.emitted('loading-end')).toHaveLength(2);
+        expect(wrapper.find('.cropper-spinner').exists()).toBe(false);
+    });
+
+    it('src null ends the loading state too', async () => {
+        const wrapper = await mountWithImage();
+        await wrapper.setProps({ src: 'https://example.com/next-600x800-delay-100.jpg' });
+        await waitForEvent(wrapper, 'loading-start', 2);
+
+        await wrapper.setProps({ src: null });
+        await sleep(200);
+
+        expect(wrapper.vm.hasImage()).toBe(false);
+        expect(wrapper.vm.loading).toBe(false);
+        expect(wrapper.find('.cropper-spinner').exists()).toBe(false);
+    });
+});
+
+describe('refresh() and unmount', () => {
+    it('does not start again after the unmount', async () => {
+        const rejections = [];
+        const onRejection = (reason) => rejections.push(reason);
+        process.on('unhandledRejection', onRejection);
+        try {
+            const wrapper = await mountWithImage();
+
+            wrapper.vm.refresh();
+            wrapper.unmount();
+            await sleep(50);
+
+            expect(rejections).toEqual([]);
+        } finally {
+            process.off('unhandledRejection', onRejection);
+        }
     });
 });
