@@ -357,7 +357,7 @@ Version 2.0 is for Vue 3. The props, the events and the methods have the same na
 
 ## Development
 
-You need Node.js 22.12 or newer (see `.nvmrc`).
+You need Node.js 22.22.2 or newer in version 22, or 24.15.0 or newer in version 24 (see `.nvmrc`). jsdom 30 needs these versions for the tests.
 
 ```bash
 npm install
