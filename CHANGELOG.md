@@ -15,6 +15,7 @@ Version 2.0 is for Vue 3. The props, the events and the methods keep their names
 - The component no longer listens to and emits `DOMMouseScroll` and `mousewheel`. Use `wheel`.
 - If there is no image, `promisedBlob()` resolves with `null`, as the README says. In 1.x, the promise was rejected.
 - The package contains only `dist/`. The file names in `dist/` changed. Import from `vue-instagram-cropper`. Imports from `vue-instagram-cropper/src/...` or `vue-instagram-cropper/dist/index.common.js` no longer work.
+- The UMD build, for example from unpkg, sets the global variable `VueInstagramCropper`. In 1.x, it was `index`.
 - The polyfills for `requestAnimationFrame` and `canvas.toBlob()` are gone. Every browser that Vue 3 supports has both. The 1.x polyfill also replaced `Array.isArray` on the whole page.
 
 ### Added
@@ -26,7 +27,9 @@ Version 2.0 is for Vue 3. The props, the events and the methods keep their names
 - Several croppers on one page work independently. In 1.x, all croppers shared one state object, so they shared their image.
 - Several croppers that mount at the same time load their own images. In 1.x, they shared one timer, and only the last cropper loaded its image.
 - After a drag, the component removes its listeners from the document. In 1.x, they stayed, and the component emitted `mouseup` and similar events for clicks anywhere on the page.
-- On unmount, the component removes all listeners and cancels a pending image load. In 1.x, a load after the unmount threw a `TypeError`.
+- On unmount, the component removes all listeners and ignores an image or a file that finishes loading later. In 1.x, such a load threw a `TypeError`.
+- A slow image or file can no longer replace a newer one. In 1.x, an image that the user replaced showed up after its load finished.
+- Metadata of another image with the same size and crop draws the new image. In 1.x, the old image stayed on the canvas.
 - `forceCacheBreak` works with a relative URL such as `/images/photo.jpg`. In 1.x, it threw a `TypeError`. A data URL or blob URL stays as it is. In 1.x, the added parameter broke it.
 - While a file is over the cropper, the container gets the class `cropper--dropzone`. The styles existed in 1.x, but the class was never set.
 - With `preventWhiteSpace`, zooming out at the smallest size no longer moves the image sideways and emits no `zoom` event.

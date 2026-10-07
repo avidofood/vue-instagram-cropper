@@ -162,7 +162,7 @@ Photos from a phone often contain an EXIF orientation. Browsers turn these image
 - `draw`: The component drew the view again. The event carries the canvas context.
 - `loading-start`: The image starts to load.
 - `loading-end`: The image finished loading.
-- `update`: The component drew a new view. The event carries the metadata, see `getMetadata()`.
+- `update`: The component drew a new view. The event carries the metadata, see `getMetadata()`. Right after `remove()`, the metadata can have no image (`img` is `null`).
 - `input`: The component removed the image. The value is `null`.
 
 The component also emits native events of the canvas again. These are `click`, `dblclick`, `mousedown`, `mouseup`, `mousemove` and `wheel`. These are `touchstart`, `touchend`, `touchcancel` and `touchmove`. These are `pointercancel`, `pointermove` and `pointerleave`. For the drag and drop of a file, it emits `dragenter`, `dragleave`, `dragover` and `drop` of the container.
@@ -252,7 +252,7 @@ Version 2.0 is for Vue 3. The props, the events and the methods have the same na
 5. The component no longer listens to and emits the legacy events `DOMMouseScroll` and `mousewheel`. Use `wheel`.
 6. If there is no image, `promisedBlob()` resolves with `null`. In 1.x, the promise was rejected.
 7. With `preventWhiteSpace`, zooming out at the smallest size emits no `zoom` event and does not move the image.
-8. The package contains only the build in `dist/`. Import from `vue-instagram-cropper`. Imports such as `vue-instagram-cropper/src/...` or `vue-instagram-cropper/dist/index.common.js` no longer work.
+8. The package contains only the build in `dist/`. Import from `vue-instagram-cropper`. Imports such as `vue-instagram-cropper/src/...` or `vue-instagram-cropper/dist/index.common.js` no longer work. The UMD build sets the global variable `VueInstagramCropper` instead of `index`.
 9. The package no longer adds polyfills for `requestAnimationFrame` and `canvas.toBlob()`. Every browser that Vue 3 supports has both. The 1.x polyfill also replaced `Array.isArray` on the whole page.
 10. The package has no runtime dependencies. `canvas-exif-orientation` is gone.
 
