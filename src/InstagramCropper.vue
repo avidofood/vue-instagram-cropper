@@ -202,19 +202,19 @@ export default {
         saving(img, imgData, outputWidth, outputHeight) {
             return new Saving(img, imgData, outputWidth, outputHeight);
         },
-        generateDataUrl(type, compressionRate) {
+        generateDataUrl(type, compressionRate, options) {
             if (!this.hasImage()) return '';
 
             return this.saving(this.img, this.imgData, this.outputWidth, this.outputHeight)
-                .generateDataUrl(type, compressionRate);
+                .generateDataUrl(type, compressionRate, options);
         },
-        generateBlob(callback, mimeType, qualityArgument) {
+        generateBlob(callback, mimeType, qualityArgument, options) {
             if (!this.hasImage()) {
                 callback(null);
                 return;
             }
             this.saving(this.img, this.imgData, this.outputWidth, this.outputHeight)
-                .generateBlob(callback, mimeType, qualityArgument);
+                .generateBlob(callback, mimeType, qualityArgument, options);
         },
         promisedBlob(...args) {
             if (!this.hasImage()) return Promise.resolve(null);

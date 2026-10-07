@@ -20,7 +20,8 @@ Version 2.0 is for Vue 3. The props, the events and the methods keep their names
 
 ### Added
 
-- The cropper follows the size of its container with a `ResizeObserver`. In 1.x, it measured the container only on a window resize. A container that was hidden at first, for example with `v-show`, got a canvas of 20 x 20 pixels, because the size `100%` was read as 10 pixels. Now the image is placed when the container shows up.
+- The cropper follows the size of its container with a `ResizeObserver`. In 1.x, it measured the container only on a window resize. In 1.x, a container that was hidden at first got a canvas of 20 x 20 pixels. An example is `v-show`: the size `100%` was read as 10 pixels. Now the component places the image as soon as the container shows up.
+- An optional last argument of `generateDataUrl()`, `generateBlob()`, `promisedBlob()` and `saving()` sets the output size: `width`, `height`, `maxWidth` and `maxHeight`. Without it, the output has the visible size in canvas pixels, as in 1.x.
 - TypeScript types for the props, the metadata, the events, the methods and the plugin. The types also register `InstagramCropper` as a global component for template type checks. See [#6](https://github.com/avidofood/vue-instagram-cropper/issues/6).
 
 ### Fixed

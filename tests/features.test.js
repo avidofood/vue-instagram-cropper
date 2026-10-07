@@ -79,3 +79,82 @@ describe('container size', () => {
         }
     });
 });
+
+describe('output size', () => {
+    // The visible image is 600 x 450 canvas pixels: landscapeUrl in a 300 x 300 container
+    it.each([
+        [{ width: 1080 }, 'width=1080;height=810'],
+        [{ height: 900 }, 'width=1200;height=900'],
+        [{ width: 1080, height: 1080 }, 'width=1080;height=810'],
+        [{ maxWidth: 300 }, 'width=300;height=225'],
+        [{ width: 2000, maxWidth: 1600 }, 'width=1600;height=1200'],
+        [{ maxWidth: 1000, maxHeight: 300 }, 'width=400;height=300'],
+        [{ width: -5, height: Number.NaN }, 'width=600;height=450'],
+        [{}, 'width=600;height=450'],
+    ])('generateDataUrl() with %j', async (options, size) => {
+        const wrapper = await mountWithImage();
+
+        expect(wrapper.vm.generateDataUrl('image/jpeg', 0.9, options))
+            .toBe(`data:image/jpeg;${size};quality=0.9`);
+    });
+
+    it('draws the image scaled to the output size', async () => {
+        const wrapper = await mountWithImage();
+        wrapper.vm.zoom(true, 20);
+        await sleep(50);
+        const contexts = [];
+        const { getContext } = HTMLCanvasElement.prototype;
+        HTMLCanvasElement.prototype.getContext = function spy(...args) {
+            const context = getContext.apply(this, args);
+            contexts.push(context);
+            return context;
+        };
+        try {
+            const { imgData } = wrapper.vm.getMetadata();
+            wrapper.vm.generateDataUrl('image/png', 1, { width: 1200 });
+
+            const scale = 1200 / Math.min(imgData.width, 600);
+            const draw = contexts.at(-1).calls.find((call) => call[0] === 'drawImage');
+            expect(draw.slice(2)).toEqual([
+                Math.min(imgData.startX, 0) * scale,
+                Math.min(imgData.startY, 0) * scale,
+                imgData.width * scale,
+                imgData.height * scale,
+            ]);
+        } finally {
+            HTMLCanvasElement.prototype.getContext = getContext;
+        }
+    });
+
+    it('generateBlob() and promisedBlob() take the options', async () => {
+        const wrapper = await mountWithImage();
+
+        const blob = await wrapper.vm.promisedBlob('image/jpeg', 0.8, { width: 1080 });
+        const viaCallback = await new Promise((resolve) => {
+            wrapper.vm.generateBlob(resolve, 'image/webp', 0.7, { maxHeight: 225 });
+        });
+
+        expect([blob.width, blob.height, blob.type]).toEqual([1080, 810, 'image/jpeg']);
+        expect([viaCallback.width, viaCallback.height]).toEqual([300, 225]);
+    });
+
+    it('saving() takes the options', async () => {
+        const wrapper = await mountWithImage();
+        const { img } = wrapper.vm.getMetadata();
+        const imgData = {
+            width: 1200, height: 900, startX: -300, startY: -150,
+        };
+
+        const blob = await wrapper.vm
+            .saving(img, imgData, wrapper.vm.outputWidth, wrapper.vm.outputHeight)
+            .promisedBlob('image/jpeg', 0.8, { width: 1080 });
+
+        expect([blob.width, blob.height]).toEqual([1080, 1080]);
+    });
+
+    it('promisedBlob() resolves with null without an image, also with options', async () => {
+        const wrapper = await mountEmpty();
+
+        await expect(wrapper.vm.promisedBlob('image/png', 1, { width: 1080 })).resolves.toBeNull();
+    });
+});

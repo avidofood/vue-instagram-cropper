@@ -200,14 +200,15 @@ const save = async () => {
 - `remove()`: Removes the image and shows the placeholder.
 - `move({ x: number, y: number })`: Moves the image by `x` and `y` canvas pixels.
 - `zoom( zoomIn: boolean, acceleration: number )`: Zooms in or out by one step. `zoomIn` defaults to `true`, `acceleration` to 1.
-- `generateDataUrl( type: string, compressionRate: number )`: 
+- `generateDataUrl( type: string, compressionRate: number, options: object )`: 
    - Returns a data-URL containing a representation of the image in the format specified by the type parameter (defaults to png).
    - `compressionRate` defaults to 1, you can pass a number between 0 and 1 to get a compressed output image.
+   - `options` sets the output size, see [Output size](#output-size).
    - If there is no image, it returns an empty string.
-- `generateBlob( callback: function, mimeType: string, compressionRate: number )`: 
+- `generateBlob( callback: function, mimeType: string, compressionRate: number, options: object )`: 
    - Creates a Blob object representing the image contained in the canvas.
    - If there is no image, the first argument of callback function is null.
-- `promisedBlob( mimeType: string, compressionRate: number )`: 
+- `promisedBlob( mimeType: string, compressionRate: number, options: object )`: 
    - Returns a Promise around `generateBlob()`. With it, you can use async/await instead of a callback.
    - If there is no image, the promise resolves with `null`.
 - `getMetadata()`: Returns an object with the image, its position and its scale. Pass it to `src` to show the image with the same crop again, for example in a list of images.
@@ -216,6 +217,24 @@ const save = async () => {
 ```javascript
 const blob = await this.$refs.cropper.promisedBlob()
 ``` 
+
+### Output size
+
+Without options, the output has the size of the visible image in canvas pixels: the container size times `quality`. The last argument of `generateDataUrl()`, `generateBlob()`, `promisedBlob()` and of the object from `saving()` sets another size:
+
+- `width` or `height`: that side gets this size. The other side keeps the aspect ratio.
+- `width` and `height`: the output fits into this box.
+- `maxWidth` and `maxHeight`: a larger output gets smaller. These options never make the output larger.
+
+```javascript
+// Always 1080 pixels wide, for example for Instagram
+const blob = await this.$refs.cropper.promisedBlob('image/jpeg', 0.9, { width: 1080 });
+
+// At most 2048 pixels on each side
+const url = this.$refs.cropper.generateDataUrl('image/png', 1, { maxWidth: 2048, maxHeight: 2048 });
+```
+
+A size larger than the original image makes the output blurry. Very large canvases can fail in some browsers, for example on iOS. Use `maxWidth` and `maxHeight` to stay below that.
 
 - `addClipPlugin(func)`: Add clip plugin to clip the image. Example:
 

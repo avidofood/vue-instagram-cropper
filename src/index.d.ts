@@ -43,15 +43,36 @@ export type InstagramCropperClipPlugin = (
     height: number,
 ) => void;
 
+/**
+ * The size of the output. Without options, the output has the visible size in canvas pixels.
+ * width or height sets that side, and the other side keeps the aspect ratio. With both, the
+ * output fits into width x height. maxWidth and maxHeight only make the output smaller.
+ */
+export interface InstagramCropperOutputOptions {
+    width?: number;
+    height?: number;
+    maxWidth?: number;
+    maxHeight?: number;
+}
+
 /** Creates the output for an image and a crop. saving() returns it. */
 export interface InstagramCropperSaving {
-    generateDataUrl(type?: string, compressionRate?: number): string;
+    generateDataUrl(
+        type?: string,
+        compressionRate?: number,
+        options?: InstagramCropperOutputOptions,
+    ): string;
     generateBlob(
         callback: (blob: Blob | null) => void,
         mimeType?: string,
         compressionRate?: number,
+        options?: InstagramCropperOutputOptions,
     ): void;
-    promisedBlob(mimeType?: string, compressionRate?: number): Promise<Blob | null>;
+    promisedBlob(
+        mimeType?: string,
+        compressionRate?: number,
+        options?: InstagramCropperOutputOptions,
+    ): Promise<Blob | null>;
 }
 
 export interface InstagramCropperProps {
@@ -96,15 +117,24 @@ export type InstagramCropperMethods = {
     /** Zooms in or out by one step. Default: zoomIn true, acceleration 1. */
     zoom(zoomIn?: boolean, acceleration?: number): void;
     /** Returns an empty string without an image. Default type: 'image/png'. */
-    generateDataUrl(type?: string, compressionRate?: number): string;
+    generateDataUrl(
+        type?: string,
+        compressionRate?: number,
+        options?: InstagramCropperOutputOptions,
+    ): string;
     /** Calls the callback with null without an image. */
     generateBlob(
         callback: (blob: Blob | null) => void,
         mimeType?: string,
         compressionRate?: number,
+        options?: InstagramCropperOutputOptions,
     ): void;
     /** Resolves with null without an image. */
-    promisedBlob(mimeType?: string, compressionRate?: number): Promise<Blob | null>;
+    promisedBlob(
+        mimeType?: string,
+        compressionRate?: number,
+        options?: InstagramCropperOutputOptions,
+    ): Promise<Blob | null>;
     getMetadata(): InstagramCropperMetadata | InstagramCropperEmptyMetadata;
     /** Clips the image. Works only with preventWhiteSpace. */
     addClipPlugin(plugin: InstagramCropperClipPlugin): void;

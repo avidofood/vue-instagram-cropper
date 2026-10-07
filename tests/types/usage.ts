@@ -7,6 +7,7 @@ import InstagramCropper, {
     type InstagramCropperEmptyMetadata,
     type InstagramCropperInstance,
     type InstagramCropperMetadata,
+    type InstagramCropperOutputOptions,
     type InstagramCropperProps,
 } from '../../src/index';
 
@@ -98,6 +99,14 @@ const hasImage: boolean = cropper.hasImage();
 const dataUrl: string = cropper.generateDataUrl('image/jpeg', 0.8);
 const blob: Promise<Blob | null> = cropper.promisedBlob('image/jpeg', 0.8);
 cropper.generateBlob((result: Blob | null) => result, 'image/png');
+
+// A fixed output size, for example 1080 pixels wide for Instagram
+const output: InstagramCropperOutputOptions = { width: 1080, maxHeight: 1350 };
+const sized: Promise<Blob | null> = cropper.promisedBlob('image/jpeg', 0.9, output);
+cropper.generateBlob(() => {}, 'image/jpeg', 0.9, { maxWidth: 2048 });
+const sizedUrl: string = cropper.generateDataUrl('image/png', 1, { height: 600 });
+// @ts-expect-error width is a number
+cropper.promisedBlob('image/jpeg', 0.9, { width: '1080px' });
 cropper.chooseFile();
 cropper.refresh();
 cropper.remove();
@@ -132,6 +141,8 @@ cropper.addClipPlugin('circle');
 const global: typeof InstagramCropper = {} as GlobalComponents['InstagramCropper'];
 
 export {
+    sized,
+    sizedUrl,
     pending,
     incomplete, hasImage, dataUrl, blob, canvas, context, file, global, instance, empty,
 };
