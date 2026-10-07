@@ -1,8 +1,22 @@
+import * as Settings from '../../core/const';
+
 /**
  * Adds a rule of third grid
  */
 export default {
+    beforeUnmount() {
+        clearTimeout(this.$_c_zoomGridTimer);
+    },
     methods: {
+        // Shows the grid now and hides it when the user stops zooming
+        $_c_showZoomGrid() {
+            this.zooming = true;
+            clearTimeout(this.$_c_zoomGridTimer);
+            this.$_c_zoomGridTimer = setTimeout(() => {
+                this.zooming = false;
+                this.$_c_draw();
+            }, Settings.ZOOM_GRID_DURATION);
+        },
         $_c_drawRuleOfThirdGrid() {
             const wi = this.$_c_ROTWidth();
             const hi = this.$_c_ROTHeight();

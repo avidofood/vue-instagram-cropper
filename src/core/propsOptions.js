@@ -39,4 +39,9 @@ export default {
         type: Boolean,
         default: false,
     },
+    // The rule-of-thirds grid while the user moves or zooms the image
+    showGrid: {
+        type: Boolean,
+        default: true,
+    },
 };

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
     callsOf,
+    collectErrors,
     landscapeUrl,
     lastDrawnImage,
     mountCropper,
@@ -156,5 +157,60 @@ describe('output size', () => {
         const wrapper = await mountEmpty();
 
         await expect(wrapper.vm.promisedBlob('image/png', 1, { width: 1080 })).resolves.toBeNull();
+    });
+});
+
+// The rule-of-thirds grid has four lines, each line is one stroke()
+const strokesAfterLastImage = (wrapper) => {
+    const { calls } = wrapper.find('canvas').element.getContext('2d');
+    const last = calls.map((call) => call[0]).lastIndexOf('drawImage');
+    return calls.slice(last).filter((call) => call[0] === 'stroke').length;
+};
+
+describe('grid', () => {
+    it('shows the grid while the user zooms and hides it after a moment', async () => {
+        const wrapper = await mountWithImage();
+
+        await wrapper.find('canvas').trigger('wheel', { deltaY: -100 });
+        await waitForEvent(wrapper, 'zoom');
+        await sleep(50);
+        expect(strokesAfterLastImage(wrapper)).toBe(4);
+
+        await sleep(600);
+        expect(strokesAfterLastImage(wrapper)).toBe(0);
+    });
+
+    it('shows the grid while the user drags', async () => {
+        const wrapper = await mountWithImage();
+        const canvas = wrapper.find('canvas');
+
+        await canvas.trigger('mousedown', { clientX: 100, clientY: 100 });
+        await canvas.trigger('mousemove', { clientX: 110, clientY: 100 });
+        await sleep(50);
+
+        expect(strokesAfterLastImage(wrapper)).toBe(4);
+    });
+
+    it('showGrid false hides the grid', async () => {
+        const wrapper = await mountWithImage({ showGrid: false });
+        const canvas = wrapper.find('canvas');
+
+        await canvas.trigger('mousedown', { clientX: 100, clientY: 100 });
+        await canvas.trigger('mousemove', { clientX: 110, clientY: 100 });
+        await canvas.trigger('wheel', { deltaY: -100 });
+        await sleep(50);
+
+        expect(callsOf(wrapper, 'stroke')).toHaveLength(0);
+    });
+
+    it('stops the grid timer on unmount', async () => {
+        const errors = collectErrors();
+        const wrapper = await mountWithImage();
+        await wrapper.find('canvas').trigger('wheel', { deltaY: -100 });
+
+        wrapper.unmount();
+        await sleep(600);
+
+        expect(errors).toEqual([]);
     });
 });

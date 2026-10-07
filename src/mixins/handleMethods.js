@@ -129,7 +129,7 @@ export default {
             if (!this.hasImage()) return;
 
             evt.preventDefault();
-            this.scrolling = true;
+            this.$_c_showZoomGrid();
 
             if (evt.wheelDelta < 0 || evt.deltaY > 0 || evt.detail > 0) {
                 this.zoom(false);
@@ -139,7 +139,6 @@ export default {
 
             this.$nextTick(() => {
                 this.$_c_handleZoomWheel();
-                this.scrolling = false;
             });
         },
 

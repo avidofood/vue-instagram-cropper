@@ -11,6 +11,9 @@ export const DEFAULT_PLACEHOLDER_TAKEUP = 2 / 3;
 // The amount of times by which the pinching is more sensitive than the scolling
 export const PINCH_ACCELERATION = 2;
 
+// How long the grid stays visible after the last zoom step, in milliseconds
+export const ZOOM_GRID_DURATION = 500;
+
 // Specifies how fast the zoom is reacting to scroll gestures. Default to level 3.
 export const ZOOM_SPEED = 3;
 

@@ -60,7 +60,7 @@ export default {
                 if (this.img !== img) return;
             }
 
-            if (this.dragging || this.pinching || this.scrolling) {
+            if (this.showGrid && (this.dragging || this.pinching || this.zooming)) {
                 this.$_c_drawRuleOfThirdGrid();
             }
 

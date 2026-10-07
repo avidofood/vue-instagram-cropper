@@ -141,6 +141,10 @@ If you still have CORS issues, set it to `true`. The browser then does not cache
 
 Keeps the canvas filled with the image while the user moves or zooms it.
 
+- `showGrid` (default: `true`)
+
+Shows the rule-of-thirds grid while the user moves or zooms the image, as in Instagram.
+
 ### Image orientation
 
 Photos from a phone often contain an EXIF orientation. Browsers turn these images correctly by themselves since 2020 (Chrome 81, Firefox 77, Safari 13.1). Version 2.0 draws the image as the browser shows it.
@@ -314,7 +318,6 @@ On npmjs.com, the trusted publisher of the package points to this repository, th
 
 I have only limited time to develop this package further. Your help to improve it step by step means a lot to me. Here is a small list of what is still missing:
 
-- The grid shows only while the user moves the image. It also needs to show while the user zooms.
 - The maximum zoom limit is not the same as in Instagram
 - We need the prop `forceAspect`. With it, you can "clip" the image to a specific aspect ratio. [vue-cropgram](https://github.com/avidofood/vue-cropgram) needs it for multiple images.
  

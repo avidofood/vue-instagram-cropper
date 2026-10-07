@@ -94,6 +94,8 @@ export interface InstagramCropperProps {
     forceCacheBreak?: boolean;
     /** Keeps the canvas filled when the user moves or zooms the image. Default: false. */
     preventWhiteSpace?: boolean;
+    /** Shows the rule-of-thirds grid while the user moves or zooms the image. Default: true. */
+    showGrid?: boolean;
 }
 
 /**
@@ -158,6 +160,7 @@ export type InstagramCropperInstance = InstagramCropperMethods & {
     readonly fileSizeLimit: number;
     readonly forceCacheBreak: boolean;
     readonly preventWhiteSpace: boolean;
+    readonly showGrid: boolean;
     /** Width of the canvas in canvas pixels: the width of the container times quality. */
     readonly outputWidth: number;
     /** Height of the canvas in canvas pixels: the height of the container times quality. */
@@ -225,6 +228,7 @@ type InstagramCropperPropOptions = {
     fileSizeLimit: { type: PropType<number>; default: number };
     forceCacheBreak: { type: PropType<boolean>; default: boolean };
     preventWhiteSpace: { type: PropType<boolean>; default: boolean };
+    showGrid: { type: PropType<boolean>; default: boolean };
 };
 
 declare const InstagramCropper: DefineComponent<

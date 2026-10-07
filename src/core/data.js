@@ -39,7 +39,8 @@ export default () => ({
     lastMovingCoord: null,
     pinchDistance: 0,
     currentPointerCoord: null,
-    scrolling: false,
+    // true for a moment after the last zoom step, so the grid shows while the user zooms
+    zooming: false,
     fileDraggedOver: false,
 
     // used in fileinput.js for the input field

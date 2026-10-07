@@ -24,6 +24,7 @@ const props: InstagramCropperProps = {
     fileSizeLimit: 1024 * 1024,
     forceCacheBreak: true,
     preventWhiteSpace: true,
+    showGrid: false,
 };
 
 h(InstagramCropper, {
