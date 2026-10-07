@@ -36,7 +36,7 @@ Version 2.0 is for Vue 3. The props, the events and the methods keep their names
 - `remove()` in a `mouseup` or `touchend` handler during a drag ends the drag. In 1.x, the next image followed the mouse without a pressed button.
 - `remove()` in an event handler during a load or a draw removes the image. Examples are `file-choose`, `image-remove-onload`, `file-loaded`, `initial-image-loaded` and the first `draw`. In 1.x, the image showed up anyway.
 - Metadata of another image with the same size and crop draws the new image. In 1.x, the old image stayed on the canvas.
-- `forceCacheBreak` works with a relative URL such as `/images/photo.jpg`. In 1.x, it threw a `TypeError`. A data URL or blob URL stays as it is. In 1.x, the added parameter broke it.
+- `forceCacheBreak` works with a relative URL such as `/images/photo.jpg`, also on a page with a `<base>` element. In 1.x, it threw a `TypeError`. A data URL or blob URL stays as it is. In 1.x, the added parameter broke it.
 - While a file is over the cropper, the container gets the class `cropper--dropzone`. The styles existed in 1.x, but the class was never set.
 - With `preventWhiteSpace`, zooming out at the smallest size no longer moves the image sideways and emits no `zoom` event.
 

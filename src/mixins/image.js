@@ -72,8 +72,9 @@ export default {
 
             // A data or blob URL has no cache, and a parameter would break it
             if (this.forceCacheBreak && href && !isLocal) {
-                // The base is needed for a relative URL such as /images/photo.jpg
-                const src = new URL(href, window.location.href);
+                // A relative URL such as images/photo.jpg needs a base. The browser resolves
+                // src against document.baseURI, which a <base> element can set.
+                const src = new URL(href, document.baseURI);
                 src.searchParams.append('cors', Date.now());
                 href = src.href;
             }

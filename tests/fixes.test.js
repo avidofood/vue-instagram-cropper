@@ -138,6 +138,26 @@ describe('forceCacheBreak', () => {
         expect(url.searchParams.get('cors')).toMatch(/^\d+$/);
     });
 
+    // The browser resolves a relative src against document.baseURI, which a <base> element sets
+    it('resolves a relative URL against the <base> element like the browser', async () => {
+        const base = document.createElement('base');
+        base.href = 'https://cdn.example.com/assets/';
+        document.head.appendChild(base);
+        try {
+            const plain = mountCropper({ src: 'images/photo-800x600.jpg' });
+            const broken = mountCropper({ src: 'images/photo-800x600.jpg', forceCacheBreak: true });
+            await waitForEvent(plain, 'new-image-drawn');
+            await waitForEvent(broken, 'new-image-drawn');
+
+            const url = new URL(lastDrawnImage(broken)[1].src);
+            expect(lastDrawnImage(plain)[1].src).toBe('https://cdn.example.com/assets/images/photo-800x600.jpg');
+            expect(`${url.origin}${url.pathname}`).toBe('https://cdn.example.com/assets/images/photo-800x600.jpg');
+            expect(url.searchParams.get('cors')).toMatch(/^\d+$/);
+        } finally {
+            base.remove();
+        }
+    });
+
     it('keeps a data URL', async () => {
         const dataUrl = 'data:image/png;base64,iVBORw0KGgo=';
         const wrapper = mountCropper({ src: dataUrl, forceCacheBreak: true });
