@@ -33,9 +33,20 @@ export default {
                 : this.imgData.width;
             return visibleWidth / this.outputHeight;
         },
+        // With preventWhiteSpace, the image must fill the canvas
+        minimumScaleRatio() {
+            if (!this.preventWhiteSpace) return 0;
+
+            return Math.max(
+                this.outputWidth / this.naturalWidth,
+                this.outputHeight / this.naturalHeight,
+            );
+        },
         maximumScaleRatio() {
             // my weird calculation from Instagram
-            return this.aspectRatio * (2.56) + 2.725;
+            const maximum = this.aspectRatio * (2.56) + 2.725;
+            // For a narrow image, the fill size can be larger than this maximum
+            return Math.max(maximum, this.minimumScaleRatio);
         },
         maximumAspectRatio() {
             return this.canvasRatio > Settings.MAXIMUM_ASPECT_RATIO

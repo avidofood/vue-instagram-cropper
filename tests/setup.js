@@ -14,6 +14,7 @@ const sizeOf = (src) => {
 const src = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
 
 // Loads the image in the next task. A URL with "broken" in it fails.
+// A URL such as /photo-800x600-delay-200.jpg loads after 200ms.
 Object.defineProperty(HTMLImageElement.prototype, 'src', {
     configurable: true,
     get() {
@@ -22,6 +23,7 @@ Object.defineProperty(HTMLImageElement.prototype, 'src', {
     set(value) {
         src.set.call(this, value);
         this.loadedSize = null;
+        const delay = /delay-(\d+)/.exec(value);
         setTimeout(() => {
             if (value.includes('broken')) {
                 this.dispatchEvent(new Event('error'));
@@ -29,7 +31,7 @@ Object.defineProperty(HTMLImageElement.prototype, 'src', {
             }
             this.loadedSize = sizeOf(value);
             this.dispatchEvent(new Event('load'));
-        });
+        }, delay ? Number(delay[1]) : 0);
     },
 });
 

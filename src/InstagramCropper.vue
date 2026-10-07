@@ -110,6 +110,9 @@ export default {
         },
         remove(event = events.IMAGE_REMOVE_EVENT) {
             if (!this.imageSet) return;
+            // The user removed the image, so an image that still loads must not show up.
+            // On a new image, $_c_onload() calls remove() itself during the current load.
+            if (event === events.IMAGE_REMOVE_EVENT) this.$_c_startLoad();
             this.$_c_setPlaceholders();
 
             const hadImage = this.img != null;
@@ -167,11 +170,7 @@ export default {
             // The scaleRatio watcher also stops at this size. The limit here avoids an
             // intermediate size, which Vue 3 would report with extra zoom events.
             if (this.preventWhiteSpace) {
-                scaleRatio = Math.max(
-                    scaleRatio,
-                    this.outputWidth / this.naturalWidth,
-                    this.outputHeight / this.naturalHeight,
-                );
+                scaleRatio = Math.max(scaleRatio, this.minimumScaleRatio);
             }
             this.scaleRatio = scaleRatio;
         },

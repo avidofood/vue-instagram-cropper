@@ -49,6 +49,25 @@ export const chooseFile = async (wrapper, file) => {
     await input.trigger('change');
 };
 
+// Collects errors that jsdom reports for event listeners and timers
+export const collectErrors = () => {
+    const errors = [];
+    window.addEventListener('error', (event) => {
+        errors.push(event.error || event.message);
+        event.preventDefault();
+    });
+    return errors;
+};
+
+export const sleep = (ms) => new Promise((resolve) => { setTimeout(resolve, ms); });
+
+// A loaded image as the browser creates it for metadata
+export const loadImage = (url) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.src = url;
+});
+
 export const imageFile = (name = 'photo.jpg', bytes = [0xFF, 0xD8, 0xFF, 0xD9]) => new File(
     [new Uint8Array(bytes)],
     name,

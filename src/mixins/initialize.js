@@ -4,6 +4,8 @@ import Line from '../lib/Line';
 export default {
     methods: {
         $_c_initialize() {
+            // An image that still loads belongs to the old state
+            this.$_c_startLoad();
             this.canvas = this.$refs.canvas;
             this.$_c_setSize();
             this.canvas.style.backgroundColor = this.canvasColor;

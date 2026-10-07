@@ -15,27 +15,40 @@ export default {
          */
         this.$_c_setImage = debounce(this.$_c_setImageNow, 30);
         this.$_c_updateVModel = debounce(this.$_c_emitUpdate, 20);
+        // Every image load gets a number. A newer load makes an older one stale, so a slow
+        // image or file cannot replace the image that the user chose after it.
+        this.$_c_loadId = 0;
     },
     beforeUnmount() {
         this.$_c_setImage.cancel();
         this.$_c_updateVModel.cancel();
     },
     methods: {
+        $_c_startLoad() {
+            this.$_c_loadId += 1;
+            return this.$_c_loadId;
+        },
+        // False for a load that a newer load replaced, and after the unmount
+        $_c_isCurrentLoad(loadId) {
+            return loadId === this.$_c_loadId && !this.$.isUnmounted;
+        },
         $_c_setImageNow(initial = false) {
+            const loadId = this.$_c_startLoad();
+
             if (typeof this.src === 'string') {
-                this.$_c_setImageViaUrl(initial);
+                this.$_c_setImageViaUrl(initial, loadId);
                 return;
             }
             // Due to the validator of value, we can assume the properties are correct
             if (this.src && typeof this.src === 'object') {
-                this.$_c_setImageViaObject(initial);
+                this.$_c_setImageViaObject(initial, loadId);
                 return;
             }
 
             this.$_c_setPlaceholders();
             this.$_c_reset_values();
         },
-        $_c_setImageViaUrl(initial) {
+        $_c_setImageViaUrl(initial, loadId) {
             let img = new Image();
             let href = this.src;
             const isLocal = /^data:/.test(href) || /^blob:/.test(href);
@@ -60,19 +73,22 @@ export default {
                 this.loading = true;
                 this.$_c_paintBackground();
                 img.onload = () => {
+                    if (!this.$_c_isCurrentLoad(loadId)) return;
                     this.$_c_onload(img, initial, true);
                 };
                 img.onerror = () => {
+                    if (!this.$_c_isCurrentLoad(loadId)) return;
                     this.emitEvent(events.IMAGE_ERROR_EVENT);
                     img = new Image();
                     img.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 600 600\'%3E%3Cpath fill=\'%23fff\' d=\'M0 0H600V600H0z\'/%3E%3Cpath d=\'M231.17 366.43a15.88 15.88 0 0 1-15.88-15.88v-95.31a15.88 15.88 0 0 1 15.88-15.88h137.66a15.89 15.89 0 0 1 15.89 15.88v95.31a15.89 15.89 0 0 1-15.89 15.88zm2.65-90a18.53 18.53 0 1 0 18.53-18.53 18.52 18.52 0 0 0-18.53 18.52zm129.72 68.83v-37.07l-29-29a4 4 0 0 0-5.62 0l-44.84 44.84-18.33-18.33a4 4 0 0 0-5.62 0l-23.67 23.67v15.88z\' fill=\'%23252525\'/%3E%3Cpath d=\'M169.39 219.53a6.66 6.66 0 0 1-1.17-9.34l8.18-10.52a6.66 6.66 0 0 1 9.35-1.17l244.86 189.25a6.68 6.68 0 0 1 1.17 9.35l-8.18 10.51a6.66 6.66 0 0 1-9.35 1.17z\' fill=\'%23b1605f\'/%3E%3C/svg%3E';
                     img.onload = () => {
+                        if (!this.$_c_isCurrentLoad(loadId)) return;
                         this.$_c_onload(img, initial, true);
                     };
                 };
             }
         },
-        $_c_setImageViaObject(initial) {
+        $_c_setImageViaObject(initial, loadId) {
             const src = deepClone(this.src);
 
             // can't be cloned
@@ -82,6 +98,19 @@ export default {
             this.naturalWidth = img.naturalWidth;
 
             this.imageSet = true;
+
+            // With preventWhiteSpace, a crop that does not fill the canvas, for example a crop
+            // from a larger canvas, shows the image filled and centered, as in 1.x
+            if (this.preventWhiteSpace && !(src.scaleRatio >= this.minimumScaleRatio)) {
+                this.img = img;
+                this.$_c_placeImage();
+
+                if (initial) {
+                    this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT);
+                }
+                return;
+            }
+
             this.skipScaleRatio = true;
 
             this.img = img;
@@ -89,11 +118,16 @@ export default {
 
             // Needed to trick the $Watcher with OldVal out.
             this.$nextTick(() => {
+                if (!this.$_c_isCurrentLoad(loadId)) return;
+
                 this.imgData = src.imgData;
                 this.scaleRatio = src.scaleRatio;
                 this.skipScaleRatio = false;
 
                 this.$_c_checkBounceness();
+                // The watchers only draw when a number changes. Another image with the same
+                // size and crop needs this draw.
+                this.$_c_draw();
 
                 if (initial) {
                     this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT);

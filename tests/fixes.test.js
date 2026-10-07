@@ -1,15 +1,19 @@
+import { nextTick } from 'vue';
 import {
     describe, expect, it, vi,
 } from 'vitest';
 import {
     chooseFile,
+    collectErrors,
     imageFile,
     landscapeUrl,
     lastDrawnImage,
+    loadImage,
     mountCropper,
     mountEmpty,
     mountWithImage,
     portraitUrl,
+    sleep,
     waitForEvent,
 } from './helpers';
 
@@ -198,5 +202,186 @@ describe('zoom with preventWhiteSpace', () => {
         expect(wrapper.vm.scaleRatio).toBe(1);
         expect(wrapper.vm.imgData.width).toBe(800);
         expect(wrapper.emitted('zoom')).toHaveLength(zooms + 1);
+    });
+});
+
+describe('images that load while something changes', () => {
+    it('ignores a slow image after src changed', async () => {
+        const slowUrl = 'https://example.com/slow-800x600-delay-200.jpg';
+        const wrapper = mountCropper({ src: slowUrl });
+        await waitForEvent(wrapper, 'loading-start');
+
+        await wrapper.setProps({ src: portraitUrl });
+        await waitForEvent(wrapper, 'new-image-drawn');
+        await sleep(300);
+
+        expect(lastDrawnImage(wrapper)[1].src).toBe(portraitUrl);
+        expect(wrapper.vm.getMetadata().img.src).toBe(portraitUrl);
+        expect(wrapper.emitted('new-image-drawn')).toHaveLength(1);
+    });
+
+    it('ignores an image that finishes loading after the unmount', async () => {
+        const errors = collectErrors();
+        const wrapper = await mountWithImage();
+        await wrapper.setProps({ src: 'https://example.com/slow-600x800-delay-100.jpg' });
+        // The first loading-start came from the first image
+        await waitForEvent(wrapper, 'loading-start', 2);
+
+        wrapper.unmount();
+        await sleep(200);
+
+        expect(errors).toEqual([]);
+    });
+
+    it('ignores a chosen file that finishes loading after the unmount', async () => {
+        const errors = collectErrors();
+        const wrapper = await mountWithImage();
+        await chooseFile(wrapper, imageFile());
+
+        wrapper.unmount();
+        await sleep(100);
+
+        expect(errors).toEqual([]);
+    });
+
+    it('ignores a slow image after the user chose a file', async () => {
+        const wrapper = mountCropper({ src: 'https://example.com/slow-800x600-delay-200.jpg' });
+        await waitForEvent(wrapper, 'loading-start');
+
+        await chooseFile(wrapper, imageFile());
+        await waitForEvent(wrapper, 'new-image-drawn');
+        await sleep(300);
+
+        expect(wrapper.vm.getMetadata().img.src).toMatch(/^data:image\/jpeg;base64,/);
+    });
+});
+
+describe('switching metadata', () => {
+    // vue-cropgram switches between saved crops. Two photos can have the same size and crop.
+    it('draws the new image when only the image changes', async () => {
+        const first = await loadImage('https://example.com/first-800x600.jpg');
+        const second = await loadImage('https://example.com/second-800x600.jpg');
+        // A crop that the bounce check keeps as it is
+        const crop = {
+            imgData: {
+                width: 900, height: 675, startX: -150, startY: -40,
+            },
+            scaleRatio: 1.125,
+        };
+        const wrapper = mountCropper({ src: { img: first, ...crop } });
+        await waitForEvent(wrapper, 'update');
+
+        await wrapper.setProps({ src: { img: second, ...crop } });
+        await vi.waitFor(() => expect(lastDrawnImage(wrapper)[1]).toBe(second));
+
+        expect(wrapper.vm.getMetadata().img).toBe(second);
+    });
+});
+
+describe('maximum zoom with preventWhiteSpace', () => {
+    // For a narrow image, the size that fills the canvas is larger than the maximum zoom
+    it('keeps a narrow image filling the canvas', async () => {
+        const wrapper = await mountWithImage({
+            src: 'https://example.com/narrow-100x1000.jpg',
+            preventWhiteSpace: true,
+        });
+        const { imgData } = wrapper.vm.getMetadata();
+        expect(imgData.width).toBe(600);
+
+        await wrapper.find('canvas').trigger('wheel', { deltaY: 100 });
+        await sleep(50);
+
+        expect(wrapper.vm.getMetadata().imgData).toEqual(imgData);
+        expect(wrapper.emitted('zoom')).toBeUndefined();
+    });
+
+    it('keeps a narrow image filling the canvas when the user zooms in', async () => {
+        const wrapper = await mountWithImage({
+            src: 'https://example.com/narrow-100x1000.jpg',
+            preventWhiteSpace: true,
+        });
+
+        await wrapper.find('canvas').trigger('wheel', { deltaY: -100 });
+        await sleep(50);
+
+        expect(wrapper.vm.imgData.width).toBeGreaterThanOrEqual(600);
+        expect(wrapper.vm.imgData.startX).toBeLessThanOrEqual(0);
+        expect(wrapper.vm.imgData.startX + wrapper.vm.imgData.width).toBeGreaterThanOrEqual(600);
+    });
+});
+
+describe('metadata without an image', () => {
+    it('getMetadata() returns img null after remove()', async () => {
+        const wrapper = await mountWithImage();
+
+        wrapper.vm.remove();
+        await sleep(50);
+
+        const metadata = wrapper.vm.getMetadata();
+        expect(metadata.img).toBeNull();
+        expect(metadata.imgData).toEqual({
+            width: 0, height: 0, startX: 0, startY: 0,
+        });
+        // The types allow a number or null here, as in 1.x
+        expect(metadata.scaleRatio === null || typeof metadata.scaleRatio === 'number').toBe(true);
+    });
+
+    it('a pending update after remove() carries img null, as in 1.x', async () => {
+        const wrapper = await mountWithImage();
+        const updates = wrapper.emitted('update').length;
+
+        const draws = wrapper.emitted('draw').length;
+
+        wrapper.vm.move({ x: -10, y: 0 });
+        // The component draws in the next animation frame and emits update 20ms later
+        await nextTick();
+        await new Promise((resolve) => { requestAnimationFrame(resolve); });
+        expect(wrapper.emitted('draw').length).toBeGreaterThan(draws);
+        wrapper.vm.remove();
+        await sleep(50);
+
+        const last = wrapper.emitted('update').at(-1)[0];
+        expect(wrapper.emitted('update').length).toBeGreaterThan(updates);
+        expect(last.img).toBeNull();
+    });
+});
+
+describe('metadata with preventWhiteSpace', () => {
+    // For example a crop from a larger canvas. 1.x showed the image filled and centered.
+    it('fills the canvas when the crop is smaller than the canvas', async () => {
+        const img = await loadImage(landscapeUrl);
+        const wrapper = mountCropper({
+            preventWhiteSpace: true,
+            src: {
+                img,
+                imgData: {
+                    width: 600, height: 450, startX: 0, startY: 75,
+                },
+                scaleRatio: 0.75,
+            },
+        });
+        await waitForEvent(wrapper, 'update');
+        await sleep(50);
+
+        expect(wrapper.vm.getMetadata().imgData).toEqual({
+            width: 800, height: 600, startX: -100, startY: 0,
+        });
+        expect(wrapper.vm.scaleRatio).toBe(1);
+        expect(wrapper.emitted('initial-image-loaded')).toHaveLength(1);
+    });
+
+    it('keeps a crop that fills the canvas', async () => {
+        const img = await loadImage(landscapeUrl);
+        const imgData = {
+            width: 900, height: 675, startX: -150, startY: -40,
+        };
+        const wrapper = mountCropper({
+            preventWhiteSpace: true,
+            src: { img, imgData, scaleRatio: 1.125 },
+        });
+        await waitForEvent(wrapper, 'update');
+        await sleep(50);
+
+        expect(wrapper.vm.getMetadata().imgData).toEqual(imgData);
     });
 });

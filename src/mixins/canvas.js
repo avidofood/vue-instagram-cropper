@@ -23,7 +23,7 @@ export default {
             });
         },
         $_c_drawFrame() {
-            if (!this.img) return;
+            if (!this.img || this.$.isUnmounted) return;
 
             this.loading = false;
             const { ctx } = this;

@@ -25,12 +25,15 @@ export default {
                 return;
             }
 
+            const loadId = this.$_c_startLoad();
             const fr = new FileReader();
             fr.onload = (e) => {
+                if (!this.$_c_isCurrentLoad(loadId)) return;
                 // The browser applies the EXIF orientation of the image itself
                 const img = new Image();
                 img.src = e.target.result;
                 img.onload = () => {
+                    if (!this.$_c_isCurrentLoad(loadId)) return;
                     this.emitEvent(events.FILE_LOADED_EVENT);
                     this.$_c_onload(img);
                     this.emitEvent(events.NEW_IMAGE_EVENT);
