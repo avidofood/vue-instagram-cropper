@@ -1,6 +1,8 @@
 import {
     describe, expect, it, vi,
 } from 'vitest';
+import { createSSRApp, h } from 'vue';
+import { renderToString } from 'vue/server-renderer';
 import InstagramCropper from '../src/index';
 import {
     callsOf,
@@ -395,5 +397,32 @@ describe('output size with a fixed aspect ratio', () => {
         expect(height % 1).toBeGreaterThan(0.01);
 
         expect(wrapper.vm.generateDataUrl()).toBe(`data:image/png;width=600;height=${Math.floor(height)};quality=1`);
+    });
+});
+
+describe('hydration', () => {
+    it('hydrates the server HTML without a mismatch and then loads the image', async () => {
+        const render = () => h(InstagramCropper, {
+            src: landscapeUrl,
+            style: 'width: 300px; height: 300px;',
+        });
+        const html = await renderToString(createSSRApp({ render }));
+        const container = document.createElement('div');
+        container.innerHTML = html;
+        document.body.appendChild(container);
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+        const app = createSSRApp({ render });
+        app.mount(container);
+        await sleep(100);
+
+        const messages = [...warn.mock.calls, ...error.mock.calls].flat().join(' ');
+        expect(messages).not.toMatch(/hydration/i);
+        expect(container.querySelector('canvas').getContext('2d').calls
+            .some((call) => call[0] === 'drawImage')).toBe(true);
+        app.unmount();
+        warn.mockRestore();
+        error.mockRestore();
     });
 });

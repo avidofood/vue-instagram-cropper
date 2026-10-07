@@ -56,6 +56,19 @@ app.use(Plugin);
 
 The plugin registers the component as `InstagramCropper`. You can use it as `<InstagramCropper>` or `<instagram-cropper>`.
 
+### (3: Only for Nuxt users)
+
+The component renders on the server without errors. The canvas draws the image in the browser after the hydration. Import the component where you need it, or register it in a plugin:
+
+```javascript
+// plugins/instagram-cropper.js
+import { Plugin } from 'vue-instagram-cropper';
+
+export default defineNuxtPlugin((nuxtApp) => {
+    nuxtApp.vueApp.use(Plugin);
+});
+```
+
 ### TypeScript
 
 Since version 2.0.0 the package contains type declarations for the props, the metadata, the events, the methods and the plugin.
@@ -267,6 +280,26 @@ const blob = await this.$refs.cropper.promisedBlob('image/jpeg', 0.9, { width: 1
 
 // At most 2048 pixels on each side
 const url = this.$refs.cropper.generateDataUrl('image/png', 1, { maxWidth: 2048, maxHeight: 2048 });
+```
+
+### Fixed aspect ratio, for example 4:5
+
+Give the container the aspect ratio and set `prevent-white-space`. Then the image always fills the container, and the output has the same aspect ratio. Together with a fixed output width, every image gets the same size:
+
+```html
+<div style="width: 100%; max-width: 400px; aspect-ratio: 4 / 5;">
+    <instagram-cropper
+        ref="cropper"
+        :src="cropper"
+        prevent-white-space
+        style="width: 100%; height: 100%;"
+    ></instagram-cropper>
+</div>
+```
+
+```javascript
+// 1080 x 1350 pixels, the portrait size of Instagram
+const blob = await this.$refs.cropper.promisedBlob('image/jpeg', 0.9, { width: 1080 });
 ```
 
 A size larger than the original image makes the output blurry. Very large canvases can fail in some browsers, for example on iOS. Use `maxWidth` and `maxHeight` to stay below that.
