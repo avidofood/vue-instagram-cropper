@@ -4,37 +4,50 @@ import debounce from '../lib/debounce';
 import deepClone from '../lib/deepClone';
 
 export default {
-    methods: {
+    created() {
+        // Every cropper needs its own timers. A debounced function in the methods
+        // would share one timer between all croppers on the page.
         /**
          * Set's image via the src-prop.
          * Image can be an URL or an object.
          * We need to debounce, so that the next image
          * is rendered correctly
          */
-        $_c_setImage: debounce(function setImage(inital = false) {
+        this.$_c_setImage = debounce(this.$_c_setImageNow, 30);
+        this.$_c_updateVModel = debounce(this.$_c_emitUpdate, 20);
+    },
+    beforeUnmount() {
+        this.$_c_setImage.cancel();
+        this.$_c_updateVModel.cancel();
+    },
+    methods: {
+        $_c_setImageNow(initial = false) {
             if (typeof this.src === 'string') {
-                this.$_c_setImageViaUrl(inital);
+                this.$_c_setImageViaUrl(initial);
                 return;
             }
             // Due to the validator of value, we can assume the properties are correct
             if (this.src && typeof this.src === 'object') {
-                this.$_c_setImageViaObject(inital);
+                this.$_c_setImageViaObject(initial);
                 return;
             }
 
             this.$_c_setPlaceholders();
             this.$_c_reset_values();
-        }, 30),
+        },
         $_c_setImageViaUrl(initial) {
             let img = new Image();
             let href = this.src;
+            const isLocal = /^data:/.test(href) || /^blob:/.test(href);
 
-            if (!/^data:/.test(href) && !/^blob:/.test(href)) {
+            if (!isLocal) {
                 img.setAttribute('crossOrigin', 'anonymous');
             }
 
-            if (this.forceCacheBreak && href) {
-                const src = new URL(href);
+            // A data or blob URL has no cache, and a parameter would break it
+            if (this.forceCacheBreak && href && !isLocal) {
+                // The base is needed for a relative URL such as /images/photo.jpg
+                const src = new URL(href, window.location.href);
                 src.searchParams.append('cors', Date.now());
                 href = src.href;
             }
@@ -227,9 +240,9 @@ export default {
         $_c_imageReachedMaximumScale() {
             return this.scaleRatio >= this.maximumScaleRatio;
         },
-        $_c_updateVModel: debounce(function updateVModel() {
+        $_c_emitUpdate() {
             this.$emit('update', this.getMetadata());
-        }, 20),
+        },
 
     },
 };

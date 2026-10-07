@@ -2,6 +2,9 @@
 import u from '../core/util';
 import * as Settings from '../core/const';
 
+// While the user drags, these events on the document end the drag
+const cancelEvents = ['mouseup', 'touchend', 'touchcancel', 'pointercancel'];
+
 export default {
     methods: {
         emitNativeEvent(evt) {
@@ -34,15 +37,15 @@ export default {
                 this.pinching = true;
                 this.pinchDistance = u.getPinchDistance(evt, this);
             }
-            const cancelEvents = ['mouseup', 'touchend', 'touchcancel', 'pointerend', 'pointercancel'];
+            cancelEvents.forEach((e) => document.addEventListener(e, this.$_c_handlePointerEnd));
+        },
 
-            for (let i = 0, len = cancelEvents.length; i < len; i += 1) {
-                const e = cancelEvents[i];
-                document.addEventListener(e, this.$_c_handlePointerEnd);
-            }
+        $_c_removeDocumentListeners() {
+            cancelEvents.forEach((e) => document.removeEventListener(e, this.$_c_handlePointerEnd));
         },
 
         $_c_handlePointerEnd(evt) {
+            this.$_c_removeDocumentListeners();
             this.emitNativeEvent(evt);
 
             let pointerMoveDistance = 0;

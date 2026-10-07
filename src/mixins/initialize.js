@@ -55,5 +55,6 @@ export default {
     },
     beforeUnmount() {
         this.$_c_autoSizingRemove();
+        this.$_c_removeDocumentListeners();
     },
 };

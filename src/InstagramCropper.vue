@@ -1,7 +1,7 @@
 <template>
     <div
         class="cropper-container"
-        :class="img ? 'cropper--has-target' : ''"
+        :class="{ 'cropper--has-target': img, 'cropper--dropzone': fileDraggedOver }"
         :style="'background-color:' + canvasColor + ';'"
         @dragenter.stop.prevent="$_c_handleDragEnter"
         @dragleave.stop.prevent="$_c_handleDragLeave"
@@ -105,9 +105,7 @@ export default {
         FullscreenButton,
         RemoveButton,
     },
-    data() {
-        return data;
-    },
+    data,
     methods: {
         emitEvent(...args) {
             this.$emit(...args);
@@ -199,6 +197,8 @@ export default {
                 .generateBlob(callback, mimeType, qualityArgument);
         },
         promisedBlob(...args) {
+            if (!this.hasImage()) return Promise.resolve(null);
+
             return this.saving(this.img, this.imgData, this.outputWidth, this.outputHeight)
                 .promisedBlob(...args);
         },

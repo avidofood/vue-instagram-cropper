@@ -1,4 +1,5 @@
-export default {
+// A function, so that every cropper gets its own state
+export default () => ({
     canvas: null,
     ctx: null,
     img: null,
@@ -43,4 +44,7 @@ export default {
 
     // used in fileinput.js for the input field
     currentIsInitial: false,
-};
+
+    // functions from addClipPlugin()
+    clipPlugins: null,
+});

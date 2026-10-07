@@ -11,7 +11,6 @@ export default {
             window.addEventListener('resize', this.$_c_setContainerSize);
         },
         $_c_autoSizingRemove() {
-            this.$_c_setContainerSize();
             window.removeEventListener('resize', this.$_c_setContainerSize);
         },
         $_c_draw() {
