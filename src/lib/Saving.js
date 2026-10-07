@@ -6,6 +6,47 @@
      * has already calculated it in croppa
      */
 
+// The watchers compute the image size in floating point, so a height of 800 can be
+// 799.9999999999999. A size within 1e-6 of a whole number counts as that number. A real fraction
+// such as 547.6 is cut off, as in 1.x: a partly covered last row would be transparent in a PNG
+// and dark in a JPEG.
+const pixelSize = (value) => {
+    const rounded = Math.round(value);
+    return Math.abs(value - rounded) < 1e-6 ? rounded : Math.floor(value);
+};
+
+// Only a finite positive number counts. Anything else leaves the option out.
+const positive = (value) => (Number.isFinite(value) && value > 0 ? value : 0);
+
+// The largest canvas side in Chrome and Firefox. A larger canvas stays empty.
+const MAX_CANVAS_SIDE = 32767;
+
+/**
+ * The factor from the visible size to the output size. width or height sets that side. With
+ * both, the output fits into width x height. maxWidth and maxHeight only make it smaller.
+ */
+export function outputScale(visibleWidth, visibleHeight, options = {}) {
+    if (!visibleWidth || !visibleHeight) return 1;
+
+    const width = positive(options.width);
+    const height = positive(options.height);
+    const maxWidth = positive(options.maxWidth);
+    const maxHeight = positive(options.maxHeight);
+    let scale = 1;
+
+    if (width && height) {
+        scale = Math.min(width / visibleWidth, height / visibleHeight);
+    } else if (width) {
+        scale = width / visibleWidth;
+    } else if (height) {
+        scale = height / visibleHeight;
+    }
+    if (maxWidth && visibleWidth * scale > maxWidth) scale = maxWidth / visibleWidth;
+    if (maxHeight && visibleHeight * scale > maxHeight) scale = maxHeight / visibleHeight;
+
+    return scale;
+}
+
 export default class Saving {
     constructor(img, imgData, outputWidth, outputHeight) {
         this.img = img;
@@ -17,25 +58,21 @@ export default class Saving {
         this.ctx = null;
     }
 
-    generateDataUrl(type, compressionRate) {
-        this.createCanvas();
+    generateDataUrl(type, compressionRate, options) {
+        this.createCanvas(options);
         const result = this.canvas.toDataURL(type, compressionRate);
         this.beforeDestroy();
 
         return result;
     }
 
-    generateBlob(callback, mimeType, qualityArgument) {
-        this.createCanvas();
+    generateBlob(callback, mimeType, qualityArgument, options) {
+        this.createCanvas(options);
         this.canvas.toBlob(callback, mimeType, qualityArgument);
         this.beforeDestroy();
     }
 
     promisedBlob(...args) {
-        if (typeof Promise === 'undefined') {
-            console.warn('No Promise support. Please add Promise polyfill if you want to use this method.');
-            return null;
-        }
         return new Promise((resolve, reject) => {
             try {
                 this.generateBlob((blob) => {
@@ -47,22 +84,35 @@ export default class Saving {
         });
     }
 
-    createCanvas() {
+    createCanvas(options) {
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
 
-        this.drawImageOnCanvas();
+        this.drawImageOnCanvas(options);
     }
 
-    drawImageOnCanvas() {
+    drawImageOnCanvas(options) {
         const { width, height } = this.imgData;
+        // The part of the image that the canvas shows
+        const visibleWidth = Math.min(width, this.outputWidth);
+        const visibleHeight = Math.min(height, this.outputHeight);
+        const scale = outputScale(visibleWidth, visibleHeight, options);
 
-        this.calculateCanvasDimension(width, height);
+        const outputWidth = Math.max(1, pixelSize(visibleWidth * scale));
+        const outputHeight = Math.max(1, pixelSize(visibleHeight * scale));
+        if (outputWidth > MAX_CANVAS_SIDE || outputHeight > MAX_CANVAS_SIDE) {
+            throw new RangeError(
+                `vue-instagram-cropper: the output of ${outputWidth} x ${outputHeight} pixels `
+                + `is larger than ${MAX_CANVAS_SIDE} pixels on a side. Use maxWidth and maxHeight.`,
+            );
+        }
+        this.canvas.width = outputWidth;
+        this.canvas.height = outputHeight;
 
         const { startX, startY } = this.getXYPosition();
 
         // ctx.drawImage(image, dx, dy, dWidth, dHeight);
-        this.ctx.drawImage(this.img, startX, startY, width, height);
+        this.ctx.drawImage(this.img, startX * scale, startY * scale, width * scale, height * scale);
     }
 
     getXYPosition() {
@@ -70,11 +120,6 @@ export default class Saving {
             startX: this.imgData.startX > 0 ? 0 : this.imgData.startX,
             startY: this.imgData.startY > 0 ? 0 : this.imgData.startY,
         };
-    }
-
-    calculateCanvasDimension(imgWidth, imgHeight) {
-        this.canvas.width = imgWidth > this.outputWidth ? this.outputWidth : imgWidth;
-        this.canvas.height = imgHeight > this.outputHeight ? this.outputHeight : imgHeight;
     }
 
     beforeDestroy() {

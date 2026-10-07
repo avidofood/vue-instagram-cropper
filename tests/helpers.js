@@ -1,0 +1,87 @@
+import { nextTick } from 'vue';
+import { mount } from '@vue/test-utils';
+import { vi } from 'vitest';
+import InstagramCropper from '../src/index';
+
+// 800 x 600 pixels, see tests/setup.js
+export const landscapeUrl = 'https://example.com/photo-800x600.jpg';
+export const portraitUrl = 'https://example.com/photo-600x800.jpg';
+
+// The container is 300 x 300 pixels. With the default quality of 2 the canvas is 600 x 600.
+export const mountCropper = (props = {}, options = {}) => mount(InstagramCropper, {
+    props,
+    attrs: { style: 'width: 300px; height: 300px;' },
+    attachTo: document.body,
+    ...options,
+});
+
+export const contextOf = (wrapper) => wrapper.find('canvas').element.getContext('2d');
+
+export const callsOf = (wrapper, name) => contextOf(wrapper).calls
+    .filter((call) => call[0] === name);
+
+export const lastDrawnImage = (wrapper) => callsOf(wrapper, 'drawImage').at(-1);
+
+export const waitForEvent = (wrapper, name, count = 1) => vi.waitFor(() => {
+    const emitted = wrapper.emitted(name) || [];
+    if (emitted.length < count) throw new Error(`${name} was emitted ${emitted.length} times`);
+});
+
+// Waits until the component drew the placeholder. The first image loads 30ms after the mount.
+export const mountEmpty = async (props = {}, options = {}) => {
+    const wrapper = mountCropper(props, options);
+    await vi.waitFor(() => {
+        if (!callsOf(wrapper, 'fillText').length) throw new Error('No placeholder yet');
+    });
+    return wrapper;
+};
+
+// Waits until the component drew an image and emitted update with the metadata
+export const mountWithImage = async (props = {}, options = {}) => {
+    const wrapper = mountCropper({ src: landscapeUrl, ...props }, options);
+    await waitForEvent(wrapper, 'update');
+    return wrapper;
+};
+
+// Sets the file on the hidden file input, as the file chooser of the browser does
+export const chooseFile = async (wrapper, file) => {
+    const input = wrapper.find('input[type="file"]');
+    Object.defineProperty(input.element, 'files', { value: [file], configurable: true });
+    await input.trigger('change');
+};
+
+// Changes the style of the container, as CSS or v-show would, and calls the resize observers
+export const resizeContainer = async (wrapper, style) => {
+    wrapper.element.setAttribute('style', style);
+    globalThis.resizeObservers.forEach((observer) => {
+        if (observer.targets.has(wrapper.element)) {
+            observer.callback([{ target: wrapper.element }], observer);
+        }
+    });
+    await nextTick();
+};
+
+// Collects errors that jsdom reports for event listeners and timers
+export const collectErrors = () => {
+    const errors = [];
+    window.addEventListener('error', (event) => {
+        errors.push(event.error || event.message);
+        event.preventDefault();
+    });
+    return errors;
+};
+
+export const sleep = (ms) => new Promise((resolve) => { setTimeout(resolve, ms); });
+
+// A loaded image as the browser creates it for metadata
+export const loadImage = (url) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.src = url;
+});
+
+export const imageFile = (name = 'photo.jpg', bytes = [0xFF, 0xD8, 0xFF, 0xD9]) => new File(
+    [new Uint8Array(bytes)],
+    name,
+    { type: 'image/jpeg' },
+);

@@ -1,4 +1,3 @@
-
 export default {
     methods: {
         $_c_preventZoomingToWhiteSpace() {

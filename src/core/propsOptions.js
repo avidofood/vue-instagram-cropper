@@ -30,6 +30,14 @@ export default {
             return val >= 0;
         },
     },
+    // The CORS mode for an image from another origin. use-credentials sends the cookies.
+    crossOrigin: {
+        type: String,
+        default: 'anonymous',
+        validator(val) {
+            return val === 'anonymous' || val === 'use-credentials';
+        },
+    },
     forceCacheBreak: {
         type: Boolean,
         default: false,
@@ -38,5 +46,20 @@ export default {
     preventWhiteSpace: {
         type: Boolean,
         default: false,
+    },
+    // false lets the page scroll over the cropper instead of zooming the image
+    zoomOnWheel: {
+        type: Boolean,
+        default: true,
+    },
+    // Texts for screen readers: canvas, remove and fullscreen. Replaces single default texts.
+    labels: {
+        type: Object,
+        default: () => ({}),
+    },
+    // The rule-of-thirds grid while the user moves or zooms the image
+    showGrid: {
+        type: Boolean,
+        default: true,
     },
 };

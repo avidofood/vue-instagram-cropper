@@ -10,7 +10,6 @@ import { exists } from './helper';
 export default function validateVModel(val) {
     if (typeof val === 'string') return true;
 
-
     if (hasCropperProperties(val)) {
         return true;
     }

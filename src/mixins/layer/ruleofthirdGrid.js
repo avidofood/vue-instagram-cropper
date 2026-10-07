@@ -1,8 +1,27 @@
+import * as Settings from '../../core/const';
+
 /**
  * Adds a rule of third grid
  */
 export default {
+    beforeUnmount() {
+        clearTimeout(this.$_c_gridTimer);
+    },
     methods: {
+        // Shows the grid now and hides it when the user stops zooming or pressing keys
+        $_c_showGridBriefly() {
+            this.adjusting = true;
+            clearTimeout(this.$_c_gridTimer);
+            this.$_c_gridTimer = setTimeout(() => {
+                this.adjusting = false;
+                this.$_c_draw(true);
+            }, Settings.GRID_DURATION);
+        },
+        // A new load ends the grid without a redraw. The new image draws without a grid.
+        $_c_stopGrid() {
+            clearTimeout(this.$_c_gridTimer);
+            this.adjusting = false;
+        },
         $_c_drawRuleOfThirdGrid() {
             const wi = this.$_c_ROTWidth();
             const hi = this.$_c_ROTHeight();

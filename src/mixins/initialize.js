@@ -1,4 +1,3 @@
-import poly from '../lib/polyfills';
 import events from '../core/events';
 import Line from '../lib/Line';
 
@@ -33,7 +32,7 @@ export default {
             this.ctx.imageSmoothingEnabled = true;
             this.ctx.strokeStyle = '#ffffff';
         },
-        $_c_reset_values() {
+        $_c_clearImage() {
             this.img = null;
             this.$refs.fileInput.value = '';
             this.imgData = {
@@ -42,10 +41,14 @@ export default {
                 startX: 0,
                 startY: 0,
             };
-            this.orientation = 1;
             this.scaleRatio = null;
             this.imageSet = false;
             this.chosenFile = null;
+            this.$_c_drawnSize = null;
+            this.$_c_metadataPending = false;
+        },
+        $_c_reset_values() {
+            this.$_c_clearImage();
 
             this.$emit('input', null);
         },
@@ -53,16 +56,9 @@ export default {
     mounted() {
         this.$_c_autoSizingInit();
         this.$_c_initialize();
-        poly.rAFPolyfill();
-        poly.toBlobPolyfill();
-
-        const support = window.requestAnimationFrame && window.File && window.FileReader && window.FileList && window.Blob;
-
-        if (typeof window === 'undefined' || !support) {
-            console.warn('Your browser does not support vue-croppa functionality.');
-        }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.$_c_autoSizingRemove();
+        this.$_c_removeDocumentListeners();
     },
 };

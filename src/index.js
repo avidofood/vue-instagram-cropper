@@ -1,8 +1,9 @@
 import component from './InstagramCropper.vue';
 
 export const Plugin = {
-    install(Vue) {
-        Vue.component('instagram-cropper', component);
+    install(app) {
+        // The PascalCase name also works as <instagram-cropper> in templates
+        app.component('InstagramCropper', component);
     },
 };
 

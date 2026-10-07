@@ -11,8 +11,9 @@ export default {
             ctx.textBaseline = 'middle';
             ctx.textAlign = 'center';
 
-            const defaultFontSize = (this.outputWidth * Settings.DEFAULT_PLACEHOLDER_TAKEUP) / this.placeholder.length;
-            const fontSize = !this.computedPlaceholderFontSize ? defaultFontSize : this.computedPlaceholderFontSize;
+            const defaultFontSize = (this.outputWidth * Settings.DEFAULT_PLACEHOLDER_TAKEUP)
+                / this.placeholder.length;
+            const fontSize = this.computedPlaceholderFontSize || defaultFontSize;
             ctx.font = `${fontSize}px sans-serif`;
 
             ctx.fillStyle = this.placeholderColor;

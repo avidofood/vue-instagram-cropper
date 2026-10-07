@@ -1,14 +1,16 @@
 // Handles the methods for the input field with the type "file"
 import events from '../core/events';
-import u from '../core/util';
 
 export default {
     methods: {
         $_c_onNewFileIn(file) {
+            // A handler of file-choose can call remove()
+            const loadBefore = this.$_c_loadId;
             this.currentIsInitial = false;
             this.loading = true;
             this.$_c_paintBackground();
             this.emitEvent(events.FILE_CHOOSE_EVENT, file);
+            if (this.$_c_loadId !== loadBefore) return;
             this.chosenFile = file;
 
             if (!this.$_c_fileSizeIsValid(file)) {
@@ -26,35 +28,25 @@ export default {
                 return;
             }
 
+            // The file replaces an image that still loads and a src that waits for the debounce
+            const loadId = this.$_c_startLoad();
             const fr = new FileReader();
             fr.onload = (e) => {
-                let fileData = e.target.result;
-                const orientation = this.$_c_getFileOrientation(fileData);
-
+                if (!this.$_c_isCurrentLoad(loadId)) return;
+                // The browser applies the EXIF orientation of the image itself
                 const img = new Image();
-                img.src = fileData;
-                fileData = null; // Weird..
+                img.src = e.target.result;
                 img.onload = () => {
+                    if (!this.$_c_isCurrentLoad(loadId)) return;
                     this.emitEvent(events.FILE_LOADED_EVENT);
-                    this.$_c_onload(img, orientation);
+                    // A handler of file-loaded can call remove()
+                    if (!this.$_c_isCurrentLoad(loadId)) return;
+                    this.$_c_onload(img, loadId);
+                    if (!this.$_c_isCurrentLoad(loadId)) return;
                     this.emitEvent(events.NEW_IMAGE_EVENT);
                 };
             };
             fr.readAsDataURL(file);
-        },
-        $_c_getFileOrientation(fileData) {
-            const base64 = u.parseDataUrl(fileData);
-            let orientation = 1;
-
-            try {
-                orientation = u.getFileOrientation(u.base64ToArrayBuffer(base64));
-            } catch (err) {
-                //
-            }
-
-            if (orientation < 1) orientation = 1;
-
-            return orientation;
         },
         $_c_fileSizeIsValid(file) {
             if (!file) return false;

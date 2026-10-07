@@ -2,6 +2,9 @@ import * as Settings from '../core/const';
 
 export default {
     computed: {
+        labelTexts() {
+            return { ...Settings.DEFAULT_LABELS, ...this.labels };
+        },
         outputWidth() {
             const w = this.realWidth;
             return w * this.quality;
@@ -22,20 +25,41 @@ export default {
         // The ratio you see on the canvas or blob result
         aspectCanvasRatio() {
             if (this.aspectRatio > this.canvasRatio) {
-                return this.outputWidth / (this.imgData.height > this.outputHeight ? this.outputHeight : this.imgData.height);
+                const visibleHeight = this.imgData.height > this.outputHeight
+                    ? this.outputHeight
+                    : this.imgData.height;
+                return this.outputWidth / visibleHeight;
             }
 
-            return (this.imgData.width > this.outputWidth ? this.outputWidth : this.imgData.width) / this.outputHeight;
+            const visibleWidth = this.imgData.width > this.outputWidth
+                ? this.outputWidth
+                : this.imgData.width;
+            return visibleWidth / this.outputHeight;
+        },
+        // With preventWhiteSpace, the image must fill the canvas
+        minimumScaleRatio() {
+            if (!this.preventWhiteSpace) return 0;
+
+            return Math.max(
+                this.outputWidth / this.naturalWidth,
+                this.outputHeight / this.naturalHeight,
+            );
         },
         maximumScaleRatio() {
             // my weird calculation from Instagram
-            return this.aspectRatio * (2.56) + 2.725;
+            const maximum = this.aspectRatio * (2.56) + 2.725;
+            // For a narrow image, the fill size can be larger than this maximum
+            return Math.max(maximum, this.minimumScaleRatio);
         },
         maximumAspectRatio() {
-            return this.canvasRatio > Settings.MAXIMUM_ASPECT_RATIO ? this.canvasRatio : Settings.MAXIMUM_ASPECT_RATIO;
+            return this.canvasRatio > Settings.MAXIMUM_ASPECT_RATIO
+                ? this.canvasRatio
+                : Settings.MAXIMUM_ASPECT_RATIO;
         },
         minimumAspectRatio() {
-            return this.canvasRatio < Settings.MINIMUM_ASPECT_RATIO ? this.canvasRatio : Settings.MINIMUM_ASPECT_RATIO;
+            return this.canvasRatio < Settings.MINIMUM_ASPECT_RATIO
+                ? this.canvasRatio
+                : Settings.MINIMUM_ASPECT_RATIO;
         },
         greaterThanMaximumAspectRatio() {
             return this.aspectRatio > this.maximumAspectRatio;

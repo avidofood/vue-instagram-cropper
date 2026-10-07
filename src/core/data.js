@@ -1,9 +1,9 @@
-export default {
+// A function, so that every cropper gets its own state
+export default () => ({
     canvas: null,
     ctx: null,
     img: null,
     line: null,
-
 
     imgData: {
         width: 0,
@@ -11,7 +11,6 @@ export default {
         startX: 0,
         startY: 0,
     },
-
 
     naturalWidth: 0,
     naturalHeight: 0,
@@ -30,7 +29,6 @@ export default {
     realHeight: 0,
     chosenFile: null,
 
-
     // used in handle mixins
     supportTouch: false,
     pointerMoved: false,
@@ -41,9 +39,13 @@ export default {
     lastMovingCoord: null,
     pinchDistance: 0,
     currentPointerCoord: null,
-    scrolling: false,
+    // true for a moment after a zoom step or a key press, so the grid shows meanwhile
+    adjusting: false,
     fileDraggedOver: false,
 
     // used in fileinput.js for the input field
     currentIsInitial: false,
-};
+
+    // functions from addClipPlugin()
+    clipPlugins: null,
+});

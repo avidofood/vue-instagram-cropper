@@ -35,72 +35,10 @@
     </style>
 </head>
 <body>
-    <div id="app">
-        <section class="container">
-            <div class="d-flex justify-content-center align-items-center px-2 py-4">
-                <h4 class="text-white text-center d-md-none" style="font-weight: 600;">Vue Instagram Cropper</h4>
-                <h1 class="text-white d-none d-md-block" style="font-weight: 600; ">Vue Instagram Cropper</h1>
-            </div>
-        </section>
-
-        <section class="container">
-            <div class="d-flex justify-content-center align-items-center">
-                <div class="bg-white p-4 rounded cropper-wrapper">
-                    <instagram-cropper 
-                        ref="cropper"
-                        :src="cropper"
-                        placeholder-color="#000000" 
-                        placeholder="Choose or Drag'n'Drop an image"
-                        :placeholder-font-size="14"
-                        :prevent-white-space="preventWhiteSpace"
-                    ></instagram-cropper>
-                </div>
-            </div>
-        </section>
-
-        <section class="container text-center mt-4">
-            <h6 class="text-light">Some Methods</h6>
-            <div class="row justify-content-center">
-                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="changeImageURL">Load other URL</button></div>
-                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="changeImageObject">Load other Object</button></div>
-                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="setToNull">Set object to null</button></div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="download">Download</button></div>
-                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="download('image/jpeg', 0.8)">Download 20% compressed JPEG</button></div>
-                
-            </div>
-            <div class="row justify-content-center">
-                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="togglePreventWhiteSpace" v-text="preventWhiteSpaceText"></button></div>
-                <div class="p-1 col-12 col-sm-auto"><button class="btn btn-secondary" @click="addCircleClip">Add circle clip</button></div>
-            </div>
-        </section>
-
-        <section class="container text-center mt-4">
-            <h6 class="text-light">Vue.js component</h6>
-            <a class="btn btn-danger" href="https://github.com/avidofood/vue-instagram-cropper" role="button">Source on GitHub</a>
-
-            <div class="social mt-4">
-                <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
-                <a class="github-button" href="https://github.com/avidofood/vue-instagram-cropper" data-show-count="true" aria-label="Star avidofood/vue-instagram-cropper on GitHub">Star</a>
-            </div>
-        </section>
-
-        <section class="container mt-5">
-            <div class="row">
-                <div class="col-12 col-md-6">
-                    <h4 class="text-white d-md-none" style="font-weight: 600;">Designed for Vue</h4>
-                    <h2 class="text-white d-none d-md-block" style="font-weight: 600; ">Designed for Vue</h2>
-                </div>
-                <div class="col-12 col-md-6">
-                    <p class="text-white">It feels like the image cropper from Instagram. Get the extension <a href="https://github.com/avidofood/vue-cropgram" class="text-danger font-weight-bold">Vue Instagram Image Upload</a> for a full experience.</p>
-                </div>
-            </div>
-        </section>
-    </div>
+    <div id="app"></div>
 
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <script src="demo/public/js/app.js"></script>
+    <script type="module" src="demo/public/build/js/app.js"></script>
 </body>
 </html>

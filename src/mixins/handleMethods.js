@@ -2,6 +2,9 @@
 import u from '../core/util';
 import * as Settings from '../core/const';
 
+// While the user drags, these events on the document end the drag
+const cancelEvents = ['mouseup', 'touchend', 'touchcancel', 'pointercancel'];
+
 export default {
     methods: {
         emitNativeEvent(evt) {
@@ -34,21 +37,24 @@ export default {
                 this.pinching = true;
                 this.pinchDistance = u.getPinchDistance(evt, this);
             }
-            const cancelEvents = ['mouseup', 'touchend', 'touchcancel', 'pointerend', 'pointercancel'];
+            cancelEvents.forEach((e) => document.addEventListener(e, this.$_c_handlePointerEnd));
+        },
 
-            for (let i = 0, len = cancelEvents.length; i < len; i += 1) {
-                const e = cancelEvents[i];
-                document.addEventListener(e, this.$_c_handlePointerEnd);
-            }
+        $_c_removeDocumentListeners() {
+            cancelEvents.forEach((e) => document.removeEventListener(e, this.$_c_handlePointerEnd));
         },
 
         $_c_handlePointerEnd(evt) {
+            this.$_c_removeDocumentListeners();
             this.emitNativeEvent(evt);
 
             let pointerMoveDistance = 0;
             if (this.pointerStartCoord) {
                 const pointerCoord = u.getPointerCoords(evt, this);
-                pointerMoveDistance = Math.sqrt(Math.pow(pointerCoord.x - this.pointerStartCoord.x, 2) + Math.pow(pointerCoord.y - this.pointerStartCoord.y, 2)) || 0;
+                pointerMoveDistance = Math.hypot(
+                    pointerCoord.x - this.pointerStartCoord.x,
+                    pointerCoord.y - this.pointerStartCoord.y,
+                ) || 0;
             }
 
             if (!this.hasImage()) {
@@ -60,11 +66,16 @@ export default {
                     this.chooseFile();
                 }
                 this.tabStart = 0;
+                // A handler of mouseup or touchend can call remove() during a drag
+                this.$_c_endGesture();
                 return;
             }
 
             this.$_c_checkBounceness();
+            this.$_c_endGesture();
+        },
 
+        $_c_endGesture() {
             this.dragging = false;
             this.pinching = false;
             this.pinchDistance = 0;
@@ -95,6 +106,8 @@ export default {
             }
             if (evt.touches && evt.touches.length === 2) {
                 if (!this.pinching) return;
+                // The grid stays for a moment after the fingers leave, as with the wheel
+                this.$_c_showGridBriefly();
                 const distance = u.getPinchDistance(evt, this);
                 const delta = distance - this.pinchDistance;
                 this.zoom(delta > 0, Settings.PINCH_ACCELERATION);
@@ -115,10 +128,10 @@ export default {
         $_c_handleWheel(evt) {
             this.emitNativeEvent(evt);
 
-            if (!this.hasImage()) return;
+            if (!this.hasImage() || !this.zoomOnWheel) return;
 
             evt.preventDefault();
-            this.scrolling = true;
+            this.$_c_showGridBriefly();
 
             if (evt.wheelDelta < 0 || evt.deltaY > 0 || evt.detail > 0) {
                 this.zoom(false);
@@ -128,7 +141,6 @@ export default {
 
             this.$nextTick(() => {
                 this.$_c_handleZoomWheel();
-                this.scrolling = false;
             });
         },
 
@@ -191,6 +203,46 @@ export default {
         },
         $_c_handleDblClick(evt) {
             this.emitNativeEvent(evt);
+        },
+        // Keys only work while the canvas has the focus. Shortcuts stay with the browser.
+        $_c_handleKeyDown(evt) {
+            if (evt.altKey || evt.ctrlKey || evt.metaKey) return;
+
+            if (!this.hasImage()) {
+                if (evt.key !== 'Enter' && evt.key !== ' ') return;
+                evt.preventDefault();
+                this.chooseFile();
+                return;
+            }
+
+            const pixels = evt.shiftKey ? Settings.KEYBOARD_STEP_LARGE : Settings.KEYBOARD_STEP;
+            const step = pixels * this.quality;
+            const moves = {
+                ArrowLeft: { x: -step, y: 0 },
+                ArrowRight: { x: step, y: 0 },
+                ArrowUp: { x: 0, y: -step },
+                ArrowDown: { x: 0, y: step },
+            };
+            const zooms = {
+                '+': true, '=': true, '-': false, _: false,
+            };
+
+            if (moves[evt.key]) {
+                this.$_c_showGridBriefly();
+                this.move(moves[evt.key]);
+                // A key press is a whole gesture, like a drag that ends
+                this.$_c_checkBounceness();
+            } else if (evt.key in zooms) {
+                this.$_c_showGridBriefly();
+                this.zoom(zooms[evt.key], Settings.KEYBOARD_ZOOM_ACCELERATION);
+                this.$nextTick(() => {
+                    this.$_c_handleZoomWheel();
+                });
+            } else {
+                return;
+            }
+
+            evt.preventDefault();
         },
         $_c_handleInputChange() {
             const input = this.$refs.fileInput;
