@@ -563,3 +563,70 @@ describe('remove() in the handler of a load event', () => {
         expect(wrapper.emitted('new-image')).toBeUndefined();
     });
 });
+
+describe('remove() in the handler of an event in the middle of a load or draw', () => {
+    it('keeps a consistent state after remove() in the first draw', async () => {
+        let wrapper;
+        let removed = false;
+        const onDraw = () => {
+            if (removed) return;
+            removed = true;
+            wrapper.vm.remove();
+        };
+        wrapper = mountCropper({ src: landscapeUrl, onDraw });
+        await vi.waitFor(() => expect(removed).toBe(true));
+        await sleep(100);
+
+        expect(wrapper.vm.hasImage()).toBe(false);
+        expect(wrapper.vm.getMetadata().img).toBeNull();
+        expect(wrapper.emitted('new-image-drawn')).toBeUndefined();
+        expect(wrapper.find('.top-right-abs').exists()).toBe(false);
+        // A click opens the file chooser again
+        const click = vi.spyOn(wrapper.find('input[type="file"]').element, 'click');
+        await wrapper.find('canvas').trigger('click');
+        expect(click).toHaveBeenCalledTimes(1);
+    });
+
+    it('stops a file after remove() in file-choose', async () => {
+        let wrapper;
+        const onFileChoose = () => wrapper.vm.remove();
+        wrapper = await mountEmpty({ onFileChoose });
+
+        await chooseFile(wrapper, imageFile());
+        await sleep(100);
+
+        expect(wrapper.vm.hasImage()).toBe(false);
+        expect(callsOf(wrapper, 'drawImage')).toHaveLength(0);
+        expect(wrapper.emitted('file-loaded')).toBeUndefined();
+        expect(wrapper.vm.loading).toBe(false);
+    });
+
+    it('stops a new src after remove() in image-remove-onload', async () => {
+        let wrapper;
+        const onImageRemoveOnload = () => wrapper.vm.remove();
+        wrapper = await mountWithImage({ onImageRemoveOnload });
+        const draws = callsOf(wrapper, 'drawImage').length;
+
+        await wrapper.setProps({ src: portraitUrl });
+        await waitForEvent(wrapper, 'image-remove-onload');
+        await sleep(100);
+
+        expect(wrapper.vm.hasImage()).toBe(false);
+        expect(wrapper.vm.getMetadata().img).toBeNull();
+        expect(callsOf(wrapper, 'drawImage')).toHaveLength(draws);
+    });
+
+    it('stops a new file after remove() in image-remove-onload', async () => {
+        let wrapper;
+        const onImageRemoveOnload = () => wrapper.vm.remove();
+        wrapper = await mountWithImage({ onImageRemoveOnload });
+
+        await chooseFile(wrapper, imageFile());
+        await waitForEvent(wrapper, 'image-remove-onload');
+        await sleep(100);
+
+        expect(wrapper.vm.hasImage()).toBe(false);
+        expect(wrapper.vm.getMetadata().img).toBeNull();
+        expect(wrapper.emitted('new-image')).toBeUndefined();
+    });
+});

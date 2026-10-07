@@ -4,10 +4,13 @@ import events from '../core/events';
 export default {
     methods: {
         $_c_onNewFileIn(file) {
+            // A handler of file-choose can call remove()
+            const loadBefore = this.$_c_loadId;
             this.currentIsInitial = false;
             this.loading = true;
             this.$_c_paintBackground();
             this.emitEvent(events.FILE_CHOOSE_EVENT, file);
+            if (this.$_c_loadId !== loadBefore) return;
             this.chosenFile = file;
 
             if (!this.$_c_fileSizeIsValid(file)) {
@@ -38,7 +41,8 @@ export default {
                     this.emitEvent(events.FILE_LOADED_EVENT);
                     // A handler of file-loaded can call remove()
                     if (!this.$_c_isCurrentLoad(loadId)) return;
-                    this.$_c_onload(img);
+                    this.$_c_onload(img, loadId);
+                    if (!this.$_c_isCurrentLoad(loadId)) return;
                     this.emitEvent(events.NEW_IMAGE_EVENT);
                 };
             };

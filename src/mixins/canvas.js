@@ -25,6 +25,8 @@ export default {
         $_c_drawFrame() {
             if (!this.img || this.$.isUnmounted) return;
 
+            // A handler of draw or new-image-drawn can call remove()
+            const { img } = this;
             this.loading = false;
             const { ctx } = this;
             const {
@@ -39,10 +41,12 @@ export default {
             }
 
             this.emitEvent(events.DRAW_EVENT, ctx);
+            if (this.img !== img) return;
 
             if (!this.imageSet) {
                 this.imageSet = true;
                 this.emitEvent(events.NEW_IMAGE_DRAWN_EVENT);
+                if (this.img !== img) return;
             }
 
             if (this.dragging || this.pinching || this.scrolling) {
