@@ -269,6 +269,16 @@ npm run build     # builds dist/ and the demo
 
 `npm pack` and `npm publish` build `dist/` first.
 
+### Releases
+
+1. Set the new version in `package.json` and add it to `CHANGELOG.md`.
+2. Merge the change into `master`.
+3. Push a tag with the version number, for example `git tag 2.0.1 && git push origin 2.0.1`.
+
+The `Release` workflow then runs the lint and the tests, and publishes the package to npm. It uses npm trusted publishing, so it needs no npm token and no 2FA prompt. The tag must match the version in `package.json` and must be on `master`. Run the workflow by hand to check the setup. That run publishes nothing.
+
+On npmjs.com, the trusted publisher of the package points to this repository, the workflow `release.yml` and the environment `npm-publish`. Under "Allowed actions", it must allow `npm publish`. A new trusted publisher expires after 2 days without a publish. Create it right before a release.
+
 ## TODO
 
 I have only limited time to develop this package further. Your help to improve it step by step means a lot to me. Here is a small list of what is still missing:
