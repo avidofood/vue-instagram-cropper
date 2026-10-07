@@ -28,7 +28,9 @@ Version 2.0 is for Vue 3. The props, the events and the methods keep their names
 - Several croppers that mount at the same time load their own images. In 1.x, they shared one timer, and only the last cropper loaded its image.
 - After a drag, the component removes its listeners from the document. In 1.x, they stayed, and the component emitted `mouseup` and similar events for clicks anywhere on the page.
 - On unmount, the component removes all listeners and ignores an image or a file that finishes loading later. In 1.x, such a load threw a `TypeError`.
-- A slow image or file can no longer replace a newer one. In 1.x, an image that the user replaced showed up after its load finished.
+- A slow image or file can no longer replace a newer one. This also holds in the 30ms before a new `src` starts to load. In 1.x, an image that the user replaced showed up after its load finished.
+- `remove()` while an image loads stops that image. `remove()` and `src` set to `null` end the loading state. In 1.x, the image showed up later, and the spinner stayed.
+- `refresh()` right before the unmount no longer throws a `TypeError`.
 - Metadata of another image with the same size and crop draws the new image. In 1.x, the old image stayed on the canvas.
 - `forceCacheBreak` works with a relative URL such as `/images/photo.jpg`. In 1.x, it threw a `TypeError`. A data URL or blob URL stays as it is. In 1.x, the added parameter broke it.
 - While a file is over the cropper, the container gets the class `cropper--dropzone`. The styles existed in 1.x, but the class was never set.

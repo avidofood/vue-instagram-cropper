@@ -3,6 +3,7 @@ import { createApp, h, type GlobalComponents } from 'vue';
 import InstagramCropper, {
     Plugin,
     type InstagramCropperClipPlugin,
+    type InstagramCropperEmits,
     type InstagramCropperEmptyMetadata,
     type InstagramCropperInstance,
     type InstagramCropperMetadata,
@@ -43,6 +44,12 @@ h(InstagramCropper, {
 // No props are required
 h(InstagramCropper);
 h(InstagramCropper, { src: null });
+
+// The example from the README
+const onUpdate: InstagramCropperEmits['update'] = (metadata) => {
+    if (metadata.img) metadata.img.src.toString();
+};
+h(InstagramCropper, { onUpdate });
 
 const strictUpdate = (metadata: InstagramCropperMetadata) => metadata.img.src;
 // @ts-expect-error the payload can be metadata without an image

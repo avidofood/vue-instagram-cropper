@@ -61,10 +61,11 @@ The plugin registers the component as `InstagramCropper`. You can use it as `<In
 Since version 2.0.0 the package contains type declarations for the props, the metadata, the events, the methods and the plugin.
 
 ```typescript
-import type { InstagramCropperMetadata } from 'vue-instagram-cropper';
+import type { InstagramCropperEmits } from 'vue-instagram-cropper';
 
-const onUpdate = (metadata: InstagramCropperMetadata) => {
-    console.log(metadata.imgData);
+// Right after remove(), the metadata can have no image
+const onUpdate: InstagramCropperEmits['update'] = (metadata) => {
+    if (metadata.img) console.log(metadata.imgData);
 };
 ```
 
