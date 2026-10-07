@@ -163,7 +163,17 @@ export default {
                 this.scaleRatio = this.imgData.width / this.naturalWidth;
             }
 
-            this.scaleRatio *= x;
+            let scaleRatio = this.scaleRatio * x;
+            // The scaleRatio watcher also stops at this size. The limit here avoids an
+            // intermediate size, which Vue 3 would report with extra zoom events.
+            if (this.preventWhiteSpace) {
+                scaleRatio = Math.max(
+                    scaleRatio,
+                    this.outputWidth / this.naturalWidth,
+                    this.outputHeight / this.naturalHeight,
+                );
+            }
+            this.scaleRatio = scaleRatio;
         },
         getCanvas() {
             return this.canvas;

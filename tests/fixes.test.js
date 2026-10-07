@@ -171,3 +171,32 @@ describe('drag and drop', () => {
         expect(wrapper.classes()).not.toContain('cropper--dropzone');
     });
 });
+
+describe('zoom with preventWhiteSpace', () => {
+    // Vue 3 runs the watchers in another order than Vue 2. Without the limit in zoom(), the
+    // component emitted zoom twice for every wheel step, although the image did not change.
+    it('emits no zoom event when the image cannot get smaller', async () => {
+        const wrapper = await mountWithImage({ preventWhiteSpace: true });
+        const { imgData } = wrapper.vm.getMetadata();
+
+        await wrapper.find('canvas').trigger('wheel', { deltaY: 100 });
+        await new Promise((resolve) => { setTimeout(resolve, 50); });
+
+        expect(wrapper.emitted('zoom')).toBeUndefined();
+        expect(wrapper.vm.getMetadata().imgData).toEqual(imgData);
+    });
+
+    it('zooms out down to the size that fills the canvas', async () => {
+        const wrapper = await mountWithImage({ preventWhiteSpace: true });
+        wrapper.vm.zoom(true, 20);
+        await new Promise((resolve) => { setTimeout(resolve, 50); });
+        const zooms = wrapper.emitted('zoom').length;
+
+        wrapper.vm.zoom(false, 20);
+        await new Promise((resolve) => { setTimeout(resolve, 50); });
+
+        expect(wrapper.vm.scaleRatio).toBe(1);
+        expect(wrapper.vm.imgData.width).toBe(800);
+        expect(wrapper.emitted('zoom')).toHaveLength(zooms + 1);
+    });
+});
