@@ -31,6 +31,7 @@ Version 2.0 is for Vue 3. The props, the events and the methods keep their names
 - A slow image or file can no longer replace a newer one. This also holds in the 30ms before a new `src` starts to load. In 1.x, an image that the user replaced showed up after its load finished.
 - `remove()` while an image loads stops that image. `remove()` and `src` set to `null` end the loading state. In 1.x, the image showed up later, and the spinner stayed.
 - `refresh()` right before the unmount no longer throws a `TypeError`.
+- `remove()` in a handler of `initial-image-loaded` or `file-loaded` removes the image. Before, the image showed up in the next frame.
 - Metadata of another image with the same size and crop draws the new image. In 1.x, the old image stayed on the canvas.
 - `forceCacheBreak` works with a relative URL such as `/images/photo.jpg`. In 1.x, it threw a `TypeError`. A data URL or blob URL stays as it is. In 1.x, the added parameter broke it.
 - While a file is over the cropper, the container gets the class `cropper--dropzone`. The styles existed in 1.x, but the class was never set.

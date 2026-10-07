@@ -256,6 +256,17 @@ Version 2.0 is for Vue 3. The props, the events and the methods have the same na
 8. The package contains only the build in `dist/`. Import from `vue-instagram-cropper`. Imports such as `vue-instagram-cropper/src/...` or `vue-instagram-cropper/dist/index.common.js` no longer work. The UMD build sets the global variable `VueInstagramCropper` instead of `index`.
 9. The package no longer adds polyfills for `requestAnimationFrame` and `canvas.toBlob()`. Every browser that Vue 3 supports has both. The 1.x polyfill also replaced `Array.isArray` on the whole page.
 10. The package has no runtime dependencies. `canvas-exif-orientation` is gone.
+11. Some fixes change what you can observe:
+    - After a drag, the component no longer emits `mouseup` and the other end events for clicks elsewhere on the page.
+    - `remove()` and `src` set to `null` stop an image that still loads and emit `loading-end`.
+    - A slower image or file no longer replaces a newer one.
+    - Several croppers on one page no longer share their image.
+    - With `preventWhiteSpace`, metadata whose crop does not fill the canvas shows the image filled and centered.
+    - Metadata of another image with the same size and crop draws the new image.
+    - `forceCacheBreak` works with relative URLs and keeps data URLs and blob URLs as they are.
+    - The container gets the class `cropper--dropzone` while a file is over it.
+
+    The CHANGELOG lists all fixes.
 
 ## Development
 
