@@ -140,9 +140,10 @@ export default {
                 this.skipScaleRatio = false;
 
                 this.$_c_checkBounceness();
-                // Another image with the same size and crop needs this draw. The same image
-                // must not draw again: a parent that writes update back to src would loop.
-                if (imageChanged) this.$_c_draw();
+                // Another image with the same size and crop needs this draw, and so does the
+                // canvas that another load cleared. Otherwise the same image must not draw
+                // again: a parent that writes update back to src would loop.
+                if (imageChanged || this.loading) this.$_c_draw();
 
                 if (initial) {
                     this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT);

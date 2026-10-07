@@ -116,8 +116,11 @@ export default {
             if (byUser) this.$_c_cancelLoad();
 
             if (!this.imageSet) {
-                // The first image was still loading
-                if (byUser) this.$_c_setPlaceholders();
+                // The first image was still loading, or it loaded and waits for the next frame
+                if (byUser) {
+                    this.$_c_clearImage();
+                    this.$_c_setPlaceholders();
+                }
                 return;
             }
             this.$_c_setPlaceholders();

@@ -36,6 +36,8 @@ export default {
                 img.onload = () => {
                     if (!this.$_c_isCurrentLoad(loadId)) return;
                     this.emitEvent(events.FILE_LOADED_EVENT);
+                    // A handler of file-loaded can call remove()
+                    if (!this.$_c_isCurrentLoad(loadId)) return;
                     this.$_c_onload(img);
                     this.emitEvent(events.NEW_IMAGE_EVENT);
                 };

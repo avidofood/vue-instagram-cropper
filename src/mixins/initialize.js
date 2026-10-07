@@ -32,7 +32,7 @@ export default {
             this.ctx.imageSmoothingEnabled = true;
             this.ctx.strokeStyle = '#ffffff';
         },
-        $_c_reset_values() {
+        $_c_clearImage() {
             this.img = null;
             this.$refs.fileInput.value = '';
             this.imgData = {
@@ -41,10 +41,12 @@ export default {
                 startX: 0,
                 startY: 0,
             };
-            this.orientation = 1;
             this.scaleRatio = null;
             this.imageSet = false;
             this.chosenFile = null;
+        },
+        $_c_reset_values() {
+            this.$_c_clearImage();
 
             this.$emit('input', null);
         },

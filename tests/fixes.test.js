@@ -518,3 +518,48 @@ describe('refresh() and unmount', () => {
         }
     });
 });
+
+describe('metadata while another image loads', () => {
+    it('draws the restored crop and ends the loading state', async () => {
+        const wrapper = await mountWithImage();
+        const metadata = wrapper.vm.getMetadata();
+        await wrapper.setProps({ src: 'https://example.com/next-600x800-delay-200.jpg' });
+        await waitForEvent(wrapper, 'loading-start', 2);
+        const draws = callsOf(wrapper, 'drawImage').length;
+
+        await wrapper.setProps({ src: metadata });
+        await sleep(300);
+
+        expect(callsOf(wrapper, 'drawImage').length).toBeGreaterThan(draws);
+        expect(lastDrawnImage(wrapper)[1]).toBe(metadata.img);
+        expect(wrapper.vm.loading).toBe(false);
+        expect(wrapper.find('.cropper-spinner').exists()).toBe(false);
+    });
+});
+
+describe('remove() in the handler of a load event', () => {
+    it('removes the image from initial-image-loaded', async () => {
+        let wrapper;
+        const onInitialImageLoaded = () => wrapper.vm.remove();
+        wrapper = mountCropper({ src: landscapeUrl, onInitialImageLoaded });
+        await waitForEvent(wrapper, 'initial-image-loaded');
+        await sleep(100);
+
+        expect(wrapper.vm.hasImage()).toBe(false);
+        expect(callsOf(wrapper, 'drawImage')).toHaveLength(0);
+    });
+
+    it('removes the image from file-loaded', async () => {
+        let wrapper;
+        const onFileLoaded = () => wrapper.vm.remove();
+        wrapper = await mountEmpty({ onFileLoaded });
+
+        await chooseFile(wrapper, imageFile());
+        await waitForEvent(wrapper, 'file-loaded');
+        await sleep(100);
+
+        expect(wrapper.vm.hasImage()).toBe(false);
+        expect(callsOf(wrapper, 'drawImage')).toHaveLength(0);
+        expect(wrapper.emitted('new-image')).toBeUndefined();
+    });
+});
