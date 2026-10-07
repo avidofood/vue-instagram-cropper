@@ -16,7 +16,7 @@ export default {
             this.$_c_onDimensionChange();
         },
         showGrid() {
-            this.$_c_draw();
+            this.$_c_draw(true);
         },
         preventWhiteSpace(val) {
             if (val) {

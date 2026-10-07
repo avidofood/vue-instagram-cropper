@@ -14,8 +14,7 @@ export default {
             clearTimeout(this.$_c_gridTimer);
             this.$_c_gridTimer = setTimeout(() => {
                 this.adjusting = false;
-                // A redraw during a load would end the load state and emit the old crop
-                if (!this.loading) this.$_c_draw();
+                this.$_c_draw(true);
             }, Settings.GRID_DURATION);
         },
         // A new load ends the grid without a redraw. The new image draws without a grid.

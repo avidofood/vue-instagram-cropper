@@ -22,17 +22,21 @@ export default {
         $_c_autoSizingRemove() {
             if (this.$_c_resizeObserver) this.$_c_resizeObserver.disconnect();
         },
-        $_c_draw() {
+        // A cosmetic draw, for example to hide the grid, changes nothing about the crop
+        $_c_draw(cosmetic = false) {
             this.$nextTick(() => {
                 if (typeof window !== 'undefined' && window.requestAnimationFrame) {
-                    requestAnimationFrame(this.$_c_drawFrame);
+                    requestAnimationFrame(() => this.$_c_drawFrame(cosmetic));
                 } else {
-                    this.$_c_drawFrame();
+                    this.$_c_drawFrame(cosmetic);
                 }
             });
         },
-        $_c_drawFrame() {
+        $_c_drawFrame(cosmetic = false) {
             if (!this.img || this.$.isUnmounted) return;
+            // During a load, a cosmetic draw would end the load state and emit the old crop.
+            // A parent that writes update back to src would then replace the new image.
+            if (cosmetic && this.loading) return;
             // A container without a size, for example with v-show. $_c_onDimensionChange()
             // places and draws the image when the container gets a size.
             if (!this.outputWidth || !this.outputHeight) return;
@@ -95,7 +99,7 @@ export default {
             if (this.imageSet) {
                 // Shown again with the size of the last draw: the crop is still right
                 if (this.$_c_drawnSize === this.$_c_currentSize()) {
-                    this.$_c_draw();
+                    this.$_c_draw(true);
                     return;
                 }
                 // Metadata that arrived while the container had no size

@@ -115,7 +115,6 @@ export default {
             // The watchers only draw when a number changes
             const imageChanged = img !== this.img;
             this.imageSet = true;
-            this.$_c_drawnSize = null;
 
             // With preventWhiteSpace, a crop that does not fill the canvas, for example a crop
             // from a larger canvas, shows the image filled and centered, as in 1.x
@@ -144,6 +143,9 @@ export default {
 
                 if (!this.outputWidth || !this.outputHeight) {
                     // The container is hidden. $_c_layoutMetadata() runs when it shows up.
+                    // In a visible container, the size of the last draw stays valid: unchanged
+                    // metadata, for example from a parent that writes update back, draws nothing.
+                    this.$_c_drawnSize = null;
                     this.$_c_metadataPending = true;
                     if (initial) this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT);
                     return;

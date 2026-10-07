@@ -456,6 +456,20 @@ describe('grid after the review', () => {
         expect(wrapper.vm.$refs.cropper.getMetadata().img.src).toBe('https://example.com/next-600x800-delay-700.jpg');
     });
 
+    it('a change of showGrid does not redraw the old image while a new one loads', async () => {
+        const wrapper = await mountWithImage();
+        await wrapper.setProps({ src: 'https://example.com/next-600x800-delay-500.jpg' });
+        await waitForEvent(wrapper, 'loading-start', 2);
+        const updates = wrapper.emitted('update').length;
+
+        await wrapper.setProps({ showGrid: false });
+        await sleep(100);
+
+        expect(wrapper.vm.loading).toBe(true);
+        expect(wrapper.emitted('loading-end')).toHaveLength(1);
+        expect(wrapper.emitted('update')).toHaveLength(updates);
+    });
+
     it('showGrid false removes a grid that is already on the canvas', async () => {
         const wrapper = await mountWithImage();
         const canvas = wrapper.find('canvas');
@@ -524,6 +538,56 @@ describe('a container that hides and shows again', () => {
         expect(lastDrawnImage(wrapper).slice(2)).toEqual([
             imgData.startX, imgData.startY, imgData.width, imgData.height,
         ]);
+    });
+
+    // With preventWhiteSpace, the size change would otherwise fill the canvas from scratch
+    it('keeps metadata that arrives while hidden, with preventWhiteSpace', async () => {
+        const img = await loadImage(landscapeUrl);
+        const imgData = {
+            width: 900, height: 675, startX: -150, startY: -40,
+        };
+        const wrapper = await mountWithImage({ preventWhiteSpace: true });
+
+        await resizeContainer(wrapper, hidden);
+        await wrapper.setProps({ src: { img, imgData, scaleRatio: 1.125 } });
+        await sleep(100);
+        await resizeContainer(wrapper, shown);
+        await sleep(50);
+
+        expect(wrapper.vm.getMetadata().imgData).toEqual(imgData);
+    });
+
+    // A parent that writes update back to src sends the same metadata again
+    it('keeps the crop after metadata came back unchanged', async () => {
+        const wrapper = await mountWithImage({ preventWhiteSpace: true });
+        wrapper.vm.zoom(true, 20);
+        await sleep(50);
+        const metadata = wrapper.vm.getMetadata();
+        await wrapper.setProps({ src: metadata });
+        await sleep(100);
+
+        await resizeContainer(wrapper, hidden);
+        await sleep(50);
+        await resizeContainer(wrapper, shown);
+        await sleep(50);
+
+        expect(wrapper.vm.getMetadata().imgData).toEqual(metadata.imgData);
+    });
+
+    it('does not end a load when the container shows again', async () => {
+        const wrapper = await mountWithImage();
+        await wrapper.setProps({ src: 'https://example.com/next-600x800-delay-500.jpg' });
+        await waitForEvent(wrapper, 'loading-start', 2);
+        const updates = wrapper.emitted('update').length;
+
+        await resizeContainer(wrapper, hidden);
+        await resizeContainer(wrapper, shown);
+        await sleep(100);
+
+        expect(wrapper.vm.loading).toBe(true);
+        expect(wrapper.emitted('update')).toHaveLength(updates);
+        await waitForEvent(wrapper, 'loading-end', 2);
+        expect(wrapper.vm.getMetadata().img.src).toBe('https://example.com/next-600x800-delay-500.jpg');
     });
 
     it('applies metadata that arrives while the container is hidden', async () => {
