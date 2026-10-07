@@ -6,10 +6,17 @@
   "main": "./dist/vue-instagram-cropper.umd.js",
   "unpkg": "./dist/vue-instagram-cropper.umd.js",
   "module": "./dist/vue-instagram-cropper.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/vue-instagram-cropper.mjs",
-      "require": "./dist/vue-instagram-cropper.umd.js"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/vue-instagram-cropper.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/vue-instagram-cropper.umd.js"
+      }
     },
     "./package.json": "./package.json"
   },
@@ -19,7 +26,8 @@
     "build:demo": "vite build --mode demo",
     "build": "npm run build:dist && npm run build:demo",
     "lint": "eslint .",
-    "test": "vitest run",
+    "test": "vitest run && npm run test:types",
+    "test:types": "tsc -p tests/types",
     "prepack": "npm run build:dist"
   },
   "files": [
@@ -48,7 +56,8 @@
     "customizable",
     "editable",
     "lightweight",
-    "mobile"
+    "mobile",
+    "typescript"
   ],
   "repository": {
     "type": "git",
