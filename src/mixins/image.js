@@ -19,6 +19,7 @@ export default {
     },
     methods: {
         $_c_startLoad() {
+            this.$_c_stopGrid();
             this.$_c_loadId += 1;
             return this.$_c_loadId;
         },

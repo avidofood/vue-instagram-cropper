@@ -106,6 +106,8 @@ export default {
             }
             if (evt.touches && evt.touches.length === 2) {
                 if (!this.pinching) return;
+                // The grid stays for a moment after the fingers leave, as with the wheel
+                this.$_c_showGridBriefly();
                 const distance = u.getPinchDistance(evt, this);
                 const delta = distance - this.pinchDistance;
                 this.zoom(delta > 0, Settings.PINCH_ACCELERATION);

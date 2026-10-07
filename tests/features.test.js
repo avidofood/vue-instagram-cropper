@@ -2,11 +2,11 @@ import {
     describe, expect, it, vi,
 } from 'vitest';
 import { createSSRApp, h } from 'vue';
+import { mount } from '@vue/test-utils';
 import { renderToString } from 'vue/server-renderer';
 import InstagramCropper from '../src/index';
 import {
     callsOf,
-    collectErrors,
     landscapeUrl,
     lastDrawnImage,
     mountCropper,
@@ -206,17 +206,6 @@ describe('grid', () => {
         await sleep(50);
 
         expect(callsOf(wrapper, 'stroke')).toHaveLength(0);
-    });
-
-    it('stops the grid timer on unmount', async () => {
-        const errors = collectErrors();
-        const wrapper = await mountWithImage();
-        await wrapper.find('canvas').trigger('wheel', { deltaY: -100 });
-
-        wrapper.unmount();
-        await sleep(600);
-
-        expect(errors).toEqual([]);
     });
 });
 
@@ -424,5 +413,88 @@ describe('hydration', () => {
         app.unmount();
         warn.mockRestore();
         error.mockRestore();
+    });
+});
+
+describe('grid after the review', () => {
+    // A cosmetic redraw must not end a load or emit the old crop
+    it('the grid timer does not redraw the old image while a new one loads', async () => {
+        const wrapper = await mountWithImage();
+        await wrapper.find('canvas').trigger('wheel', { deltaY: -100 });
+        const updates = wrapper.emitted('update').length;
+        await sleep(100);
+
+        await wrapper.setProps({ src: 'https://example.com/next-600x800-delay-700.jpg' });
+        await waitForEvent(wrapper, 'loading-start', 2);
+        await sleep(600);
+
+        expect(wrapper.vm.loading).toBe(true);
+        expect(wrapper.emitted('loading-end')).toHaveLength(1);
+        expect(wrapper.emitted('update').length).toBeLessThanOrEqual(updates + 1);
+    });
+
+    it('a parent that writes update back keeps the new image', async () => {
+        const Parent = {
+            components: { InstagramCropper },
+            data: () => ({ crop: landscapeUrl }),
+            template: `<InstagramCropper
+                ref="cropper"
+                style="width: 300px; height: 300px;"
+                :src="crop"
+                @update="crop = $event"
+            />`,
+        };
+        const wrapper = mount(Parent, { attachTo: document.body });
+        await vi.waitFor(() => expect(typeof wrapper.vm.crop).toBe('object'));
+        await wrapper.find('canvas').trigger('wheel', { deltaY: -100 });
+        await sleep(100);
+
+        wrapper.vm.crop = 'https://example.com/next-600x800-delay-700.jpg';
+        await sleep(1000);
+
+        expect(wrapper.vm.$refs.cropper.getMetadata().img.src).toBe('https://example.com/next-600x800-delay-700.jpg');
+    });
+
+    it('showGrid false removes a grid that is already on the canvas', async () => {
+        const wrapper = await mountWithImage();
+        const canvas = wrapper.find('canvas');
+        await canvas.trigger('mousedown', { clientX: 100, clientY: 100 });
+        await canvas.trigger('mousemove', { clientX: 110, clientY: 100 });
+        await sleep(50);
+        expect(strokesAfterLastImage(wrapper)).toBe(4);
+
+        await wrapper.setProps({ showGrid: false });
+        await sleep(50);
+
+        expect(strokesAfterLastImage(wrapper)).toBe(0);
+    });
+
+    it('shows the grid for a moment after a pinch', async () => {
+        const wrapper = await mountWithImage();
+        const canvas = wrapper.find('canvas');
+        const fingers = (distance) => [
+            { clientX: 150 - distance, clientY: 150 }, { clientX: 150 + distance, clientY: 150 },
+        ];
+
+        await canvas.trigger('touchstart', { touches: fingers(20) });
+        await canvas.trigger('touchmove', { touches: fingers(40) });
+        await canvas.trigger('touchend', { touches: [], changedTouches: fingers(40) });
+        await sleep(100);
+
+        expect(strokesAfterLastImage(wrapper)).toBe(4);
+        await sleep(600);
+        expect(strokesAfterLastImage(wrapper)).toBe(0);
+    });
+
+    it('cancels the grid timer on unmount', async () => {
+        const wrapper = await mountWithImage();
+        await wrapper.find('canvas').trigger('wheel', { deltaY: -100 });
+        const timer = wrapper.vm.$_c_gridTimer;
+        const clear = vi.spyOn(globalThis, 'clearTimeout');
+
+        wrapper.unmount();
+
+        expect(timer).toBeTruthy();
+        expect(clear).toHaveBeenCalledWith(timer);
     });
 });

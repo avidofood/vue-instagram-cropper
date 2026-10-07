@@ -15,6 +15,9 @@ export default {
         outputHeight() {
             this.$_c_onDimensionChange();
         },
+        showGrid() {
+            this.$_c_draw();
+        },
         preventWhiteSpace(val) {
             if (val) {
                 this.imageSet = false;
