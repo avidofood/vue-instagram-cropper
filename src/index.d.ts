@@ -20,11 +20,14 @@ export interface InstagramCropperMetadata {
     scaleRatio: number;
 }
 
-/** What getMetadata() returns without an image. */
+/**
+ * What getMetadata() returns without an image. scaleRatio is null before the first image and 0
+ * after remove(), as in 1.x.
+ */
 export interface InstagramCropperEmptyMetadata {
     img: null;
     imgData: InstagramCropperImageData;
-    scaleRatio: null;
+    scaleRatio: number | null;
 }
 
 /**
@@ -113,9 +116,28 @@ export type InstagramCropperMethods = {
     ): InstagramCropperSaving;
 };
 
+/** The component instance, as a template ref or the init event returns it. */
+export type InstagramCropperInstance = InstagramCropperMethods & {
+    readonly src?: string | InstagramCropperMetadata | null;
+    readonly quality: number;
+    readonly canvasColor: string;
+    readonly placeholder: string;
+    readonly placeholderColor: string;
+    readonly placeholderFontSize: number;
+    readonly fileSizeLimit: number;
+    readonly forceCacheBreak: boolean;
+    readonly preventWhiteSpace: boolean;
+    /** Width of the canvas in canvas pixels: the width of the container times quality. */
+    readonly outputWidth: number;
+    /** Height of the canvas in canvas pixels: the height of the container times quality. */
+    readonly outputHeight: number;
+    /** Set it to null to remove all clip plugins. */
+    clipPlugins: InstagramCropperClipPlugin[] | null;
+};
+
 export type InstagramCropperEmits = {
-    /** The component is ready. */
-    init: (cropper: InstagramCropperMethods) => void;
+    /** The component is ready. The event carries the component instance. */
+    init: (cropper: InstagramCropperInstance) => void;
     'file-choose': (file: File) => void;
     'file-size-exceed': (file: File) => void;
     'file-type-mismatch': (file: File) => void;
@@ -131,7 +153,11 @@ export type InstagramCropperEmits = {
     'initial-image-loaded': () => void;
     'loading-start': () => void;
     'loading-end': () => void;
-    update: (metadata: InstagramCropperMetadata) => void;
+    /**
+     * The component drew a new view. After remove(), a pending update can carry the metadata
+     * without an image (img is null), as in 1.x.
+     */
+    update: (metadata: InstagramCropperMetadata | InstagramCropperEmptyMetadata) => void;
     /** Emitted with null when the image is removed. */
     input: (value: null) => void;
     // The component emits these events of the canvas and the container again

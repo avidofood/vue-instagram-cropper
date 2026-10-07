@@ -3,6 +3,8 @@ import { createApp, h, type GlobalComponents } from 'vue';
 import InstagramCropper, {
     Plugin,
     type InstagramCropperClipPlugin,
+    type InstagramCropperEmptyMetadata,
+    type InstagramCropperInstance,
     type InstagramCropperMetadata,
     type InstagramCropperProps,
 } from '../../src/index';
@@ -24,7 +26,16 @@ const props: InstagramCropperProps = {
 
 h(InstagramCropper, {
     ...props,
-    onUpdate: (metadata: InstagramCropperMetadata) => metadata.imgData.width,
+    // After remove(), a pending update carries metadata without an image
+    onUpdate: (metadata: InstagramCropperMetadata | InstagramCropperEmptyMetadata) => (
+        metadata.img ? metadata.img.src : metadata.imgData.width
+    ),
+    // vue-cropgram creates the output with the instance from init
+    onInit: (vm: InstagramCropperInstance) => {
+        const { img, imgData } = vm.getMetadata();
+        if (img) vm.saving(img, imgData, vm.outputWidth, vm.outputHeight);
+        return vm.preventWhiteSpace && vm.quality;
+    },
     onDraw: (context: CanvasRenderingContext2D) => context.canvas,
     onClick: (event: MouseEvent) => event.clientX,
 });
@@ -32,6 +43,10 @@ h(InstagramCropper, {
 // No props are required
 h(InstagramCropper);
 h(InstagramCropper, { src: null });
+
+const strictUpdate = (metadata: InstagramCropperMetadata) => metadata.img.src;
+// @ts-expect-error the payload can be metadata without an image
+h(InstagramCropper, { onUpdate: strictUpdate });
 
 // @ts-expect-error quality is a number
 h(InstagramCropper, { quality: 'high' });
@@ -53,6 +68,15 @@ h(InstagramCropper, { src: metadata });
 const incomplete: InstagramCropperMetadata = { img, scaleRatio: 1 };
 
 declare const cropper: InstanceType<typeof InstagramCropper>;
+// A template ref fits where the init payload type is expected
+const instance: InstagramCropperInstance = cropper;
+const empty: InstagramCropperEmptyMetadata = {
+    img: null,
+    imgData: {
+        width: 0, height: 0, startX: 0, startY: 0,
+    },
+    scaleRatio: 0,
+};
 const hasImage: boolean = cropper.hasImage();
 const dataUrl: string = cropper.generateDataUrl('image/jpeg', 0.8);
 const blob: Promise<Blob | null> = cropper.promisedBlob('image/jpeg', 0.8);
@@ -91,5 +115,5 @@ cropper.addClipPlugin('circle');
 const global: typeof InstagramCropper = {} as GlobalComponents['InstagramCropper'];
 
 export {
-    incomplete, hasImage, dataUrl, blob, canvas, context, file, global,
+    incomplete, hasImage, dataUrl, blob, canvas, context, file, global, instance, empty,
 };
