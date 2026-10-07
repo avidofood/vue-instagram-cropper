@@ -35,6 +35,9 @@
             class="text-danger text-center mt-2"
             v-text="error"
         />
+        <p class="text-light text-center small mt-2">
+            Keyboard: focus the image with Tab, move it with the arrow keys, zoom with + and -.
+        </p>
     </section>
 
     <section class="container text-center mt-4">
@@ -82,6 +85,14 @@
                     @click="download('image/jpeg', 0.8)"
                 >
                     Download 20% compressed JPEG
+                </button>
+            </div>
+            <div class="p-1 col-12 col-sm-auto">
+                <button
+                    class="btn btn-secondary"
+                    @click="download('image/jpeg', 0.9, { width: 1080 })"
+                >
+                    Download 1080 px wide
                 </button>
             </div>
         </div>
@@ -205,8 +216,8 @@ export default {
 
             img.src = 'https://images.unsplash.com/photo-1559124778-aa10b8898cc0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=562&q=80';
         },
-        async download(type, compressionRate) {
-            const blob = await this.$refs.cropper.promisedBlob(type, compressionRate);
+        async download(type, compressionRate, options) {
+            const blob = await this.$refs.cropper.promisedBlob(type, compressionRate, options);
             if (!blob) return;
 
             const url = URL.createObjectURL(blob);
