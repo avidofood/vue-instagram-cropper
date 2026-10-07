@@ -14,25 +14,58 @@
 
 **If you are looking to crop and upload images like in Instagram, please visit https://github.com/avidofood/vue-cropgram 😜**
 
+ >**Prerequisites**: Vue 3.2 or newer for version 2.x of this package. For Vue 2, use version 1.x.
+
 ## Installation in 2 Steps
 
 ### 1: Add with npm 💻
 ```bash
- npm install vue-instagram-cropper
+# For Vue 3.x.x
+npm install vue-instagram-cropper
+
+# For Vue 2.x.x
+npm install vue-instagram-cropper@1x
 ```
 
-### 2a: Install as a component
+### 2a: Import the component
 
-```javascript
- import InstagramCropper from 'vue-instagram-cropper'
-
- Vue.component('instagram-cropper', InstagramCropper);
+```vue
+<script setup>
+import InstagramCropper from 'vue-instagram-cropper';
+</script>
 ```
-### 2b: Install as a plugin 
-```javascript
- import { Plugin } from 'vue-instagram-cropper'
 
- Vue.use(Plugin);
+Or register it globally:
+
+```javascript
+import { createApp } from 'vue';
+import InstagramCropper from 'vue-instagram-cropper';
+
+const app = createApp(App);
+app.component('InstagramCropper', InstagramCropper);
+```
+
+### 2b: Install as a plugin
+```javascript
+import { createApp } from 'vue';
+import { Plugin } from 'vue-instagram-cropper';
+
+const app = createApp(App);
+app.use(Plugin);
+```
+
+The plugin registers the component as `InstagramCropper`. You can use it as `<InstagramCropper>` or `<instagram-cropper>`.
+
+### TypeScript
+
+Since version 2.0.0 the package contains type declarations for the props, the metadata, the events, the methods and the plugin.
+
+```typescript
+import type { InstagramCropperMetadata } from 'vue-instagram-cropper';
+
+const onUpdate = (metadata: InstagramCropperMetadata) => {
+    console.log(metadata.imgData);
+};
 ```
 
 ## Usage - (or to make it runnable 🏃‍♂️)
@@ -49,6 +82,8 @@
 
  cropper: 'https://i.picsum.photos/id/468/200/300.jpg',
 ```
+
+The component takes the size of its container. Give it a width and a height, for example with a class.
 
 ### Advanced version 🌐
 
@@ -72,7 +107,7 @@ https://avidofood.github.io/vue-instagram-cropper
 
 ## Props
 
-This package is made to immitate Instagram's cropper.
+This package is made to imitate Instagram's cropper.
 
 ### Props values
 
@@ -91,60 +126,91 @@ Multiplies your image output. If your canvas is 600px wide and the quality is se
 - `placeholderColor` (default: `#67ACFD`)
 - `placeholderFontSize` (default: `0`)
   
-Dynamic calculation when it's set to 0.
+With `0`, the component calculates the font size.
 
 - `fileSizeLimit` (default: `0`)
   
-If you love overlays, then copy the overlay from the advanced example.
+The largest file size in bytes. `0` means no limit. A larger file emits `file-size-exceed`.
 
 - `forceCacheBreak` (default: `false`)
 
-This is important if you have still CORS issues. But remember the browser is not caching images anymore.
+If you still have CORS issues, set it to `true`. The browser then does not cache the images. Data URLs and blob URLs stay as they are.
 
 - `preventWhiteSpace` (default: `false`)
 
-Prevents revealing background white space when moving or zooming the image.
+Keeps the canvas filled with the image while the user moves or zooms it.
+
+### Image orientation
+
+Photos from a phone often contain an EXIF orientation. Browsers turn these images correctly by themselves since 2020 (Chrome 81, Firefox 77, Safari 13.1). Version 2.0 draws the image as the browser shows it.
 
 ## Events 
 
-- `init`: Initialized
-- `initial-image-loaded`: Emitted when initial image loaded.
-- `file-choose`: File was chosen
-- `file-size-exceed`: File Size Limit was reached
-- `file-type-mismatch`: Only images are accepted
-- `file-loaded`: Emitted when a new file is received and read successfully
-- `new-image`: Emitted when a new valid image is received and read successfully
-- `new-image-drawn`: Emitted when a new image is drawn on canvas for the first time.
-- `image-error`: Emitted when an error occurs for the image (`onerror`-listener)
-- `image-remove`: Emitted when image is removed from croppa.
-- `image-remove-onload`: Emitted when image is removed from croppa due to file-loaded or change of `src`.
-- `move`: 
-- `zoom`: 
-- `draw`: Emitted on every view update
-- `loading-start`: Emitted when image loading phase starts.
-- `loading-end`: Emitted when image loading phase ends.
-- `update`: When a new image is drawn, you get get the metadata via the event.
+- `init`: The component is ready. The event carries the component.
+- `initial-image-loaded`: The image from `src` loaded for the first time.
+- `file-choose`: The user chose a file. The event carries the file.
+- `file-size-exceed`: The file is larger than `fileSizeLimit`.
+- `file-type-mismatch`: The file is not an image.
+- `file-loaded`: The component read the new file.
+- `new-image`: The component read a new valid image.
+- `new-image-drawn`: The component drew a new image on the canvas for the first time.
+- `image-error`: The image failed to load (`onerror` listener).
+- `image-remove`: The user or `remove()` removed the image.
+- `image-remove-onload`: The component removed the old image for a new file or a new `src`.
+- `move`: The user or `move()` moved the image.
+- `zoom`: The user or `zoom()` changed the size of the image.
+- `draw`: The component drew the view again. The event carries the canvas context.
+- `loading-start`: The image starts to load.
+- `loading-end`: The image finished loading.
+- `update`: The component drew a new view. The event carries the metadata, see `getMetadata()`.
+- `input`: The component removed the image. The value is `null`.
+
+The component also emits native events of the canvas again. These are `click`, `dblclick`, `mousedown`, `mouseup`, `mousemove` and `wheel`. These are `touchstart`, `touchend`, `touchcancel` and `touchmove`. These are `pointercancel`, `pointermove` and `pointerleave`. For the drag and drop of a file, it emits `dragenter`, `dragleave`, `dragover` and `drop` of the container.
 
 ## Methods
 
-You need to set `ref=cropper` to the HTML tag `<instagram-cropper>`. After that you can call all methods like this `this.$refs.cropper.hasImage()`.
+You need to set `ref="cropper"` to the HTML tag `<instagram-cropper>`. After that you can call all methods like this `this.$refs.cropper.hasImage()`.
+
+With `<script setup>`, use a template ref:
+
+```vue
+<script setup>
+import { ref } from 'vue';
+import InstagramCropper from 'vue-instagram-cropper';
+
+const cropper = ref(null);
+
+const save = async () => {
+    const blob = await cropper.value.promisedBlob('image/jpeg', 0.8);
+};
+</script>
+
+<template>
+    <InstagramCropper ref="cropper" src="/images/photo.jpg" />
+</template>
+```
 
 - `getCanvas()`: returns the canvas object
 - `getContext()`: returns the canvas context object
 - `getChosenFile()`: returns File object
 - `chooseFile()`: Opens the file chooser window to choose an image.
-- `refresh()`: Reinitialize the component. Useful when you want to change initial image.
+- `refresh()`: Starts the component again, for example to load the initial image again.
 - `hasImage()`: Return boolean value indicating whether currently there is a image.
+- `remove()`: Removes the image and shows the placeholder.
+- `move({ x: number, y: number })`: Moves the image by `x` and `y` canvas pixels.
+- `zoom( zoomIn: boolean, acceleration: number )`: Zooms in or out by one step. `zoomIn` defaults to `true`, `acceleration` to 1.
 - `generateDataUrl( type: string, compressionRate: number )`: 
    - Returns a data-URL containing a representation of the image in the format specified by the type parameter (defaults to png).
    - `compressionRate` defaults to 1, you can pass a number between 0 and 1 to get a compressed output image.
+   - If there is no image, it returns an empty string.
 - `generateBlob( callback: function, mimeType: string, compressionRate: number )`: 
    - Creates a Blob object representing the image contained in the canvas.
    - If there is no image, the first argument of callback function is null.
 - `promisedBlob( mimeType: string, compressionRate: number )`: 
-   - This method returns a Promise wrapping around generateBlob(), so that you can use async/await syntax instead of a callback to get blob data, it's simpler.
-   - If there is no image, the first argument of callback function is null.
-- `getMetadata()`: Gives an object back with all important information to create the image again at the same scale and position. Useful, if you are using a list of images.
+   - Returns a Promise around `generateBlob()`. With it, you can use async/await instead of a callback.
+   - If there is no image, the promise resolves with `null`.
+- `getMetadata()`: Returns an object with the image, its position and its scale. Pass it to `src` to show the image with the same crop again, for example in a list of images.
+- `saving(img, imgData, outputWidth, outputHeight)`: Creates the output for other metadata, for example for an image in a list. It returns an object with `generateDataUrl()`, `generateBlob()` and `promisedBlob()`. Pass the `outputWidth` and `outputHeight` of the component.
 
 ```javascript
 const blob = await this.$refs.cropper.promisedBlob()
@@ -169,27 +235,61 @@ onInit(vm) {
   })
 },
 ``` 
->Note: in the plugin function you should always start with ctx.beginPath() and end with ctx.closePath().
+>Note: In the plugin function, always start with `ctx.beginPath()` and end with `ctx.closePath()`.
 
->Note: it only works when prevent-white-space is true.
+>Note: Clip plugins only work with `prevent-white-space` set to `true`.
+
+To remove all clip plugins, set `this.$refs.cropper.clipPlugins = null`.
+
+## Upgrade from 1.x to 2.0
+
+Version 2.0 is for Vue 3. The props, the events and the methods have the same names as in 1.x. These things changed:
+
+1. Vue 3.2 or newer is required. For Vue 2, stay on version 1.x: `npm install vue-instagram-cropper@1x`.
+2. Register the component with `app.component()` or `app.use(Plugin)` instead of `Vue.component()` or `Vue.use()`. The plugin registers the name `InstagramCropper`. The tag `<instagram-cropper>` still works.
+3. Remove `.native` from listeners on the component. Vue 3 has no `.native` modifier. A listener such as `@click` gets the click on the canvas from the component, as in 1.x without `.native`.
+4. The component no longer turns a chosen photo by its EXIF orientation. The browser does that already. In 1.x, photos from the iOS photo editor showed up turned twice ([#17](https://github.com/avidofood/vue-instagram-cropper/pull/17)).
+5. The component no longer listens to and emits the legacy events `DOMMouseScroll` and `mousewheel`. Use `wheel`.
+6. If there is no image, `promisedBlob()` resolves with `null`. In 1.x, the promise was rejected.
+7. With `preventWhiteSpace`, zooming out at the smallest size emits no `zoom` event and does not move the image.
+8. The package contains only the build in `dist/`. Import from `vue-instagram-cropper`. Imports such as `vue-instagram-cropper/src/...` or `vue-instagram-cropper/dist/index.common.js` no longer work.
+9. The package no longer adds polyfills for `requestAnimationFrame` and `canvas.toBlob()`. Every browser that Vue 3 supports has both. The 1.x polyfill also replaced `Array.isArray` on the whole page.
+10. The package has no runtime dependencies. `canvas-exif-orientation` is gone.
+
+## Development
+
+You need Node.js 22.12 or newer (see `.nvmrc`).
+
+```bash
+npm install
+npm test          # unit tests and type checks
+npm run lint
+npm run build     # builds dist/ and the demo
+```
+
+`npm pack` and `npm publish` build `dist/` first.
 
 ## TODO
 
-I have only limited time to develop this package further. It would mean a lot to me, if you would help me to improve it step by step. Here is a small list, what is still missing:
+I have only limited time to develop this package further. Your help to improve it step by step means a lot to me. Here is a small list of what is still missing:
 
-- When zooming, the grid should be visible (Only moving shows the grid right now)
+- The grid shows only while the user moves the image. It also needs to show while the user zooms.
 - The maximum zoom limit is not the same as in Instagram
-- We need the prop `forceAspect`. Important if you want to "clip" the image to a specific aspect ratio. Needed for multiple images with [vue-cropgram](https://github.com/avidofood/vue-cropgram)
+- We need the prop `forceAspect`. With it, you can "clip" the image to a specific aspect ratio. [vue-cropgram](https://github.com/avidofood/vue-cropgram) needs it for multiple images.
  
 ## Security
 
-If you discover any security related issues, please don't email me. I'm afraid 😱. avidofood@protonmail.com
+If you discover any security related issues, please do not email me. I'm afraid 😱. avidofood@protonmail.com
 
 ## Credits
 
 Now comes the best part! 😍
 This package is based on
 
- - https://github.com/zhanziyang/vue-croppa (but simplefied)
+ - https://github.com/zhanziyang/vue-croppa (but simplified)
 
 Oh come on. You read everything?? If you liked it so far, hit the ⭐️ button to give me a 🤩 face. 
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
