@@ -51,7 +51,7 @@ Version 2.0 is for Vue 3. The props, the events and the methods keep their names
 - The package has no runtime dependencies. `canvas-exif-orientation` is gone.
 - A size change without an image redraws the placeholder. In 1.x, it started the component again and emitted `init` a second time.
 - The package declares `"type": "commonjs"` and `"exports"` with `types` conditions. The ES module build is `dist/vue-instagram-cropper.mjs`, the UMD build is `dist/vue-instagram-cropper.umd.js`. As in 1.x, the CSS is part of the JavaScript files.
-- The build uses Vite 8. Tests use Vitest. Linting uses ESLint 9 and eslint-config-avidofood 4. The development tools need Node.js ^22.22.2 or ^24.15.0, because of jsdom 30. The published files have no Node.js requirement.
+- The build uses Vite 8. Tests use Vitest and jsdom 30, the type tests TypeScript 7. Linting uses ESLint 9 and eslint-config-avidofood 4. The development tools need Node.js ^22.22.2 or ^24.15.0, because of jsdom 30. The published files have no Node.js requirement.
 - `npm pack` and `npm publish` build `dist/` first (`prepack`). The repository no longer contains `dist/`.
 - The demo uses Vue 3.
 - With the new lockfile, `npm audit` finds no vulnerabilities. The 122 open Dependabot alerts of 1.x all came from its build tools (vue-cli 4, laravel-mix 5, webpack 4). None of them reached the published package.
