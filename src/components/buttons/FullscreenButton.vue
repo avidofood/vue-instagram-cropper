@@ -20,7 +20,6 @@
     </rounded-button>
 </template>
 
-
 <script>
 import RoundedButton from './RoundedButton.vue';
 
@@ -31,9 +30,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-    .bottom-left-abs{
-        bottom: 8px;
-        left: 8px;
-    }
+<style scoped>
+.bottom-left-abs {
+    bottom: 8px;
+    left: 8px;
+}
 </style>

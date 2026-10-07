@@ -41,7 +41,6 @@ export default {
 
             img.src = href;
 
-
             if (u.imageLoaded(img)) {
                 this.$_c_onload(img, +img.dataset.exifOrientation, initial, true);
             } else {
@@ -97,7 +96,6 @@ export default {
 
             this.img = img;
 
-
             if (orientation > 1) {
                 if (!this.img) return;
 
@@ -131,7 +129,11 @@ export default {
                 // Usually the aspectRatio is perfectly set and you don't want to change it.
                 // For example if you are loading the image via URL src
                 // and you don't want to change the aspect ratio
-                if (keepAspect && !this.greaterThanMaximumAspectRatio && !this.smallerThanMinimumAspectRatio) {
+                if (
+                    keepAspect
+                    && !this.greaterThanMaximumAspectRatio
+                    && !this.smallerThanMinimumAspectRatio
+                ) {
                     this.$_c_aspectFit();
                 } else {
                     this.$_c_aspectFill();

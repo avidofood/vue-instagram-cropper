@@ -32,10 +32,6 @@ export default class Saving {
     }
 
     promisedBlob(...args) {
-        if (typeof Promise === 'undefined') {
-            console.warn('No Promise support. Please add Promise polyfill if you want to use this method.');
-            return null;
-        }
         return new Promise((resolve, reject) => {
             try {
                 this.generateBlob((blob) => {

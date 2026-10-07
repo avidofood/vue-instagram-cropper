@@ -1,6 +1,5 @@
 import events from '../core/events';
 
-
 export default {
     methods: {
         $_c_setContainerSize() {

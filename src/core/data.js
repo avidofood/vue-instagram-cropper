@@ -4,14 +4,12 @@ export default {
     img: null,
     line: null,
 
-
     imgData: {
         width: 0,
         height: 0,
         startX: 0,
         startY: 0,
     },
-
 
     naturalWidth: 0,
     naturalHeight: 0,
@@ -29,7 +27,6 @@ export default {
     realWidth: 0,
     realHeight: 0,
     chosenFile: null,
-
 
     // used in handle mixins
     supportTouch: false,

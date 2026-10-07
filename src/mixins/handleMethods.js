@@ -48,7 +48,10 @@ export default {
             let pointerMoveDistance = 0;
             if (this.pointerStartCoord) {
                 const pointerCoord = u.getPointerCoords(evt, this);
-                pointerMoveDistance = Math.sqrt(Math.pow(pointerCoord.x - this.pointerStartCoord.x, 2) + Math.pow(pointerCoord.y - this.pointerStartCoord.y, 2)) || 0;
+                pointerMoveDistance = Math.hypot(
+                    pointerCoord.x - this.pointerStartCoord.x,
+                    pointerCoord.y - this.pointerStartCoord.y,
+                ) || 0;
             }
 
             if (!this.hasImage()) {

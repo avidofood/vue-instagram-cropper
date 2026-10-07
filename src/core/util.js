@@ -36,7 +36,7 @@ export default {
         const coord1 = this.onePointCoord(pointer1, vm);
         const coord2 = this.onePointCoord(pointer2, vm);
 
-        return Math.sqrt(Math.pow(coord1.x - coord2.x, 2) + Math.pow(coord1.y - coord2.y, 2));
+        return Math.hypot(coord1.x - coord2.x, coord1.y - coord2.y);
     },
     eventHasFile(evt) {
         const dt = evt.dataTransfer || evt.originalEvent.dataTransfer;
@@ -93,6 +93,5 @@ export default {
         const reg = /^data:([^;]+)?(;base64)?,(.*)/gmi;
         return reg.exec(url)[3];
     },
-
 
 };

@@ -16,3 +16,27 @@ export default {
     LOADING_START_EVENT: 'loading-start',
     LOADING_END_EVENT: 'loading-end',
 };
+
+// The component emits these events of the canvas and the container again.
+// The 1.x versions did that too, so a parent could use for example @click.
+export const nativeEvents = [
+    'click',
+    'dblclick',
+    'touchstart',
+    'mousedown',
+    'touchend',
+    'touchcancel',
+    'mouseup',
+    'pointercancel',
+    'touchmove',
+    'mousemove',
+    'pointermove',
+    'pointerleave',
+    'DOMMouseScroll',
+    'wheel',
+    'mousewheel',
+    'dragenter',
+    'dragleave',
+    'dragover',
+    'drop',
+];

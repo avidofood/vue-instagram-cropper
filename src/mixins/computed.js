@@ -22,20 +22,30 @@ export default {
         // The ratio you see on the canvas or blob result
         aspectCanvasRatio() {
             if (this.aspectRatio > this.canvasRatio) {
-                return this.outputWidth / (this.imgData.height > this.outputHeight ? this.outputHeight : this.imgData.height);
+                const visibleHeight = this.imgData.height > this.outputHeight
+                    ? this.outputHeight
+                    : this.imgData.height;
+                return this.outputWidth / visibleHeight;
             }
 
-            return (this.imgData.width > this.outputWidth ? this.outputWidth : this.imgData.width) / this.outputHeight;
+            const visibleWidth = this.imgData.width > this.outputWidth
+                ? this.outputWidth
+                : this.imgData.width;
+            return visibleWidth / this.outputHeight;
         },
         maximumScaleRatio() {
             // my weird calculation from Instagram
             return this.aspectRatio * (2.56) + 2.725;
         },
         maximumAspectRatio() {
-            return this.canvasRatio > Settings.MAXIMUM_ASPECT_RATIO ? this.canvasRatio : Settings.MAXIMUM_ASPECT_RATIO;
+            return this.canvasRatio > Settings.MAXIMUM_ASPECT_RATIO
+                ? this.canvasRatio
+                : Settings.MAXIMUM_ASPECT_RATIO;
         },
         minimumAspectRatio() {
-            return this.canvasRatio < Settings.MINIMUM_ASPECT_RATIO ? this.canvasRatio : Settings.MINIMUM_ASPECT_RATIO;
+            return this.canvasRatio < Settings.MINIMUM_ASPECT_RATIO
+                ? this.canvasRatio
+                : Settings.MINIMUM_ASPECT_RATIO;
         },
         greaterThanMaximumAspectRatio() {
             return this.aspectRatio > this.maximumAspectRatio;

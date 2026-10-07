@@ -2,22 +2,32 @@
   "name": "vue-instagram-cropper",
   "version": "1.1.5",
   "description": "Simple Image Cropper that works like Instagram for Vue",
-  "main": "dist/index.common.js",
-  "unpkg": "dist/index.umd.min.js",
+  "type": "commonjs",
+  "main": "./dist/vue-instagram-cropper.umd.js",
+  "unpkg": "./dist/vue-instagram-cropper.umd.js",
+  "module": "./dist/vue-instagram-cropper.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/vue-instagram-cropper.mjs",
+      "require": "./dist/vue-instagram-cropper.umd.js"
+    },
+    "./package.json": "./package.json"
+  },
   "private": false,
   "scripts": {
-    "demo": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "build": "vue-cli-service build",
-    "build-bundle": "vue-cli-service build --target lib --name index ./src/index.js"
+    "build:dist": "vite build --mode dist",
+    "build:demo": "vite build --mode demo",
+    "build": "npm run build:dist && npm run build:demo",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "prepack": "npm run build:dist"
   },
   "files": [
-    "dist/*",
-    "src/*",
-    "*.json",
-    "*.js"
+    "dist"
   ],
   "keywords": [
+    "vue 3",
+    "vue3",
     "instagram",
     "instagram cropper",
     "cropper",
@@ -42,27 +52,34 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/avidofood/vue-instagram-cropper.git"
+    "url": "git+https://github.com/avidofood/vue-instagram-cropper.git"
   },
+  "bugs": {
+    "url": "https://github.com/avidofood/vue-instagram-cropper/issues"
+  },
+  "homepage": "https://avidofood.github.io/vue-instagram-cropper/",
   "author": {
     "name": "Philipp Mochine",
     "email": "support@avidofood.com",
     "url": "https://avidofood.com"
   },
   "license": "MIT",
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.5.4",
-    "@vue/cli-service": "^4.5.4",
-    "cross-env": "^6.0.3",
-    "eslint": "^6.6.0",
-    "eslint-config-avidofood": "^1.1.0",
-    "laravel-mix": "^5.0.5",
-    "sass": "^1.26.10",
-    "sass-loader": "^8.0.2",
-    "vue": "^2.6.12",
-    "vue-template-compiler": "^2.6.12"
+  "peerDependencies": {
+    "vue": "^3.2.0"
   },
   "dependencies": {
     "canvas-exif-orientation": "^0.4.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.9",
+    "@vue/test-utils": "^2.5.1",
+    "eslint": "^9.39.5",
+    "eslint-config-avidofood": "^4.0.0",
+    "jsdom": "^29.1.1",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.3",
+    "vite-plugin-css-injected-by-js": "^5.0.2",
+    "vitest": "^5.0.3",
+    "vue": "^3.5.43"
   }
 }

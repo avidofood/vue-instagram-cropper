@@ -21,11 +21,9 @@
             @dblclick.stop.prevent="$_c_handleDblClick"
             @touchstart.stop="$_c_handlePointerStart"
             @mousedown.stop.prevent="$_c_handlePointerStart"
-            @pointerstart.stop.prevent="$_c_handlePointerStart"
             @touchend.stop.prevent="$_c_handlePointerEnd"
             @touchcancel.stop.prevent="$_c_handlePointerEnd"
             @mouseup.stop.prevent="$_c_handlePointerEnd"
-            @pointerend.stop.prevent="$_c_handlePointerEnd"
             @pointercancel.stop.prevent="$_c_handlePointerEnd"
             @touchmove.stop="$_c_handlePointerMove"
             @mousemove.stop.prevent="$_c_handlePointerMove"
@@ -42,11 +40,11 @@
 
         <FullscreenButton
             v-if="img && aspectRatio !== 1 && !preventWhiteSpace"
-            @click.native="$_c_handleFullscreen"
+            @click="$_c_handleFullscreen"
         />
         <RemoveButton
             v-if="img"
-            @click.native="remove()"
+            @click="remove()"
         />
     </div>
 </template>
@@ -55,7 +53,7 @@
 import props from './core/props';
 import propsOptions from './core/propsOptions';
 import data from './core/data';
-import events from './core/events';
+import events, { nativeEvents } from './core/events';
 import * as Settings from './core/const';
 
 import initialize from './mixins/initialize';
@@ -81,9 +79,11 @@ import RemoveButton from './components/buttons/RemoveButton.vue';
 import deepClone from './lib/deepClone';
 import Saving from './lib/Saving';
 
-
 export default {
     props: { ...props, ...propsOptions },
+    // The native events are declared too. Otherwise Vue 3 also binds a listener such as
+    // @click to the root element, and the parent gets the event twice.
+    emits: [...Object.values(events), 'update', 'input', ...nativeEvents],
     mixins: [
         watches,
         initialize,
@@ -224,32 +224,32 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.cropper-container{
+<style scoped>
+.cropper-container {
     display: inline-block;
     cursor: pointer;
     position: relative;
     font-size: 0;
     align-self: flex-start;
-
-    &:hover{
-        opacity: 0.7;
-    }
-
-    &.cropper--dropzone{
-        box-shadow: inset 0 0 10px #333;
-        canvas{
-            opacity: 0.5;
-        }
-    }
-
-    &.cropper--has-target{
-        cursor: move;
-        &:hover{
-            opacity: 1;
-        }
-    }
 }
 
+.cropper-container:hover {
+    opacity: 0.7;
+}
 
+.cropper-container.cropper--dropzone {
+    box-shadow: inset 0 0 10px #333;
+}
+
+.cropper-container.cropper--dropzone canvas {
+    opacity: 0.5;
+}
+
+.cropper-container.cropper--has-target {
+    cursor: move;
+}
+
+.cropper-container.cropper--has-target:hover {
+    opacity: 1;
+}
 </style>

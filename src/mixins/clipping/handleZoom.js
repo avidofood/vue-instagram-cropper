@@ -18,6 +18,5 @@ export default {
             this.$_c_checkBounceness();
         },
 
-
     },
 };

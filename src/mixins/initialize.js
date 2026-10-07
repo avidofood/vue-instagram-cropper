@@ -1,4 +1,3 @@
-import poly from '../lib/polyfills';
 import events from '../core/events';
 import Line from '../lib/Line';
 
@@ -53,16 +52,8 @@ export default {
     mounted() {
         this.$_c_autoSizingInit();
         this.$_c_initialize();
-        poly.rAFPolyfill();
-        poly.toBlobPolyfill();
-
-        const support = window.requestAnimationFrame && window.File && window.FileReader && window.FileList && window.Blob;
-
-        if (typeof window === 'undefined' || !support) {
-            console.warn('Your browser does not support vue-croppa functionality.');
-        }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.$_c_autoSizingRemove();
     },
 };
