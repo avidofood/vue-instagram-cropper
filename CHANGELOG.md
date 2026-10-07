@@ -31,6 +31,7 @@ Version 2.0 is for Vue 3. The props, the events and the methods keep their names
 - A slow image or file can no longer replace a newer one. This also holds in the 30ms before a new `src` starts to load. In 1.x, an image that the user replaced showed up after its load finished.
 - `remove()` while an image loads stops that image. `remove()` and `src` set to `null` end the loading state. In 1.x, the image showed up later, and the spinner stayed.
 - `refresh()` right before the unmount no longer throws a `TypeError`.
+- `remove()` in a `mouseup` or `touchend` handler during a drag ends the drag. In 1.x, the next image followed the mouse without a pressed button.
 - `remove()` in an event handler during a load or a draw removes the image. Examples are `file-choose`, `image-remove-onload`, `file-loaded`, `initial-image-loaded` and the first `draw`. In 1.x, the image showed up anyway.
 - Metadata of another image with the same size and crop draws the new image. In 1.x, the old image stayed on the canvas.
 - `forceCacheBreak` works with a relative URL such as `/images/photo.jpg`. In 1.x, it threw a `TypeError`. A data URL or blob URL stays as it is. In 1.x, the added parameter broke it.

@@ -630,3 +630,45 @@ describe('remove() in the handler of an event in the middle of a load or draw', 
         expect(wrapper.emitted('new-image')).toBeUndefined();
     });
 });
+
+describe('remove() during a drag', () => {
+    // From 1.x: the drag state stayed, so the next image followed the mouse without a button
+    it('ends the drag, so the next image does not follow the mouse', async () => {
+        let wrapper;
+        let removed = false;
+        const onMouseup = () => {
+            if (removed) return;
+            removed = true;
+            wrapper.vm.remove();
+        };
+        wrapper = await mountWithImage({ onMouseup });
+        const canvas = wrapper.find('canvas');
+
+        await canvas.trigger('mousedown', { clientX: 100, clientY: 100 });
+        await canvas.trigger('mouseup', { clientX: 100, clientY: 100 });
+        await wrapper.setProps({ src: portraitUrl });
+        await waitForEvent(wrapper, 'new-image-drawn', 2);
+        const { imgData } = wrapper.vm.getMetadata();
+
+        await canvas.trigger('mousemove', { clientX: 250, clientY: 250 });
+        await sleep(50);
+
+        expect(wrapper.vm.dragging).toBe(false);
+        expect(wrapper.vm.getMetadata().imgData).toEqual(imgData);
+        expect(wrapper.emitted('move')).toBeUndefined();
+    });
+});
+
+describe('metadata during initial-image-loaded', () => {
+    // The watchers set scaleRatio after this event, as in 1.x. The types allow null.
+    it('has the image, and scaleRatio can still be null', async () => {
+        let metadata;
+        let wrapper;
+        const onInitialImageLoaded = () => { metadata = wrapper.vm.getMetadata(); };
+        wrapper = mountCropper({ src: landscapeUrl, onInitialImageLoaded });
+        await waitForEvent(wrapper, 'initial-image-loaded');
+
+        expect(metadata.img.src).toBe(landscapeUrl);
+        expect(metadata.scaleRatio).toBeNull();
+    });
+});

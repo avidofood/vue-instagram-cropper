@@ -66,11 +66,16 @@ export default {
                     this.chooseFile();
                 }
                 this.tabStart = 0;
+                // A handler of mouseup or touchend can call remove() during a drag
+                this.$_c_endGesture();
                 return;
             }
 
             this.$_c_checkBounceness();
+            this.$_c_endGesture();
+        },
 
+        $_c_endGesture() {
             this.dragging = false;
             this.pinching = false;
             this.pinchDistance = 0;
