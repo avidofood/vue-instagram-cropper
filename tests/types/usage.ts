@@ -25,6 +25,7 @@ const props: InstagramCropperProps = {
     forceCacheBreak: true,
     preventWhiteSpace: true,
     showGrid: false,
+    zoomOnWheel: false,
 };
 
 h(InstagramCropper, {

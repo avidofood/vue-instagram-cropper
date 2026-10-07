@@ -214,3 +214,36 @@ describe('grid', () => {
         expect(errors).toEqual([]);
     });
 });
+
+describe('zoomOnWheel', () => {
+    const wheel = (wrapper) => {
+        const event = new WheelEvent('wheel', { deltaY: -100, cancelable: true, bubbles: true });
+        wrapper.find('canvas').element.dispatchEvent(event);
+        return event;
+    };
+
+    it('zooms and keeps the page from scrolling by default', async () => {
+        const wrapper = await mountWithImage();
+        const { scaleRatio } = wrapper.vm;
+
+        const event = wheel(wrapper);
+        await sleep(50);
+
+        expect(event.defaultPrevented).toBe(true);
+        expect(wrapper.vm.scaleRatio).toBeGreaterThan(scaleRatio);
+    });
+
+    it('false lets the page scroll and does not zoom', async () => {
+        const wrapper = await mountWithImage({ zoomOnWheel: false });
+        const { scaleRatio } = wrapper.vm;
+
+        const event = wheel(wrapper);
+        await sleep(50);
+
+        expect(event.defaultPrevented).toBe(false);
+        expect(wrapper.vm.scaleRatio).toBe(scaleRatio);
+        expect(wrapper.emitted('zoom')).toBeUndefined();
+        // The component still emits the wheel event
+        expect(wrapper.emitted('wheel')).toHaveLength(1);
+    });
+});

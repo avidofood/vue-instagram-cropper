@@ -126,7 +126,7 @@ export default {
         $_c_handleWheel(evt) {
             this.emitNativeEvent(evt);
 
-            if (!this.hasImage()) return;
+            if (!this.hasImage() || !this.zoomOnWheel) return;
 
             evt.preventDefault();
             this.$_c_showZoomGrid();

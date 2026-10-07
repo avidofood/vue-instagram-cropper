@@ -145,6 +145,10 @@ Keeps the canvas filled with the image while the user moves or zooms it.
 
 Shows the rule-of-thirds grid while the user moves or zooms the image, as in Instagram.
 
+- `zoomOnWheel` (default: `true`)
+
+With `false`, the mouse wheel and the trackpad do not zoom the image, and the page scrolls over the cropper. Pinch to zoom still works.
+
 ### Image orientation
 
 Photos from a phone often contain an EXIF orientation. Browsers turn these images correctly by themselves since 2020 (Chrome 81, Firefox 77, Safari 13.1). Version 2.0 draws the image as the browser shows it.

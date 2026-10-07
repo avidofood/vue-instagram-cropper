@@ -39,6 +39,11 @@ export default {
         type: Boolean,
         default: false,
     },
+    // false lets the page scroll over the cropper instead of zooming the image
+    zoomOnWheel: {
+        type: Boolean,
+        default: true,
+    },
     // The rule-of-thirds grid while the user moves or zooms the image
     showGrid: {
         type: Boolean,
