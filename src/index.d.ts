@@ -90,6 +90,11 @@ export interface InstagramCropperProps {
     placeholderFontSize?: number;
     /** Largest file size in bytes. 0 means no limit. Default: 0. */
     fileSizeLimit?: number;
+    /**
+     * The CORS mode for an image from another origin. 'use-credentials' sends the cookies.
+     * Default: 'anonymous'.
+     */
+    crossOrigin?: 'anonymous' | 'use-credentials';
     /** Adds a parameter to the URL, so the browser loads the image again. Default: false. */
     forceCacheBreak?: boolean;
     /** Keeps the canvas filled when the user moves or zooms the image. Default: false. */
@@ -160,6 +165,7 @@ export type InstagramCropperInstance = InstagramCropperMethods & {
     readonly placeholderColor: string;
     readonly placeholderFontSize: number;
     readonly fileSizeLimit: number;
+    readonly crossOrigin: 'anonymous' | 'use-credentials';
     readonly forceCacheBreak: boolean;
     readonly preventWhiteSpace: boolean;
     readonly showGrid: boolean;
@@ -229,6 +235,7 @@ type InstagramCropperPropOptions = {
     placeholderColor: { type: PropType<string>; default: string };
     placeholderFontSize: { type: PropType<number>; default: number };
     fileSizeLimit: { type: PropType<number>; default: number };
+    crossOrigin: { type: PropType<'anonymous' | 'use-credentials'>; default: string };
     forceCacheBreak: { type: PropType<boolean>; default: boolean };
     preventWhiteSpace: { type: PropType<boolean>; default: boolean };
     showGrid: { type: PropType<boolean>; default: boolean };

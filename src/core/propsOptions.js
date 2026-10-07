@@ -30,6 +30,14 @@ export default {
             return val >= 0;
         },
     },
+    // The CORS mode for an image from another origin. use-credentials sends the cookies.
+    crossOrigin: {
+        type: String,
+        default: 'anonymous',
+        validator(val) {
+            return val === 'anonymous' || val === 'use-credentials';
+        },
+    },
     forceCacheBreak: {
         type: Boolean,
         default: false,

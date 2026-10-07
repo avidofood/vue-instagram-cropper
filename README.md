@@ -133,6 +133,10 @@ With `0`, the component calculates the font size.
   
 The largest file size in bytes. `0` means no limit. A larger file emits `file-size-exceed`.
 
+- `crossOrigin` (default: `anonymous`)
+
+The CORS mode for an image from another origin. The image server must allow the export with the header `Access-Control-Allow-Origin`. Otherwise the browser does not export the cropped image. If the image server needs the cookies of the user, set `use-credentials`. Then the server must also send `Access-Control-Allow-Credentials: true` and your origin instead of `*`.
+
 - `forceCacheBreak` (default: `false`)
 
 If you still have CORS issues, set it to `true`. The browser then does not cache the images. Data URLs and blob URLs stay as they are.

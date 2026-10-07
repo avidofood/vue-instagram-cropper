@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import InstagramCropper from '../src/index';
 import {
     callsOf,
     collectErrors,
@@ -245,5 +246,28 @@ describe('zoomOnWheel', () => {
         expect(wrapper.emitted('zoom')).toBeUndefined();
         // The component still emits the wheel event
         expect(wrapper.emitted('wheel')).toHaveLength(1);
+    });
+});
+
+describe('crossOrigin', () => {
+    it('loads a remote image with anonymous by default', async () => {
+        const wrapper = await mountWithImage();
+
+        expect(lastDrawnImage(wrapper)[1].getAttribute('crossOrigin')).toBe('anonymous');
+    });
+
+    // For an image server that needs the cookies of the user
+    it('use-credentials sends the cookies', async () => {
+        const wrapper = await mountWithImage({ crossOrigin: 'use-credentials' });
+
+        expect(lastDrawnImage(wrapper)[1].getAttribute('crossOrigin')).toBe('use-credentials');
+    });
+
+    it('rejects another value', () => {
+        const { crossOrigin } = InstagramCropper.props;
+
+        expect(crossOrigin.validator('anonymous')).toBe(true);
+        expect(crossOrigin.validator('use-credentials')).toBe(true);
+        expect(crossOrigin.validator('')).toBe(false);
     });
 });

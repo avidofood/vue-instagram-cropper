@@ -22,6 +22,7 @@ const props: InstagramCropperProps = {
     placeholderColor: '#ffffff',
     placeholderFontSize: 14,
     fileSizeLimit: 1024 * 1024,
+    crossOrigin: 'use-credentials',
     forceCacheBreak: true,
     preventWhiteSpace: true,
     showGrid: false,
@@ -60,6 +61,9 @@ h(InstagramCropper, { onUpdate: strictUpdate });
 
 // @ts-expect-error quality is a number
 h(InstagramCropper, { quality: 'high' });
+
+// @ts-expect-error crossOrigin is anonymous or use-credentials
+h(InstagramCropper, { crossOrigin: 'cookies' });
 
 // @ts-expect-error src is a URL or metadata
 h(InstagramCropper, { src: 42 });

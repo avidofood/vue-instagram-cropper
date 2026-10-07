@@ -67,7 +67,7 @@ export default {
             const isLocal = /^data:/.test(href) || /^blob:/.test(href);
 
             if (!isLocal) {
-                img.setAttribute('crossOrigin', 'anonymous');
+                img.setAttribute('crossOrigin', this.crossOrigin);
             }
 
             // A data or blob URL has no cache, and a parameter would break it
