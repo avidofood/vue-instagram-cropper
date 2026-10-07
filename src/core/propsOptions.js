@@ -52,6 +52,11 @@ export default {
         type: Boolean,
         default: true,
     },
+    // Texts for screen readers: canvas, remove and fullscreen. Replaces single default texts.
+    labels: {
+        type: Object,
+        default: () => ({}),
+    },
     // The rule-of-thirds grid while the user moves or zooms the image
     showGrid: {
         type: Boolean,

@@ -27,6 +27,7 @@ const props: InstagramCropperProps = {
     preventWhiteSpace: true,
     showGrid: false,
     zoomOnWheel: false,
+    labels: { remove: 'Bild entfernen' },
 };
 
 h(InstagramCropper, {
@@ -61,6 +62,9 @@ h(InstagramCropper, { onUpdate: strictUpdate });
 
 // @ts-expect-error quality is a number
 h(InstagramCropper, { quality: 'high' });
+
+// @ts-expect-error labels has the keys canvas, remove and fullscreen
+h(InstagramCropper, { labels: { close: 'Close' } });
 
 // @ts-expect-error crossOrigin is anonymous or use-credentials
 h(InstagramCropper, { crossOrigin: 'cookies' });

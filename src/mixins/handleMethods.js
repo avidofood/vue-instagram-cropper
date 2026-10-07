@@ -129,7 +129,7 @@ export default {
             if (!this.hasImage() || !this.zoomOnWheel) return;
 
             evt.preventDefault();
-            this.$_c_showZoomGrid();
+            this.$_c_showGridBriefly();
 
             if (evt.wheelDelta < 0 || evt.deltaY > 0 || evt.detail > 0) {
                 this.zoom(false);
@@ -201,6 +201,46 @@ export default {
         },
         $_c_handleDblClick(evt) {
             this.emitNativeEvent(evt);
+        },
+        // Keys only work while the canvas has the focus. Shortcuts stay with the browser.
+        $_c_handleKeyDown(evt) {
+            if (evt.altKey || evt.ctrlKey || evt.metaKey) return;
+
+            if (!this.hasImage()) {
+                if (evt.key !== 'Enter' && evt.key !== ' ') return;
+                evt.preventDefault();
+                this.chooseFile();
+                return;
+            }
+
+            const pixels = evt.shiftKey ? Settings.KEYBOARD_STEP_LARGE : Settings.KEYBOARD_STEP;
+            const step = pixels * this.quality;
+            const moves = {
+                ArrowLeft: { x: -step, y: 0 },
+                ArrowRight: { x: step, y: 0 },
+                ArrowUp: { x: 0, y: -step },
+                ArrowDown: { x: 0, y: step },
+            };
+            const zooms = {
+                '+': true, '=': true, '-': false, _: false,
+            };
+
+            if (moves[evt.key]) {
+                this.$_c_showGridBriefly();
+                this.move(moves[evt.key]);
+                // A key press is a whole gesture, like a drag that ends
+                this.$_c_checkBounceness();
+            } else if (evt.key in zooms) {
+                this.$_c_showGridBriefly();
+                this.zoom(zooms[evt.key], Settings.KEYBOARD_ZOOM_ACCELERATION);
+                this.$nextTick(() => {
+                    this.$_c_handleZoomWheel();
+                });
+            } else {
+                return;
+            }
+
+            evt.preventDefault();
         },
         $_c_handleInputChange() {
             const input = this.$refs.fileInput;

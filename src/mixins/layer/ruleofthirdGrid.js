@@ -5,17 +5,17 @@ import * as Settings from '../../core/const';
  */
 export default {
     beforeUnmount() {
-        clearTimeout(this.$_c_zoomGridTimer);
+        clearTimeout(this.$_c_gridTimer);
     },
     methods: {
-        // Shows the grid now and hides it when the user stops zooming
-        $_c_showZoomGrid() {
-            this.zooming = true;
-            clearTimeout(this.$_c_zoomGridTimer);
-            this.$_c_zoomGridTimer = setTimeout(() => {
-                this.zooming = false;
+        // Shows the grid now and hides it when the user stops zooming or pressing keys
+        $_c_showGridBriefly() {
+            this.adjusting = true;
+            clearTimeout(this.$_c_gridTimer);
+            this.$_c_gridTimer = setTimeout(() => {
+                this.adjusting = false;
                 this.$_c_draw();
-            }, Settings.ZOOM_GRID_DURATION);
+            }, Settings.GRID_DURATION);
         },
         $_c_drawRuleOfThirdGrid() {
             const wi = this.$_c_ROTWidth();

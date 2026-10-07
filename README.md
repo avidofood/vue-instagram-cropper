@@ -149,6 +149,10 @@ Keeps the canvas filled with the image while the user moves or zooms it.
 
 Shows the rule-of-thirds grid while the user moves or zooms the image, as in Instagram.
 
+- `labels` (default: English texts)
+
+Texts for screen readers: `canvas`, `remove` and `fullscreen`. See [Keyboard and screen readers](#keyboard-and-screen-readers).
+
 - `zoomOnWheel` (default: `true`)
 
 With `false`, the mouse wheel and the trackpad do not zoom the image, and the page scrolls over the cropper. Pinch to zoom still works.
@@ -156,6 +160,25 @@ With `false`, the mouse wheel and the trackpad do not zoom the image, and the pa
 ### Image orientation
 
 Photos from a phone often contain an EXIF orientation. Browsers turn these images correctly by themselves since 2020 (Chrome 81, Firefox 77, Safari 13.1). Version 2.0 draws the image as the browser shows it.
+
+### Keyboard and screen readers
+
+The canvas can get the focus with the Tab key. While it has the focus:
+
+- Without an image, Enter or Space opens the file chooser.
+- The arrow keys move the image by 10 pixels. With Shift, they move it by 50 pixels.
+- Plus and minus zoom the image.
+
+The canvas, the remove button and the fullscreen button have English texts for screen readers. Replace them with the prop `labels`, for example:
+
+```html
+<instagram-cropper
+    :src="cropper"
+    :labels="{ remove: 'Bild entfernen', fullscreen: 'Bild einpassen oder füllen' }"
+></instagram-cropper>
+```
+
+`labels.canvas` describes the canvas and its keys.
 
 ## Events 
 

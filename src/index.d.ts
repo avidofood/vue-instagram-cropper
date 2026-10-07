@@ -75,6 +75,16 @@ export interface InstagramCropperSaving {
     ): Promise<Blob | null>;
 }
 
+/** Texts for screen readers. Each one replaces its English default text. */
+export interface InstagramCropperLabels {
+    /** The canvas, with the keys. */
+    canvas?: string;
+    /** The button that removes the image. Default: 'Remove image'. */
+    remove?: string;
+    /** The button that fits or fills the image. Default: 'Fit or fill the image'. */
+    fullscreen?: string;
+}
+
 export interface InstagramCropperProps {
     /** URL of the image, or the metadata from getMetadata(). Without it, the placeholder shows. */
     src?: string | InstagramCropperMetadata | null;
@@ -103,6 +113,8 @@ export interface InstagramCropperProps {
     showGrid?: boolean;
     /** false lets the page scroll over the cropper instead of zooming the image. Default: true. */
     zoomOnWheel?: boolean;
+    /** Texts for screen readers, for example in another language. */
+    labels?: InstagramCropperLabels;
 }
 
 /**
@@ -170,6 +182,7 @@ export type InstagramCropperInstance = InstagramCropperMethods & {
     readonly preventWhiteSpace: boolean;
     readonly showGrid: boolean;
     readonly zoomOnWheel: boolean;
+    readonly labels: InstagramCropperLabels;
     /** Width of the canvas in canvas pixels: the width of the container times quality. */
     readonly outputWidth: number;
     /** Height of the canvas in canvas pixels: the height of the container times quality. */
@@ -240,6 +253,7 @@ type InstagramCropperPropOptions = {
     preventWhiteSpace: { type: PropType<boolean>; default: boolean };
     showGrid: { type: PropType<boolean>; default: boolean };
     zoomOnWheel: { type: PropType<boolean>; default: boolean };
+    labels: { type: PropType<InstagramCropperLabels>; default: () => InstagramCropperLabels };
 };
 
 declare const InstagramCropper: DefineComponent<

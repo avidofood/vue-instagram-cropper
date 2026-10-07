@@ -2,6 +2,9 @@ import * as Settings from '../core/const';
 
 export default {
     computed: {
+        labelTexts() {
+            return { ...Settings.DEFAULT_LABELS, ...this.labels };
+        },
         outputWidth() {
             const w = this.realWidth;
             return w * this.quality;

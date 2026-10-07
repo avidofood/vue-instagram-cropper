@@ -8,15 +8,22 @@
         @dragover.stop.prevent="$_c_handleDragOver"
         @drop.stop.prevent="$_c_handleDrop"
     >
+        <!-- Hidden: the canvas opens the file chooser with a click, Enter or Space -->
         <input
             type="file"
             accept="image/*"
+            tabindex="-1"
+            aria-hidden="true"
             ref="fileInput"
             @change="$_c_handleInputChange"
             style="height:1px;width:1px;overflow:hidden;margin-left:-99999px;position:absolute;"
         >
         <canvas
             ref="canvas"
+            tabindex="0"
+            role="application"
+            :aria-label="labelTexts.canvas"
+            @keydown="$_c_handleKeyDown"
             @click.stop.prevent="$_c_handleClick"
             @dblclick.stop.prevent="$_c_handleDblClick"
             @touchstart.stop="$_c_handlePointerStart"
@@ -38,10 +45,12 @@
 
         <FullscreenButton
             v-if="img && aspectRatio !== 1 && !preventWhiteSpace"
+            :aria-label="labelTexts.fullscreen"
             @click="$_c_handleFullscreen"
         />
         <RemoveButton
             v-if="img"
+            :aria-label="labelTexts.remove"
             @click="remove()"
         />
     </div>
@@ -271,5 +280,10 @@ export default {
 
 .cropper-container.cropper--has-target:hover {
     opacity: 1;
+}
+
+.cropper-container canvas:focus-visible {
+    outline: 2px solid #3897f0;
+    outline-offset: -2px;
 }
 </style>

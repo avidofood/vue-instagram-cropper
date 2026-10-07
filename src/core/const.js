@@ -11,8 +11,22 @@ export const DEFAULT_PLACEHOLDER_TAKEUP = 2 / 3;
 // The amount of times by which the pinching is more sensitive than the scolling
 export const PINCH_ACCELERATION = 2;
 
-// How long the grid stays visible after the last zoom step, in milliseconds
-export const ZOOM_GRID_DURATION = 500;
+// How long the grid stays visible after the last zoom step or key press, in milliseconds
+export const GRID_DURATION = 500;
+
+// An arrow key moves the image by this many pixels of the container, with Shift by the second
+export const KEYBOARD_STEP = 10;
+export const KEYBOARD_STEP_LARGE = 50;
+// A plus or minus key zooms like this many wheel steps
+export const KEYBOARD_ZOOM_ACCELERATION = 5;
+
+// The texts for screen readers. The prop labels can replace each of them.
+export const DEFAULT_LABELS = {
+    canvas: 'Image cropper. Press Enter to choose an image. '
+        + 'Arrow keys move the image, plus and minus zoom it.',
+    remove: 'Remove image',
+    fullscreen: 'Fit or fill the image',
+};
 
 // Specifies how fast the zoom is reacting to scroll gestures. Default to level 3.
 export const ZOOM_SPEED = 3;

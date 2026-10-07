@@ -1,4 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import {
+    describe, expect, it, vi,
+} from 'vitest';
 import InstagramCropper from '../src/index';
 import {
     callsOf,
@@ -269,5 +271,104 @@ describe('crossOrigin', () => {
         expect(crossOrigin.validator('anonymous')).toBe(true);
         expect(crossOrigin.validator('use-credentials')).toBe(true);
         expect(crossOrigin.validator('')).toBe(false);
+    });
+});
+
+describe('keyboard', () => {
+    const press = (wrapper, key, options = {}) => {
+        const event = new KeyboardEvent('keydown', {
+            key, cancelable: true, bubbles: true, ...options,
+        });
+        wrapper.find('canvas').element.dispatchEvent(event);
+        return event;
+    };
+
+    // Zoomed in, so the image can move in every direction
+    const mountZoomed = async () => {
+        const wrapper = await mountWithImage();
+        wrapper.vm.zoom(true, 20);
+        await sleep(50);
+        return wrapper;
+    };
+
+    it('the canvas can get the focus', async () => {
+        const wrapper = await mountEmpty();
+
+        expect(wrapper.find('canvas').attributes('tabindex')).toBe('0');
+        // Screen readers pass the arrow keys to an element with the role application
+        expect(wrapper.find('canvas').attributes('role')).toBe('application');
+        // The hidden file input is no extra tab stop without a visible focus
+        expect(wrapper.find('input[type="file"]').attributes('tabindex')).toBe('-1');
+    });
+
+    it('arrow keys move the image, Shift moves it further', async () => {
+        const wrapper = await mountZoomed();
+        const { startX, startY } = wrapper.vm.imgData;
+
+        const event = press(wrapper, 'ArrowLeft');
+        press(wrapper, 'ArrowUp', { shiftKey: true });
+        await sleep(50);
+
+        expect(event.defaultPrevented).toBe(true);
+        // 10 pixels in the container, times the quality of 2. Shift: 50 pixels.
+        expect(wrapper.vm.imgData.startX).toBe(startX - 20);
+        expect(wrapper.vm.imgData.startY).toBeLessThan(startY);
+        expect(wrapper.emitted('move').length).toBeGreaterThan(0);
+    });
+
+    it('plus and minus zoom the image', async () => {
+        const wrapper = await mountZoomed();
+        const { scaleRatio } = wrapper.vm;
+
+        press(wrapper, '+');
+        await sleep(50);
+        const zoomedIn = wrapper.vm.scaleRatio;
+        press(wrapper, '-');
+        press(wrapper, '-');
+        await sleep(50);
+
+        expect(zoomedIn).toBeGreaterThan(scaleRatio);
+        expect(wrapper.vm.scaleRatio).toBeLessThan(zoomedIn);
+        expect(wrapper.emitted('zoom').length).toBeGreaterThan(0);
+    });
+
+    it('Enter opens the file chooser without an image', async () => {
+        const wrapper = await mountEmpty();
+        const click = vi.spyOn(wrapper.find('input[type="file"]').element, 'click');
+
+        const event = press(wrapper, 'Enter');
+
+        expect(event.defaultPrevented).toBe(true);
+        expect(click).toHaveBeenCalledTimes(1);
+    });
+
+    it('leaves other keys and shortcuts to the page', async () => {
+        const wrapper = await mountZoomed();
+        const { startX } = wrapper.vm.imgData;
+
+        const tab = press(wrapper, 'Tab');
+        const shortcut = press(wrapper, 'ArrowLeft', { ctrlKey: true });
+        await sleep(50);
+
+        expect(tab.defaultPrevented).toBe(false);
+        expect(shortcut.defaultPrevented).toBe(false);
+        expect(wrapper.vm.imgData.startX).toBe(startX);
+    });
+});
+
+describe('labels', () => {
+    it('names the canvas and the buttons', async () => {
+        const wrapper = await mountWithImage();
+
+        expect(wrapper.find('canvas').attributes('aria-label')).toMatch(/^Image cropper\./);
+        expect(wrapper.find('.top-right-abs').attributes('aria-label')).toBe('Remove image');
+        expect(wrapper.find('.bottom-left-abs').attributes('aria-label')).toBe('Fit or fill the image');
+    });
+
+    it('labels replaces single texts, for example for another language', async () => {
+        const wrapper = await mountWithImage({ labels: { remove: 'Bild entfernen' } });
+
+        expect(wrapper.find('.top-right-abs').attributes('aria-label')).toBe('Bild entfernen');
+        expect(wrapper.find('.bottom-left-abs').attributes('aria-label')).toBe('Fit or fill the image');
     });
 });
