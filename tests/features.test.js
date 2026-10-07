@@ -372,3 +372,28 @@ describe('labels', () => {
         expect(wrapper.find('.bottom-left-abs').attributes('aria-label')).toBe('Fit or fill the image');
     });
 });
+
+describe('output size with a fixed aspect ratio', () => {
+    // A 4:5 container with preventWhiteSpace. The image height is 799.99... after the watchers,
+    // because 600 * (800 / 600) is not exact in floating point.
+    it('counts a size such as 799.99999 as 800 pixels', async () => {
+        const wrapper = await mountWithImage({ preventWhiteSpace: true }, {
+            attrs: { style: 'width: 320px; height: 400px;' },
+        });
+
+        expect(wrapper.vm.generateDataUrl()).toBe('data:image/png;width=640;height=800;quality=1');
+        expect(wrapper.vm.generateDataUrl('image/jpeg', 0.9, { width: 1080 }))
+            .toBe('data:image/jpeg;width=1080;height=1350;quality=0.9');
+    });
+
+    // A partly covered last row would be transparent in a PNG and dark in a JPEG
+    it('cuts a real fraction off, as 1.x did', async () => {
+        const wrapper = await mountWithImage();
+        wrapper.vm.zoom(true, 1);
+        await sleep(50);
+        const { height } = wrapper.vm.getMetadata().imgData;
+        expect(height % 1).toBeGreaterThan(0.01);
+
+        expect(wrapper.vm.generateDataUrl()).toBe(`data:image/png;width=600;height=${Math.floor(height)};quality=1`);
+    });
+});

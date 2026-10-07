@@ -6,6 +6,14 @@
      * has already calculated it in croppa
      */
 
+// The watchers compute the image size in floating point, so a height of 800 can be 799.99999.
+// Such a size counts as 800. A real fraction such as 547.6 is cut off, as in 1.x: a partly
+// covered last row would be transparent in a PNG and dark in a JPEG.
+const pixelSize = (value) => {
+    const rounded = Math.round(value);
+    return Math.abs(value - rounded) < 1e-6 ? rounded : Math.floor(value);
+};
+
 // Only a positive number counts. Anything else leaves the option out.
 const positive = (value) => (typeof value === 'number' && value > 0 ? value : 0);
 
@@ -81,15 +89,13 @@ export default class Saving {
 
     drawImageOnCanvas(options) {
         const { width, height } = this.imgData;
+        // The part of the image that the canvas shows
+        const visibleWidth = Math.min(width, this.outputWidth);
+        const visibleHeight = Math.min(height, this.outputHeight);
+        const scale = outputScale(visibleWidth, visibleHeight, options);
 
-        this.calculateCanvasDimension(width, height);
-
-        // The canvas has the visible size now. The options can scale it.
-        const scale = outputScale(this.canvas.width, this.canvas.height, options);
-        if (scale !== 1) {
-            this.canvas.width = Math.max(1, Math.round(this.canvas.width * scale));
-            this.canvas.height = Math.max(1, Math.round(this.canvas.height * scale));
-        }
+        this.canvas.width = Math.max(1, pixelSize(visibleWidth * scale));
+        this.canvas.height = Math.max(1, pixelSize(visibleHeight * scale));
 
         const { startX, startY } = this.getXYPosition();
 
@@ -102,11 +108,6 @@ export default class Saving {
             startX: this.imgData.startX > 0 ? 0 : this.imgData.startX,
             startY: this.imgData.startY > 0 ? 0 : this.imgData.startY,
         };
-    }
-
-    calculateCanvasDimension(imgWidth, imgHeight) {
-        this.canvas.width = imgWidth > this.outputWidth ? this.outputWidth : imgWidth;
-        this.canvas.height = imgHeight > this.outputHeight ? this.outputHeight : imgHeight;
     }
 
     beforeDestroy() {
